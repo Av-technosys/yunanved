@@ -1,73 +1,39 @@
-"use client"
-import { SubHeading } from "@/components/font";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
-import { useState } from "react";
+import { OrderStatusBoxes } from "@/components/admin/orderStatusBoxes"
+import { OrderStatusChart } from "@/components/admin/orderStatusChart"
+import { RecentOrdersTable } from "@/components/admin/recentOrdersTable"
+import { QuickActions } from "@/components/admin/quickActions"
+import { DashboardCards } from "@/components/admin/dashboardCard"
 
-export default function ProductDetails() {
-    type AttributeValue = {
-        id?: string;
-        value: string;
-    };
+export default function DashboardPage() {
+  return (
+    <div className="space-y-6 p-3">
+      {/* Page Header */}
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-800">
+          Dashboard Overview
+        </h1>
+        <p className="text-slate-500">
+          Welcome back! Here's what's happening with your store today
+        </p>
+      </header>
 
-    const [productAttributes, setProductAttributes] = useState<Record<string, AttributeValue>>({});
+      <DashboardCards />
 
-    function handleValueChange(attribute: string, value: string, id?: string) {
-        setProductAttributes((prev) => ({
-            ...prev,
-            [attribute]: {
-                id: prev[attribute]?.id ?? id,
-                value,
-            },
-        }));
-    }
-
-    const handleSubmit = () => {
-        const payload = Object.entries(productAttributes).map(
-            ([attribute, { id, value }]) => ({
-                id,
-                attribute,
-                value,
-            })
-        );
-        console.log(payload);
-    }
-
-    return (
-        <div className=" max-w-3xl mx-auto space-y-8">
-            <Button onClick={handleSubmit}>Submit</Button>
-            {
-                PRODUCT_ATTRIBUTES.map((productAttributeItem, idx) => {
-                    return (
-                        <div key={idx} className=" space-y-4">
-                            <SubHeading className=" font-medium">{productAttributeItem.title}</SubHeading>
-                            <div className=" space-y-3 grid grid-cols-2 gap-4">
-                                {
-                                    productAttributeItem.elements.map((element, idx) => {
-                                        return (
-                                            <div key={element.toString()} className=" flex  w-full gap-2">
-
-                                                <div className=" w-full space-y-1">
-                                                    <Label>{element}</Label>
-                                                    <Input
-                                                        value={productAttributes[element]?.value}
-                                                        onChange={(e) =>
-                                                            handleValueChange(element, e.target.value, productAttributes[element]?.id)
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
-
-                        </div>
-                    )
-                })
-            }
+      {/* Row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <OrderStatusBoxes />
         </div>
-    );
-};
+        <QuickActions />
+      </div>
+
+      {/* Row 3 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RecentOrdersTable />
+        </div>
+        <OrderStatusChart />
+      </div>
+    </div>
+  )
+}

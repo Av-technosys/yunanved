@@ -91,30 +91,78 @@ export const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "semi-stitched"];
 export const MATERIALS = ["Cotton", "Wool", "Silk", "Leather", "Linen"];
 
 export const CATEGORY_1 = [
-    {
-        id: "c1a1e1b1-1234-4d3a-9f0a-abc111def001",
-        name: "Sarees",
-        slug: "sarees",
-        image: "/category/sarees.jpg?w=300&h=300",
-    },
-    {
-        id: "c1a1e1b2-1234-4d3a-9f0a-abc111def002",
-        name: "Occasion Wear",
-        slug: "occasion-wear",
-        image: "/category/occasion-wear.jpg?w=300&h=300",
-    },
-    {
-        id: "c1a1e1b5-1234-4d3a-9f0a-abc111def005",
-        name: "Loungewear",
-        slug: "loungewear",
-        image: "/category/kurta-chunni-set.jpg?w=300&h=300",
-    },
-    {
-        id: "c1a1e1b9-1234-4d3a-9f0a-abc111def009",
-        name: "Ready To Wear",
-        slug: "ready-to-wear",
-        image: "//1759177487581-Copy of 2S0A7588.webp?w=300&h=300",
-    },
+  {
+    id: "c1a1e1b1-1234-4d3a-9f0a-abc111def001",
+    name: "Sarees",
+    slug: "sarees",
+    image: "/category/sarees.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b2-1234-4d3a-9f0a-abc111def002",
+    name: "Occasion Wear",
+    slug: "occasion-wear",
+    image: "/category/occasion-wear.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b3-1234-4d3a-9f0a-abc111def003",
+    name: "Kurtas",
+    slug: "kurtas",
+    image: "/category/kurtas.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b4-1234-4d3a-9f0a-abc111def004",
+    name: "Kurta Sets",
+    slug: "kurta-sets",
+    image: "/category/kurta-sets.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b5-1234-4d3a-9f0a-abc111def005",
+    name: "Loungewear",
+    slug: "loungewear",
+    image: "/category/loungewear.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b6-1234-4d3a-9f0a-abc111def006",
+    name: "Ethnic Dresses",
+    slug: "ethnic-dresses",
+    image: "/category/ethnic-dresses.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b7-1234-4d3a-9f0a-abc111def007",
+    name: "Co-ord Sets",
+    slug: "co-ord-sets",
+    image: "/category/co-ord-sets.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b8-1234-4d3a-9f0a-abc111def008",
+    name: "Dupattas",
+    slug: "dupattas",
+    image: "/category/dupattas.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b9-1234-4d3a-9f0a-abc111def009",
+    name: "Ready To Wear",
+    slug: "ready-to-wear",
+    image: "/category/ready-to-wear.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b10-1234-4d3a-9f0a-abc111def010",
+    name: "Bottom Wear",
+    slug: "bottom-wear",
+    image: "/category/bottom-wear.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b11-1234-4d3a-9f0a-abc111def011",
+    name: "Festive Collection",
+    slug: "festive-collection",
+    image: "/category/festive-collection.jpg?w=300&h=300",
+  },
+  {
+    id: "c1a1e1b12-1234-4d3a-9f0a-abc111def012",
+    name: "Winter Wear",
+    slug: "winter-wear",
+    image: "/category/winter-wear.jpg?w=300&h=300",
+  },
 ];
 
 export const moreSidebarCategories = [
