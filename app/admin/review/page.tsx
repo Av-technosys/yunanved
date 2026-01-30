@@ -12,17 +12,17 @@ import ReviewTable from "./ReviewTable"
 
 const Page = () => {
 
-    const ORDER_STATUS = [
-        { value: "pending", label: "Pending" },
-        { value: "completed", label: "Completed" },
-        { value: "cancelled", label: "Cancelled" },
-        { value: "failed", label: "Failed" },
-        { value: "shipped", label: "Shipped" },
-        { value: "delivered", label: "Delivered" },
+    // const ORDER_STATUS = [
+    //     { value: "pending", label: "Pending" },
+    //     { value: "completed", label: "Completed" },
+    //     { value: "cancelled", label: "Cancelled" },
+    //     { value: "failed", label: "Failed" },
+    //     { value: "shipped", label: "Shipped" },
+    //     { value: "delivered", label: "Delivered" },
 
-    ]
+    // ]
 
-    const [selectedOrderStatus, setSelectedOrderStatus] = useState<string | undefined>(undefined);
+    // const [selectedOrderStatus, setSelectedOrderStatus] = useState<string | undefined>(undefined);
 
     return <div className=" w-full">
         <Card>
@@ -63,7 +63,7 @@ const Page = () => {
                     </div>
 
 
-                    <Select placeholder="Order Status" label="Order Status" selectItems={ORDER_STATUS} value={selectedOrderStatus} onValueChange={setSelectedOrderStatus} />
+                    {/* <Select placeholder="Order Status" label="Order Status" selectItems={ORDER_STATUS} value={selectedOrderStatus} onValueChange={setSelectedOrderStatus} /> */}
                 </div>
                 <ReviewTable />
                 <ProductPagination />
