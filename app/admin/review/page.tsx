@@ -19,7 +19,7 @@ const Page = () => {
   const page = Number(searchParams.get("page") ?? 1)
 
   return (
-    <div className="w-full p-2">
+    <div className="w-full">
       <Card>
         <CardHeader>
           <CardTitle>Review Management</CardTitle>
