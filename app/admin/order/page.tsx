@@ -33,7 +33,7 @@ const Page = () => {
     useState<string | undefined>()
 
   return (
-    <div className="w-full p-2">
+    <div className="w-full">
       <Card>
         <CardHeader>
           <CardTitle>Order Management</CardTitle>
@@ -41,12 +41,7 @@ const Page = () => {
         </CardHeader>
 
         <CardContent>
-          <div className="flex justify-end">
-            <Button>
-              <Plus />
-              Add Category
-            </Button>
-          </div>
+
 
           <div className="flex gap-3">
             <div className="w-full max-w-xl">

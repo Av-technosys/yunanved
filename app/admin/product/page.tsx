@@ -28,7 +28,7 @@ const Page = () => {
   const [selectedVisibility, setSelectedVisibility] = useState<string | undefined>()
 
   return (
-    <div className="w-full p-1">
+    <div className="w-full ">
       <Card>
         <CardHeader>
           <CardTitle>Product Management</CardTitle>

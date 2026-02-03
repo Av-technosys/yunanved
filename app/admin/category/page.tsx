@@ -15,9 +15,11 @@ import { useState } from "react"
 import CategoryTable from "./categoryTable"
 import ProductPagination from "@/components/pagination"
 import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
+import { usePathname } from "next/navigation";
 
 const Page = () => {
-  const router = useRouter()
+  const pathname  = usePathname();
   const searchParams = useSearchParams()
 
   const page = Number(searchParams.get("page") ?? 1)
@@ -31,7 +33,7 @@ const Page = () => {
     useState<string | undefined>()
 
   return (
-    <div className="w-full p-1">
+    <div className="w-full min-h-screen">
       <Card>
         <CardHeader>
           <CardTitle>Category Management</CardTitle>
@@ -39,12 +41,12 @@ const Page = () => {
         </CardHeader>
 
         <CardContent>
-          <div className="flex justify-end">
+          <Link href={`${pathname}/add`}  className="flex justify-end">
             <Button>
               <Plus />
               Add Category
             </Button>
-          </div>
+          </Link>
 
           <div className="flex gap-3">
             <div className="w-full max-w-xl">

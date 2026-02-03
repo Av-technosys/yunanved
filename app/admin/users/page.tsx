@@ -33,7 +33,7 @@ const Page = () => {
     useState<string | undefined>()
 
   return (
-    <div className="w-full p-2">
+    <div className="w-full">
       <Card>
         <CardHeader>
           <CardTitle>Users Management</CardTitle>
