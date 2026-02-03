@@ -1,24 +1,35 @@
 import { coupon, couponTransaction, user } from "./userSchema";
-import { product, productAttribute } from "./productSchema";
-import { review } from "./reviewSchema";
+import { category, featuredBanner, featuredCategory, featuredCategoryProduct, featuredProduct, product, productAttribute, productCategory, productMedia } from "./productSchema";
+import { review, reviewMedia } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
 import {
   order,
   orderItem,
+  payment,
 } from "./orderSchema";
 
 export const productTable = product;
 export const productAttributeTable = productAttribute;
+export const categoryTable = category
+export const productCategoryTable = productCategory
+export const productMediaTable = productMedia
+export const featuredProductTable = featuredProduct
+export const featuredCategoryTable = featuredCategory
+export const featuredCategoryProductTable = featuredCategoryProduct
+export const featuredBannerTable = featuredBanner
 // export const taileredFits = taileredFit;
+
+export const reviewsTable = review;
+export const reviewMediaTable = reviewMedia
 
 export const orderTable = order;
 export const orderItemsTable = orderItem;
+export const paymentTable = payment;
 
 export const userTable = user;
 export const userCoupons = coupon;
 export const usercouponTransaction = couponTransaction;
 
-export const reviewsTable = review;
 
 export const contactTable = contact;
 

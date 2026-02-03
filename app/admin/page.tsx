@@ -3,8 +3,12 @@ import { OrderStatusChart } from "@/components/admin/orderStatusChart"
 import { RecentOrdersTable } from "@/components/admin/recentOrdersTable"
 import { QuickActions } from "@/components/admin/quickActions"
 import { DashboardCards } from "@/components/admin/dashboardCard"
+import { db } from "@/lib/tb"
+import { productTable } from "@/db/schema"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const data = await db.select().from(productTable)
+  console.log(JSON.stringify(data))
   return (
     <div className="space-y-6 p-3">
       {/* Page Header */}
