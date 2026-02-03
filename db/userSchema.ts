@@ -38,11 +38,11 @@ export const userAddress = pgTable("user_address", {
 export const coupon = pgTable("coupon", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 20 }).notNull(),
-  description: varchar("description", { length: 100 }).notNull(),
-  code: varchar("code", { length: 20 }).notNull(),
+  description: varchar("description", { length: 100 }),
+  code: varchar("code", { length: 20 }).notNull().unique(),
   isDiscountPercentage: boolean("is_discount_percentage").notNull().default(false),
-  discountPercentage: integer("discount_percentage").notNull(),
-  discountFixedAmount: integer("discount_fixed_amount").notNull(),
+  discountPercentage: integer("discount_percentage"),
+  discountFixedAmount: integer("discount_fixed_amount"),
   useOnce: boolean("use_once").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -57,7 +57,7 @@ export const couponTransaction = pgTable("coupon_transaction", {
     .references(() => coupon.id),
   code: varchar("code", { length: 20 }).notNull(),
   isDiscountPercentage: boolean("is_discount_percentage").notNull().default(false),
-  discountPercentage: integer("discount_percentage").notNull(),
-  discountFixedAmount: integer("discount_fixed_amount").notNull(),
+  discountPercentage: integer("discount_percentage"),
+  discountFixedAmount: integer("discount_fixed_amount"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

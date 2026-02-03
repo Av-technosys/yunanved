@@ -15,6 +15,13 @@
       "when": 1770112129988,
       "tag": "0001_sloppy_butterfly",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770113140313,
+      "tag": "0002_nebulous_wildside",
+      "breakpoints": true
     }
   ]
 }

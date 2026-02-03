@@ -45,12 +45,12 @@ export const orderItem = pgTable("order_item", {
   productId: uuid("product_id")
     .notNull()
     .references(() => product.id),
-  quantity: integer("quantity").notNull(),
+  quantity: integer("quantity"),
   productName: varchar("product_name").notNull(),
   productSlug: varchar("product_slug").notNull(),
-  productImage: varchar("product_image").notNull(),
+  productImage: varchar("product_image"),
   productPrice: integer("product_price").notNull(),
-  productSKU: varchar("product_sku").notNull(),
+  productSKU: varchar("product_sku"),
 });
 
 export const payment = pgTable("payment", {
@@ -59,13 +59,13 @@ export const payment = pgTable("payment", {
     .notNull()
     .references(() => order.id),
   paymentId: varchar("payment_id").notNull(),
-  paymentStatus: varchar("payment_status").notNull(),
-  paymentMethod: varchar("payment_method").notNull(),
-  paymentAmount: integer("payment_amount").notNull(),
-  paymentCurrency: varchar("payment_currency").notNull(),
-  paymentDescription: varchar("payment_description").notNull(),
-  paymentMetadata: varchar("payment_metadata").notNull(),
-  paymentGatewayOrderId: varchar("payment_gateway_order_id").notNull(),
+  paymentStatus: varchar("payment_status"),
+  paymentMethod: varchar("payment_method"),
+  paymentAmount: integer("payment_amount"),
+  paymentCurrency: varchar("payment_currency"),
+  paymentDescription: varchar("payment_description"),
+  paymentMetadata: varchar("payment_metadata"),
+  paymentGatewayOrderId: varchar("payment_gateway_order_id"),
 
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

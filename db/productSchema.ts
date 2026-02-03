@@ -47,7 +47,7 @@ export const category: any = pgTable("categories", {
   name: varchar("name").notNull(),
   slug: varchar("slug").unique().notNull(),
   bannerImage: varchar("banner_image"),
-  parrentId: uuid("parent_id").notNull().references(() => category.id),
+  parrentId: uuid("parent_id").references(() => category.id),
   description: varchar("description"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -90,11 +90,11 @@ export const featuredCategoryProduct = pgTable("featured_category_product", {
 
 export const featuredBanner = pgTable("featured_banner", {
   id: uuid("id").primaryKey().defaultRandom(),
-  categoryId: uuid("category_id").notNull().references(() => category.id),
+  categoryId: uuid("category_id").references(() => category.id),
   isBanner: boolean("is_banner").notNull().default(false),
   mediaURL: varchar("media_url").notNull(),
   slug: varchar("slug").unique().notNull(),
-  productId: uuid("product_id").notNull().references(() => product.id),
+  productId: uuid("product_id").references(() => product.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
