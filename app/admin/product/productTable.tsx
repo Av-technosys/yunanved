@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable react-hooks/purity */
-
 import {
   Table,
   TableBody,
@@ -10,69 +8,66 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-
-interface ProductTableProps {
-  page: number;
-}
+import ProductPagination from "@/components/pagination";
+import { Edit } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 const PAGE_SIZE = 10;
 
-const ProductTable = ({ page }: ProductTableProps) => {
-  const startIndex = (page - 1) * PAGE_SIZE;
-
+const ProductTable = ({ products, total, currentPage }: any) => {
+  const totalPages = Math.ceil(total / PAGE_SIZE);
   const router = useRouter();
-  const pathname = usePathname();
 
   return (
-    <div className="mt-8 w-full overflow-x-auto">
+    <>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[352px]">Product</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Stock Status</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead className="w-[150px]">Status</TableHead>
-            <TableHead className="text-right w-[60px]">Edit</TableHead>
+            <TableHead>Product Name</TableHead>
+            <TableHead>Base Price</TableHead>
+            <TableHead>Strikethrough Price</TableHead>
+            <TableHead>IsCancelable</TableHead>
+            <TableHead>isReturnable</TableHead>
+            <TableHead>isDeleted</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {Array.from({ length: PAGE_SIZE }).map((_, index) => {
-            const rowNumber = startIndex + index + 1;
-
-            return (
-              <TableRow key={rowNumber}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <div className="size-8 bg-gray-700 rounded" />
-                    <p>Product {rowNumber}</p>
-                  </div>
-                </TableCell>
-
-                <TableCell>Atta</TableCell>
-                <TableCell>Yes</TableCell>
-                <TableCell>$250.00</TableCell>
-                <TableCell>Yes</TableCell>
-
-                {/* ✏️ Edit */}
-                <TableCell className="text-right">
-                  <button
-                    onClick={() => router.push(`${pathname}/${rowNumber}`)}
-                    className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
-                    aria-label="Edit product"
+          {products.length > 0 ? (
+            products?.map((item: any) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>₹{item.basePrice}</TableCell>
+                <TableCell>₹{item.strikethroughPrice}</TableCell>
+                <TableCell>{item.isCancelable ? "Yes" : "No"}</TableCell>
+                <TableCell>{item.isReturnable ? "Yes" : "No"}</TableCell>
+                <TableCell>{item.isDeleted ? "Yes" : "No"}</TableCell>
+                <TableCell>
+                  <Button
+                    className="cursor-pointer"
+                    variant={"outline"}
+                    onClick={() => router.push(`/admin/product/${item.id}`)}
                   >
-                    <Pencil className="w-4 h-4" />
-                  </button>
+                    <Edit />
+                  </Button>
                 </TableCell>
               </TableRow>
-            );
-          })}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={7}
+                className="h-24 text-center text-gray-600 font-semibold"
+              >
+                No product found..
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
-    </div>
+    </>
   );
 };
 

@@ -1,75 +1,58 @@
-"use client"
+import { db } from "@/lib/db";
 
-import { Select } from "@/components/select"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Plus } from "lucide-react"
-import { useState } from "react"
-import CategoryTable from "./categoryTable"
-import ProductPagination from "@/components/pagination"
-import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
-import { usePathname } from "next/navigation";
+import CategoryClient from "./categoryClient";
+import { category } from "@/db/productSchema";
+import { and, asc, ilike, sql } from "drizzle-orm";
 
-const Page = () => {
-  const pathname  = usePathname();
-  const searchParams = useSearchParams()
-
-  const page = Number(searchParams.get("page") ?? 1)
-
-  const VISIBILITY = [
-    { value: "visible", label: "Visible" },
-    { value: "hidden", label: "Hidden" },
-  ]
-
-  const [selectedVisibility, setSelectedVisibility] =
-    useState<string | undefined>()
-
-  return (
-    <div className="w-full min-h-screen">
-      <Card>
-        <CardHeader>
-          <CardTitle>Category Management</CardTitle>
-          <CardDescription>Manage your categories here</CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <Link href={`${pathname}/add`}  className="flex justify-end">
-            <Button>
-              <Plus />
-              Add Category
-            </Button>
-          </Link>
-
-          <div className="flex gap-3">
-            <div className="w-full max-w-xl">
-              <Input placeholder="Search Category" />
-            </div>
-
-            <Select
-              placeholder="Select Visibility"
-              label="Visibility"
-              selectItems={VISIBILITY}
-              value={selectedVisibility}
-              onValueChange={setSelectedVisibility}
-            />
-          </div>
-
-          {/* page is controlled by URL */}
-          <CategoryTable page={page} />
-
-          <ProductPagination currentPage={page} totalPages={10} />
-        </CardContent>
-      </Card>
-    </div>
-  )
+interface PageProps {
+  searchParams: {
+    page?: string;
+    page_size?: string;
+    search?: string;
+  };
 }
 
-export default Page
+const PAGE_SIZE = 3;
+
+const Page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+
+  const page = Number(params.page ?? "1");
+  const pageSize = Number(params.page_size ?? PAGE_SIZE);
+  const text = params.search ?? "";
+
+  const filters = [];
+
+  if (text && text.trim() !== "") {
+    filters.push(ilike(category.name, `%${text}%`));
+  }
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+  const offset = (page - 1) * pageSize;
+
+  const categories = await db
+    .select()
+    .from(category)
+    .orderBy(asc(category.createdAt))
+    .limit(PAGE_SIZE)
+    .offset(offset)
+    .where(whereClause);
+
+  const totalCategories = await db
+    .select({
+      count: sql`count(*)`,
+    })
+    .from(category)
+    .where(whereClause);
+
+  const totalPages = Math.ceil((totalCategories[0].count as any) / PAGE_SIZE);
+
+  return (
+    <CategoryClient
+      categories={categories}
+      total={totalPages}
+      currentPage={page}
+    />
+  );
+};
+
+export default Page;

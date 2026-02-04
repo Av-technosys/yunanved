@@ -1,91 +1,55 @@
-"use client"
+import { db } from "@/lib/db";
+import { product } from "@/db/productSchema";
+import ProductClient from "./productClient";
+import { and, asc, ilike, sql } from "drizzle-orm";
 
-import { useSearchParams , useRouter } from "next/navigation"
-import { Select } from "@/components/select"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { CATEGORY_1 } from "@/const"
-import { Plus } from "lucide-react"
-import { useMemo, useState } from "react"
-import ProductTable from "./productTable"
-import ProductPagination from "../../../components/pagination"
-
-const Page = () => {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const page = Number(searchParams.get("page") ?? 1)
-
-  const CATEGORY = useMemo(() => {
-    return CATEGORY_1.map((category) => ({
-      value: category.id,
-      label: category.name,
-    }))
-  }, [])
-
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
-  const [selectedStockStatus, setSelectedStockStatus] = useState<string | undefined>()
-  const [selectedVisibility, setSelectedVisibility] = useState<string | undefined>()
-
-  return (
-    <div className="w-full ">
-      <Card>
-        <CardHeader>
-          <CardTitle>Product Management</CardTitle>
-          <CardDescription>Manage your products here</CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <div className="flex m-3 justify-end">
-            <Button onClick={() => router.push("/admin/product/create")} >
-              <Plus />
-              Add Product
-            </Button>
-          </div>
-
-          <div className="flex gap-3">
-            <div className="w-full max-w-xl">
-              <Input placeholder="Search product" />
-            </div>
-
-            <Select
-              placeholder="Select Category"
-              label="Category"
-              selectItems={CATEGORY}
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            />
-
-            <Select
-              placeholder="Select Stock Status"
-              label="Stock Status"
-              selectItems={[
-                { value: "in_stock", label: "In Stock" },
-                { value: "out_of_stock", label: "Out of Stock" },
-              ]}
-              value={selectedStockStatus}
-              onValueChange={setSelectedStockStatus}
-            />
-
-            <Select
-              placeholder="Select Visibility"
-              label="Visibility"
-              selectItems={[
-                { value: "visible", label: "Visible" },
-                { value: "hidden", label: "Hidden" },
-              ]}
-              value={selectedVisibility}
-              onValueChange={setSelectedVisibility}
-            />
-          </div>
-
-          {/* page is now controlled by URL */}
-          <ProductTable page={page} />
-          <ProductPagination currentPage={page} totalPages={10} />
-        </CardContent>
-      </Card>
-    </div>
-  )
+interface PageProps {
+  searchParams: {
+    page?: string;
+    page_size?: string;
+    search?: string;
+  };
 }
 
-export default Page
+const PAGE_SIZE = 3;
+
+const Page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+
+  const page = Number(params.page ?? "1");
+  const pageSize = Number(params.page_size ?? PAGE_SIZE);
+  const text = params.search ?? "";
+
+  const filters = [];
+
+  if (text && text.trim() !== "") {
+    filters.push(ilike(product.name, `%${text}%`));
+  }
+
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
+  const offset = (page - 1) * pageSize;
+
+  const products = await db
+    .select()
+    .from(product)
+    .orderBy(asc(product.createdAt))
+    .limit(PAGE_SIZE)
+    .offset(offset)
+    .where(whereClause);
+
+  const totalProducts = await db
+    .select({
+      count: sql`count(*)`,
+    })
+    .from(product)
+    .where(whereClause);
+
+  const totalPages = Math.ceil((totalProducts[0].count as any) / PAGE_SIZE);
+
+  return (
+    <ProductClient products={products} total={totalPages} currentPage={page} />
+  );
+};
+
+export default Page;

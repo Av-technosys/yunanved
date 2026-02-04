@@ -15,11 +15,12 @@ import { usePathname, useRouter } from "next/navigation";
 
 interface CategoryTableProps {
   page: number;
+  categories: any;
 }
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 3;
 
-const CategoryTable = ({ page }: CategoryTableProps) => {
+const CategoryTable = ({ page, categories }: CategoryTableProps) => {
   const startIndex = (page - 1) * PAGE_SIZE;
 
   const router = useRouter();
@@ -30,34 +31,40 @@ const CategoryTable = ({ page }: CategoryTableProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Category</TableHead>
-            <TableHead>Items</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Edit</TableHead>
+            <TableHead>S.No</TableHead>
+            <TableHead>Category Name</TableHead>
+            <TableHead>Slug Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {Array.from({ length: PAGE_SIZE }).map((_, index) => {
+          {categories?.map((category: any, index: number) => {
             const rowNumber = startIndex + index + 1;
 
             return (
               <TableRow key={rowNumber}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
-                    <div className="size-8 bg-gray-700 rounded" />
-                    <p>Category {rowNumber}</p>
+                    <p>{rowNumber}</p>
                   </div>
                 </TableCell>
 
-                <TableCell>{Math.floor(Math.random() * 100)}</TableCell>
+                <TableCell>{category.name}</TableCell>
 
-                <TableCell>Active</TableCell>
+                <TableCell>{category.slug}</TableCell>
 
-                {/* ✏️ Edit icon */}
+                <TableCell>{category.description}</TableCell>
+
+                <TableCell>
+                  {new Date(category.createdAt).toLocaleDateString()}
+                </TableCell>
+
                 <TableCell className="text-right">
                   <button
-                    onClick={() => router.push(`${pathname}/${rowNumber}`)}
+                    onClick={() => router.push(`${pathname}/${category.id}`)}
                     className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
                     aria-label="Edit category"
                   >

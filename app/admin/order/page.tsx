@@ -1,69 +1,51 @@
-"use client"
+import { db } from "@/lib/db";
+import OrderClient from "./orderClient";
+import { order } from "@/db/orderSchema";
+import { and, asc, or, sql } from "drizzle-orm";
 
-import { Select } from "@/components/select"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Plus } from "lucide-react"
-import { useState } from "react"
-import ProductPagination from "@/components/pagination"
-import OrderTable from "./OrderTable"
-import { useSearchParams } from "next/navigation"
-
-const Page = () => {
-  const searchParams = useSearchParams()
-  const page = Number(searchParams.get("page") ?? 1)
-
-  const ORDER_STATUS = [
-    { value: "pending", label: "Pending" },
-    { value: "completed", label: "Completed" },
-    { value: "cancelled", label: "Cancelled" },
-    { value: "failed", label: "Failed" },
-    { value: "shipped", label: "Shipped" },
-    { value: "delivered", label: "Delivered" },
-  ]
-
-  const [selectedOrderStatus, setSelectedOrderStatus] =
-    useState<string | undefined>()
-
-  return (
-    <div className="w-full">
-      <Card>
-        <CardHeader>
-          <CardTitle>Order Management</CardTitle>
-          <CardDescription>Manage your orders here</CardDescription>
-        </CardHeader>
-
-        <CardContent>
-
-
-          <div className="flex gap-3">
-            <div className="w-full max-w-xl">
-              <Input placeholder="Search user name" />
-            </div>
-
-            <Select
-              placeholder="Order Status"
-              label="Order Status"
-              selectItems={ORDER_STATUS}
-              value={selectedOrderStatus}
-              onValueChange={setSelectedOrderStatus}
-            />
-          </div>
-
-          {/* URL-driven pagination */}
-          <OrderTable page={page} />
-          <ProductPagination currentPage={page} totalPages={10} />
-        </CardContent>
-      </Card>
-    </div>
-  )
+interface PageProps {
+  searchParams: {
+    page?: string;
+    page_size?: string;
+    search?: string;
+  };
 }
 
-export default Page
+const PAGE_SIZE = 3;
+
+const Page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+
+  const page = Number(params.page ?? "1");
+  const pageSize = Number(params.page_size ?? PAGE_SIZE);
+  const text = params.search ?? "";
+
+  const filters = [];
+
+  if (text && text.trim() !== "") {
+    filters.push(or(sql`${order.id}::text ILIKE ${`%${text}%`}`));
+  }
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+  const offset = (page - 1) * pageSize;
+
+  const orders = await db
+    .select()
+    .from(order)
+    .orderBy(asc(order.createdAt))
+    .limit(PAGE_SIZE)
+    .offset(offset)
+    .where(whereClause);
+
+  const totalOrders = await db
+    .select({
+      count: sql`count(*)`,
+    })
+    .from(order)
+    .where(whereClause);
+
+  const totalPages = Math.ceil((totalOrders[0].count as any) / PAGE_SIZE);
+
+  return <OrderClient order={orders} total={totalPages} currentPage={page} />;
+};
+
+export default Page;
