@@ -1,89 +1,85 @@
-import Link from "next/link"
-import { Facebook, Instagram, Twitter, Linkedin, MapPin, Phone, Mail } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import React from 'react';
+import Link from 'next/link';
+import { Facebook, Twitter, Instagram, Mail, MapPin, Phone, Clock } from 'lucide-react';
 
-export function Footer() {
-    return (
-        <footer className="bg-background border-t">
-            <div className="container px-4 md:px-6 py-12 md:py-16 mx-auto">
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold">YUNANVED</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Premium fashion designed for the modern individual. Quality, sustainability, and style in every stitch.
-                        </p>
-                        <div className="flex space-x-4">
-                            <Link href="#" className="text-muted-foreground hover:text-foreground">
-                                <Facebook className="h-5 w-5" />
-                                <span className="sr-only">Facebook</span>
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-foreground">
-                                <Instagram className="h-5 w-5" />
-                                <span className="sr-only">Instagram</span>
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-foreground">
-                                <Twitter className="h-5 w-5" />
-                                <span className="sr-only">Twitter</span>
-                            </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-foreground">
-                                <Linkedin className="h-5 w-5" />
-                                <span className="sr-only">LinkedIn</span>
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-semibold tracking-wider uppercase">Shop</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#" className="hover:text-foreground">New Arrivals</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Men</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Women</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Accessories</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Sale</Link></li>
-                        </ul>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-semibold tracking-wider uppercase">Support</h3>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#" className="hover:text-foreground">Contact Us</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">FAQs</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Shipping & Returns</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Privacy Policy</Link></li>
-                            <li><Link href="#" className="hover:text-foreground">Terms of Service</Link></li>
-                        </ul>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-semibold tracking-wider uppercase">Contact</h3>
-                        <ul className="space-y-3 text-sm text-muted-foreground">
-                            <li className="flex items-start gap-2">
-                                <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                                <span>123 Fashion Blvd, Design District, NY 10001</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Phone className="h-4 w-4 shrink-0" />
-                                <span>+1 (555) 123-4567</span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Mail className="h-4 w-4 shrink-0" />
-                                <span>support@yunanved.com</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <Separator className="my-8" />
-
-                <div className="flex flex-col items-center justify-between gap-4 md:flex-row text-xs text-muted-foreground">
-                    <p>&copy; 2025 Yunanved. All rights reserved.</p>
-                    <div className="flex gap-4">
-                        <Link href="#" className="hover:text-foreground">Privacy</Link>
-                        <Link href="#" className="hover:text-foreground">Terms</Link>
-                        <Link href="#" className="hover:text-foreground">Sitemap</Link>
-                    </div>
-                </div>
+export const Footer = () => {
+  return (
+    <footer className="w-full bg-white border-t border-gray-200 pt-16 pb-8 px-6 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          
+          {/* Brand Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">YUNANVED</h2>
+            <p className="text-sm leading-relaxed text-slate-600 max-w-xs">
+              Your destination for premium fashion and lifestyle. Curated collections for the modern individual.
+            </p>
+            <div className="flex space-x-4">
+              <Link href="#" className="hover:text-slate-500 transition-colors"><Facebook size={20} /></Link>
+              <Link href="#" className="hover:text-slate-500 transition-colors"><Twitter size={20} /></Link>
+              <Link href="#" className="hover:text-slate-500 transition-colors"><Instagram size={20} /></Link>
+              <Link href="#" className="hover:text-slate-500 transition-colors"><Mail size={20} /></Link>
             </div>
-        </footer>
-    )
-}
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-xl font-semibold mb-6 text-slate-900">Quick Links</h3>
+            <ul className="space-y-4 text-sm text-slate-600">
+              <li><Link href="/about" className="hover:underline">About Us</Link></li>
+              <li><Link href="/contact" className="hover:underline">Contact Us</Link></li>
+              <li><Link href="/policies" className="hover:underline">Policies</Link></li>
+            </ul>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <h3 className="text-xl font-semibold mb-6 text-slate-900">Categories</h3>
+            <ul className="space-y-3 text-sm text-slate-600">
+              {['Fashion', 'Perfumes', 'Electronics', 'Beauty', 'Groceries', 'Household', 'Eyewear', 'Kitchen'].map((item) => (
+                <li key={item}><Link href={`/category/${item.toLowerCase()}`} className="hover:underline">{item}</Link></li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Section */}
+          <div>
+            <h3 className="text-xl font-semibold mb-6 text-slate-900">Contact</h3>
+            <ul className="space-y-5 text-sm text-slate-600">
+              <li className="flex items-start gap-3">
+                <MapPin size={18} className="mt-0.5 shrink-0" />
+                <span>456 Fashion Avenue, Fashion District,<br />New York, NY 10013</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Phone size={18} className="shrink-0" />
+                <span>+1 (555) 987-6543</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Mail size={18} className="shrink-0" />
+                <span>hello@yunanved.com</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Clock size={18} className="shrink-0" />
+                <span>Mon - Sun: 10:00 AM - 8:00 PM</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+          <p>© 2024 Yunanved. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+            <span className="text-gray-300">|</span>
+            <Link href="/terms" className="hover:underline">Terms & Conditions</Link>
+            <span className="text-gray-300">|</span>
+            <Link href="/shipping" className="hover:underline">Shipping Policy</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
