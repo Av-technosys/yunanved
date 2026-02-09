@@ -1,48 +1,69 @@
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from "@/components/ui/accordion"
 
-export function FAQ() {
-    return (
-        <section className="container mx-auto px-4 md:px-6 py-16 max-w-3xl">
-            <div className="text-center mb-10">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                    Frequently Asked Questions
-                </h2>
-                <p className="text-muted-foreground mt-2">
-                    Everything you need to know.
-                </p>
-            </div>
+const faqData = [
+  {
+    id: "item-1",
+    question: "How long does delivery take?",
+    answer:
+      "Orders are usually delivered within 3–5 business days. Metro cities often arrive faster, while remote locations may take a little longer depending on courier availability."
+  },
+  {
+    id: "item-2",
+    question: "Can I return or exchange a product?",
+    answer:
+      "Yes. You can request a return or exchange within 7 days of delivery as long as the item is unused and in its original packaging."
+  },
+  {
+    id: "item-3",
+    question: "Do you offer Cash on Delivery?",
+    answer:
+      "We support Cash on Delivery for most locations. Some remote pincodes may require prepaid payment due to courier restrictions."
+  },
+  {
+    id: "item-4",
+    question: "How can I track my order?",
+    answer:
+      "Once your order ships, you’ll receive a tracking link via SMS and email. You can also check the status anytime inside your account dashboard."
+  }
+];
 
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1">
-                    <AccordionTrigger>Where is my order?</AccordionTrigger>
-                    <AccordionContent>
-                        You can track your order by logging into your account or checking the shipping confirmation email we sent you. Orders typically ship within 1-2 business days.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                    <AccordionTrigger>What is your return policy?</AccordionTrigger>
-                    <AccordionContent>
-                        We offer a 30-day return policy for all unused items in their original packaging. Please visit our Returns page to initiate a return.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3">
-                    <AccordionTrigger>Do you ship internationally?</AccordionTrigger>
-                    <AccordionContent>
-                        Yes, we ship to over 100 countries worldwide. Shipping costs and delivery times vary by location and are calculated at checkout.
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-4">
-                    <AccordionTrigger>How do I contact support?</AccordionTrigger>
-                    <AccordionContent>
-                        You can reach our customer support team via email at support@yunanved.com or by calling +1 (555) 123-4567 during business hours (Mon-Fri, 9am-6pm EST).
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </section>
-    )
+export function FAQ() {
+  return (
+    <section className=" mx-auto min-w-4xl py-10 px-4">
+      {/* Header Section */}
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          Frequently Asked Questions
+        </h2>
+        <p className="mt-2 text-lg text-slate-600">
+          Everything you need to know
+        </p>
+      </div>
+
+      {/* Accordion Section */}
+      <Accordion type="single" collapsible className="w-full space-y-4">
+      {faqData.map((faq) => (
+  <AccordionItem 
+    key={faq.id} 
+    value={faq.id}
+    className="border rounded-xl px-6 py-1 border-slate-200 shadow-sm"
+  >
+    <AccordionTrigger className="text-base font-bold text-slate-900 hover:no-underline text-left">
+      {faq.question}
+    </AccordionTrigger>
+
+    <AccordionContent className="text-slate-600 leading-relaxed">
+      {faq.answer}
+    </AccordionContent>
+  </AccordionItem>
+))}
+
+      </Accordion>
+    </section>
+  )
 }

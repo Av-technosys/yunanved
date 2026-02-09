@@ -1,109 +1,125 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Star } from "lucide-react"
+import React from 'react';
+import { Star } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const products = [
-    {
-        id: 1,
-        name: "Classic Denim Jacket",
-        price: "$89.00",
-        image: "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?q=80&w=1887&auto=format&fit=crop",
-        category: "Outerwear",
-        rating: 4.5
-    },
-    {
-        id: 2,
-        name: "Cotton Essentials Tee",
-        price: "$25.00",
-        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1780&auto=format&fit=crop",
-        category: "Tops",
-        new: true,
-        rating: 4.8
-    },
-    {
-        id: 3,
-        name: "Urban Cargo Pants",
-        price: "$65.00",
-        image: "https://images.unsplash.com/photo-1517445312882-efe00af26dd1?q=80&w=1800&auto=format&fit=crop", // Replaced with a more generic clothing image if needed or just accept this
-        category: "Bottoms",
-        rating: 4.2
-    },
-    {
-        id: 4,
-        name: "Leather Street Sneakers",
-        price: "$120.00",
-        image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop",
-        category: "Footwear",
-        rating: 4.9
-    }
-]
+  // Group 1: Dark Footer (Row 1)
+  { id: 1, name: "Macbook M2 15\"", price: "$899", category: "Pink, 256 GB", rating: 5, reviews: 1021, image: "/product1.png", group: 1 },
+  { id: 2, name: "Apple Watch Series 7", price: "$399", category: "Dark Green", rating: 4, reviews: 1021, image: "/product2.png", group: 1 },
+  { id: 3, name: "iPhone 17 Pro", price: "$1199", category: "Orange, 256 GB", rating: 5, reviews: 3021, image: "/product3.png", group: 1 },
+  { id: 4, name: "Headphone", price: "$299", category: "White", rating: 4, reviews: 850, image: "/product1.png", group: 1 },
+
+  // Group 2: Light Footer / Dark Buttons (Row 2)
+  { id: 5, name: "Sneakers", price: "$129", category: "Blue", rating: 5, reviews: 643, image: "/product1.png", group: 2 },
+  { id: 6, name: "Cotton Shirt", price: "$49", category: "Black", rating: 4, reviews: 1203, image: "/product2.png", group: 2 },
+  { id: 7, name: "Fortune Chakki Atta", price: "$15", category: "10kg", rating: 5, reviews: 402, image: "/product3.png", group: 2 },
+  { id: 8, name: "Slimfit Jeans", price: "$79", category: "Black", rating: 5, reviews: 982, image: "/product2.png", group: 2 },
+
+  // Group 3: Clean White / Outlined (Row 3)
+  { id: 9, name: "Dark Chocolate", price: "$5", category: "100 gm", rating: 5, reviews: 4210, image: "/product1.png", group: 3 },
+  { id: 10, name: "FaceWash", price: "$12", category: "250 ml", rating: 4, reviews: 231, image: "/product2.png", group: 3 },
+  { id: 11, name: "Peanut Butter", price: "$8", category: "500 gm", rating: 4, reviews: 1550, image: "/product3.png", group: 3 },
+  { id: 12, name: "Farmley Walnuts", price: "$22", category: "500 gm", rating: 4, reviews: 884, image: "/product3.png", group: 3 },
+];
 
 export function FeaturedProducts() {
-    return (
-        <section className="py-16 container mx-auto px-4 md:px-6">
-            <div className="flex flex-col items-center justify-between mb-10 gap-4 sm:flex-row">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                        Trending Now
-                    </h2>
-                    <p className="text-muted-foreground mt-2">
-                        Our most popular picks for the season.
-                    </p>
+  return (
+    <section className="bg-[#FFF8E7] px-4 md:px-10 py-16 rounded-[3.5rem] mx-4 my-10">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-slate-900 mb-3">Featured Products</h2>
+          <p className="text-slate-600 text-sm max-w-2xl mx-auto">
+            Discover our newest arrivals, thoughtfully designed to elevate everyday style with purpose and quality.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {products.map((product) => {
+            // Group 1 Styling (Dark Footer)
+            if (product.group === 1) {
+              return (
+                <Card key={product.id} className="overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow">
+                  <div className="h-52 flex items-center justify-center p-3">
+                    <img src={product.image} alt={product.name} className="object-contain h-full" />
+                  </div>
+                  <div className="bg-[#414141] p-4 text-white">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="font-bold text-sm">{product.name}</h3>
+                      <span className="text-[10px] opacity-60">({product.category})</span>
+                    </div>
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="#FFC107" stroke="none" />)}
+                      <span className="text-[10px] opacity-60">({product.reviews})</span>
+                    </div>
+                    <p className="text-[10px] text-green-400 mb-2">Free Shipping</p>
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-lg">{product.price}</span>
+                      <Button className="bg-white text-black hover:bg-gray-200 rounded-lg text-xs h-8 px-4 font-bold">Add to Cart</Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            }
+
+            // Group 2 Styling (Light Footer / Dark Buttons)
+            if (product.group === 2) {
+              return (
+                <Card key={product.id} className="overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow">
+                  <div className="h-52 flex items-center justify-center p-3">
+                    <img src={product.image} alt={product.name} className="object-contain h-full" />
+                  </div>
+                  <div className="p-4 bg-white">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="font-bold text-sm text-black">{product.name}</h3>
+                      <span className="text-[10px] text-gray-400">({product.category})</span>
+                    </div>
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="#FFC107" stroke="none" />)}
+                      <span className="text-[10px] text-gray-400">({product.reviews})</span>
+                    </div>
+                    <p className="text-[10px] text-green-500 mb-2">Free Shipping</p>
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-lg text-black">{product.price}</span>
+                      <Button className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold">Add to Cart</Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            }
+
+            // Group 3 Styling (Clean White / Outlined)
+            return (
+              <Card key={product.id} className="overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow">
+                <div className="h-52 flex items-center justify-center p-3">
+                  <img src={product.image} alt={product.name} className="object-contain h-full" />
                 </div>
-                <Button variant="outline" className="hidden sm:inline-flex">
-                    View All Products
-                </Button>
-            </div>
+                <div className="p-4 bg-white border-t border-gray-100">
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-sm text-black">{product.name}</h3>
+                    <span className="text-[10px] text-gray-400">({product.category})</span>
+                  </div>
+                  <div className="flex items-center gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="#FFC107" stroke="none" />)}
+                    <span className="text-[10px] text-gray-400">({product.reviews})</span>
+                  </div>
+                  <p className="text-[10px] text-green-500 mb-2">Free Shipping</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-lg text-black">{product.price}</span>
+                    <Button variant="outline" className="border-gray-200 text-gray-600 rounded-lg text-xs h-8 px-4 hover:bg-gray-50">Add to Cart</Button>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {products.map((product) => (
-                    <Card key={product.id} className="group overflow-hidden rounded-lg border-none shadow-lg items-center">
-                        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-                            {product.new && (
-                                <div className="absolute top-2 left-2 z-10">
-                                    <Badge variant="secondary" className="bg-black text-white hover:bg-black/90">New</Badge>
-                                </div>
-                            )}
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-                                style={{ backgroundImage: `url('${product.image}')` }}
-                            />
-                            {/* Quick Add Overlay */}
-                            <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full transition-transform duration-300 group-hover:translate-y-0 bg-gradient-to-t from-black/60 to-transparent">
-                                <Button className="w-full bg-white text-black hover:bg-gray-200">
-                                    Add to Cart
-                                </Button>
-                            </div>
-                        </div>
-
-                        <CardContent className="pt-4">
-                            <div className="text-sm text-muted-foreground mb-1">{product.category}</div>
-                            <h3 className="font-semibold text-lg leading-none tracking-tight mb-2 group-hover:text-primary transition-colors">
-                                {product.name}
-                            </h3>
-                            <div className="flex items-center gap-1 mb-2">
-                                {Array(5).fill(null).map((_, i) => (
-                                    <Star
-                                        key={i}
-                                        className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                                    />
-                                ))}
-                                <span className="text-xs text-muted-foreground ml-1">({product.rating})</span>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="pt-0 flex items-center justify-between">
-                            <span className="font-bold text-lg">{product.price}</span>
-                        </CardFooter>
-                    </Card>
-                ))}
-            </div>
-
-            <div className="mt-8 text-center sm:hidden">
-                <Button variant="outline" className="w-full">
-                    View All Products
-                </Button>
-            </div>
-        </section>
-    )
+        <div className="text-center">
+          <Button className="bg-[#414141] hover:bg-black text-white rounded-full px-12 py-6 text-lg font-medium transition-all">
+            Explore All
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
 }

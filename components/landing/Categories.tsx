@@ -1,57 +1,87 @@
-import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
+import * as React from "react"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 const categories = [
-    {
-        title: "Women's Collection",
-        image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2071&auto=format&fit=crop",
-        href: "#"
-    },
-    {
-        title: "Men's Classic",
-        image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?q=80&w=2071&auto=format&fit=crop",
-        href: "#"
-    },
-    {
-        title: "Accessories",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop", // Watch/Shoe
-        href: "#"
-    },
-    {
-        title: "New Arrivals",
-        image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop",
-        href: "#"
-    }
-]
+  { name: "Electronics", image: "/category.jpg" },
+  { name: "Beauty", image: "/category.jpg" },
+  { name: "Grocery", image: "/category.jpg" },
+  { name: "Perfume", image: "/category.jpg" },
+  { name: "Household", image: "/category.jpg" },
+  { name: "Daily Essential", image: "/category.jpg" },
+  { name: "Fashion", image: "/category.jpg" },
+  { name: "Eyewear", image: "/category.jpg" },
+  { name: "Kitchen", image: "/category.jpg" },
+  { name: "Health", image: "/category.jpg" },
+];
 
 export function Categories() {
-    return (
-        <section className="py-16 bg-muted/30">
-            <div className="container mx-auto px-4 md:px-6">
-                <h2 className="text-3xl font-bold tracking-tighter text-center mb-12 sm:text-4xl">
-                    Shop by Category
-                </h2>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {categories.map((category) => (
-                        <Link key={category.title} href={category.href} className="group overflow-hidden rounded-lg">
-                            <Card className="border-none shadow-md overflow-hidden h-[300px] relative">
-                                <CardContent className="p-0 h-full">
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                                        style={{ backgroundImage: `url('${category.image}')` }}
-                                    />
-                                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <h3 className="text-2xl font-bold text-white tracking-wide uppercase border-b-2 border-transparent group-hover:border-white transition-all">
-                                            {category.title}
-                                        </h3>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    ))}
-                </div>
-            </div>
-        </section>
-    )
+  return (
+    // Section padding (px-6 to px-16) ensures the "Screen Gap" on all devices
+    <section className="w-full  bg-white">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-12 text-slate-900 tracking-tight">
+          Explore All Categories
+        </h2>
+
+        {/* This container adds internal padding so arrows don't overlap the circles */}
+        <div className="relative w-full">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            {/* '-ml-8' creates the horizontal gap between items */}
+
+  {/* Arrow anchor layer — centers relative to image */}
+  <div className="hidden md:block pointer-events-none absolute inset-x-0 top-[56px] sm:top-[64px] lg:top-[72px]">
+    <CarouselPrevious className="pointer-events-auto -left-10 h-10 w-10 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm" />
+    <CarouselNext className="pointer-events-auto -right-10 h-10 w-10 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm" />
+  </div>
+
+            <CarouselContent className="-ml-8 overflow-visible py-2">
+              {categories.map((cat, index) => (
+                <CarouselItem 
+                  key={index} 
+                  // 'pl-8' works with the negative margin above to create the gap
+                  className="pl-10 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                >
+                  <div className="flex flex-col items-center group cursor-pointer">
+                    {/* Gradient Ring */}
+                    <div className="relative p-[3px] rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 transition-transform duration-300 group-hover:scale-110">
+                      <div className="bg-white p-[2px] rounded-full">
+                        <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 overflow-hidden rounded-full border border-slate-100 shadow-inner">
+                          <img
+                            src={cat.image}
+                            alt={cat.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Label */}
+                    <span className="mt-5 font-bold text-sm md:text-base text-slate-900 text-center whitespace-nowrap">
+                      {cat.name}
+                    </span>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+
+       
+
+            
+          </Carousel>
+        </div>
+      </div>
+    </section>
+  );
 }

@@ -1,111 +1,73 @@
-import Link from "next/link"
-import { Menu, Search, ShoppingBag, User } from "lucide-react"
+import { Search, MapPin, ShoppingCart } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+const Navbar = () => {
+  return (
+    <header className="w-full bg-white py-3 px-6 md:px-12">
+      <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4 md:gap-8">
+        
+        {/* Logo */}
+        <div className="flex-shrink-0">
+          <h1 className="text-2xl font-black tracking-tighter text-[#1A2E35]">
+            YUNANVED
+          </h1>
+        </div>
 
-export function Navbar() {
-    return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-            <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-                {/* Mobile Menu */}
-                <div className="flex items-center md:hidden">
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="mr-2">
-                                <Menu className="h-6 w-6" />
-                                <span className="sr-only">Toggle menu</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                            <SheetTitle className="text-lg font-bold">Menu</SheetTitle> {/* Accessibility Fix */}
-                            <nav className="flex flex-col gap-4 mt-4">
-                                <Link href="#" className="text-lg font-medium hover:underline">
-                                    New Arrivals
-                                </Link>
-                                <Link href="#" className="text-lg font-medium hover:underline">
-                                    Men
-                                </Link>
-                                <Link href="#" className="text-lg font-medium hover:underline">
-                                    Women
-                                </Link>
-                                <Link href="#" className="text-lg font-medium hover:underline">
-                                    Accessories
-                                </Link>
-                                <Link href="#" className="text-lg font-medium hover:underline">
-                                    Sale
-                                </Link>
-                            </nav>
-                        </SheetContent>
-                    </Sheet>
-                    {/* Search Trigger for Mobile (Optional) */}
-                    <Search className="h-5 w-5 md:hidden" />
-                </div>
+        {/* Location Picker */}
+        <div className="hidden lg:flex items-center gap-2 text-[#1A2E35] cursor-pointer group">
+          <MapPin size={20} className="text-[#1A2E35]" />
+          <div className="flex flex-col leading-tight">
+            <span className="text-[10px] text-gray-500 font-medium">Deliver to</span>
+            <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">Jaipur</span>
+          </div>
+        </div>
 
-                {/* Logo */}
-                <div className="flex items-center gap-2">
-                    <Link href="/" className="flex items-center gap-2">
-                        <span className="text-xl font-bold tracking-tighter sm:text-2xl">
-                            YUNANVED
-                        </span>
-                    </Link>
-                </div>
+        {/* Search Bar Container */}
+        <div className="flex-grow max-w-2xl relative flex items-center">
+          <div className="relative w-full">
+            <Input 
+              type="text" 
+              placeholder="Search for Products, Brands & More" 
+              className="w-full h-11 rounded-full border-slate-300 pr-14 pl-6 text-sm focus-visible:ring-1 focus-visible:ring-slate-400"
+            />
+            {/* Search Button integrated inside the bar */}
+            <Button 
+              size="icon" 
+              className="absolute right-1 top-1 h-9 w-9 rounded-full bg-[#3D3D3D] hover:bg-black text-white"
+            >
+              <Search size={18} />
+            </Button>
+          </div>
+        </div>
 
-                {/* Desktop Navigation */}
-                <nav className="hidden gap-6 md:flex">
-                    <Link
-                        href="#"
-                        className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                        New Arrivals
-                    </Link>
-                    <Link
-                        href="#"
-                        className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                        Men
-                    </Link>
-                    <Link
-                        href="#"
-                        className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                        Women
-                    </Link>
-                    <Link
-                        href="#"
-                        className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                        Accessories
-                    </Link>
-                    <Link
-                        href="#"
-                        className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
-                    >
-                        Sale
-                    </Link>
-                </nav>
+        {/* Actions (Sign Up, Login, Cart) */}
+        <div className="flex items-center gap-3 md:gap-6">
+          <button className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-black">
+            Sign Up
+          </button>
+          
+          <Button 
+            className="bg-[#3D3D3D] hover:bg-black text-white rounded-full px-8 h-10 font-bold hidden md:flex"
+          >
+            Login
+          </Button>
 
-                {/* Right Actions */}
-                <div className="flex items-center gap-2 sm:gap-4">
-                    <div className="hidden sm:block relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Search products..."
-                            className="w-[200px] lg:w-[300px] pl-8 rounded-full bg-secondary"
-                        />
-                    </div>
-                    <Button variant="ghost" size="icon">
-                        <User className="h-5 w-5" />
-                        <span className="sr-only">Sign In</span>
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                        <ShoppingBag className="h-5 w-5" />
-                        <span className="sr-only">Cart</span>
-                    </Button>
-                </div>
+          {/* Cart Icon with Badge */}
+          <div className="relative cursor-pointer group p-2">
+            <div className="bg-[#3D3D3D] p-2 rounded-full text-white group-hover:bg-black transition-colors">
+              <ShoppingCart size={20} />
             </div>
-        </header>
-    )
-}
+            {/* Notification Badge */}
+            <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full border-2 border-white">
+              2
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
