@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { SubHeading } from "@/components/font";
 import { Button } from "@/components/ui/button";
@@ -5,12 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
 import { useState } from "react";
+import { saveProductAttributes } from "@/helper/index";;
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { getProductAttributes } from "@/helper/index";;
+
+
 
 export default function ProductDetails() {
     type AttributeValue = {
         id?: string;
         value: string;
     };
+
+
+
+
+    const { id } = useParams<{ id: string }>();
+    const searchParams = useSearchParams();
+    const isEdit = searchParams.get("edit") === "true";
+
 
     const [productAttributes, setProductAttributes] = useState<Record<string, AttributeValue>>({});
 
@@ -24,16 +39,35 @@ export default function ProductDetails() {
         }));
     }
 
-    const handleSubmit = () => {
-        const payload = Object.entries(productAttributes).map(
-            ([attribute, { id, value }]) => ({
-                id,
+    async function handleSubmit() {
+        const payload = Object.entries(productAttributes)
+            .map(([attribute, { value }]) => ({
                 attribute,
-                value,
-            })
-        );
-        console.log(payload);
+                value: value.trim(),
+            }))
+            .filter(a => a.value.length > 0);
+
+        await saveProductAttributes(id, payload);
     }
+
+    useEffect(() => {
+        if (!isEdit) return;
+
+        async function load() {
+            const attrs = await getProductAttributes(id);
+
+            const mapped = Object.fromEntries(
+                attrs.map((a: any) => [
+                    a.attribute,
+                    { id: a.id, value: a.value }
+                ])
+            );
+
+            setProductAttributes(mapped);
+        }
+
+        load();
+    }, [id, isEdit]);
 
     return (
         <div className=" max-w-3xl mx-auto space-y-8">
@@ -52,7 +86,7 @@ export default function ProductDetails() {
                                                 <div className=" w-full space-y-1">
                                                     <Label>{element}</Label>
                                                     <Input
-                                                        value={productAttributes[element]?.value}
+                                                        value={productAttributes[element]?.value ?? ""}
                                                         onChange={(e) =>
                                                             handleValueChange(element, e.target.value, productAttributes[element]?.id)
                                                         }

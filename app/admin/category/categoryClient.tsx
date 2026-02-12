@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Select } from "@/components/select";
@@ -63,13 +64,17 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
           <CardDescription>Manage your categories here</CardDescription>
         </CardHeader>
 
+
+
         <CardContent>
-          <Link href={`${pathname}/add`} className="flex justify-end">
-            <Button>
-              <Plus />
-              Add Category
-            </Button>
-          </Link>
+   <div className="flex justify-end">
+  <Button asChild>
+    <Link href={`${pathname}/add`}>
+      <Plus />
+      Add Category
+    </Link>
+  </Button>
+</div>
 
           <div className="flex gap-3">
             <div className="w-full max-w-xl">

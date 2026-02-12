@@ -7,7 +7,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,32 +22,20 @@ import {
 } from "@/components/ui/select";
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createCategory } from "@/helper/index";;
 
 export default function AddCategoryForm() {
   const router = useRouter();
-  const [isActive, setIsActive] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [isActive, setIsActive] = useState(true);
+  const [parentId, setParentId] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleFileChange = (file?: File) => {
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) return;
-
+    if (!file || !file.type.startsWith("image/")) return;
     const url = URL.createObjectURL(file);
     setPreview(url);
-  };
-
-  const submitHandler = (e: any) => {
-    e.preventDefault();
-    const categoryData = {
-      name: e.target.name.value,
-      parent: e.target.parent.value,
-      description: e.target.description.value,
-      isActive: isActive,
-      bannerImage: preview,
-    };
-    console.log(categoryData);
   };
 
   return (
@@ -64,10 +51,17 @@ export default function AddCategoryForm() {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={(e) => submitHandler(e)}>
+          <form action={createCategory}>
+
+            {/* IMPORTANT: bridge React state → FormData */}
+            <input type="hidden" name="parentId" value={parentId} />
+            <input type="hidden" name="isActive" value={isActive ? "true" : "false"} />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-              {/* Left Column: Form Inputs */}
+
+              {/* Left Column */}
               <div className="space-y-6">
+
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Category Name
@@ -83,7 +77,7 @@ export default function AddCategoryForm() {
                   <Label className="text-slate-600 font-medium">
                     Parent Category
                   </Label>
-                  <Select name="parent">
+                  <Select onValueChange={setParentId}>
                     <SelectTrigger className="h-11 text-slate-400">
                       <SelectValue placeholder="Select Parent Category" />
                     </SelectTrigger>
@@ -105,10 +99,12 @@ export default function AddCategoryForm() {
                     className="min-h-[140px] resize-none"
                   />
                 </div>
+
               </div>
 
-              {/* Right Column: Upload & Toggle */}
+              {/* Right Column */}
               <div className="space-y-6">
+
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Category Image
@@ -150,6 +146,7 @@ export default function AddCategoryForm() {
                     onChange={(e) => handleFileChange(e.target.files?.[0])}
                   />
                 </div>
+
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Visibility Status
@@ -170,16 +167,20 @@ export default function AddCategoryForm() {
                     />
                   </div>
                 </div>
+
               </div>
             </div>
+
             <div className="flex justify-end gap-4 px-0 pt-10">
               <Button
+                type="button"
                 variant="outline"
                 onClick={() => router.push("/admin/category")}
                 className="px-12 h-11 rounded-full border-slate-300 text-slate-600 hover:bg-slate-50"
               >
                 Cancel
               </Button>
+
               <Button
                 type="submit"
                 className="px-12 h-11 rounded-full bg-[#2D5A5D] hover:bg-[#234749] text-white"
@@ -187,6 +188,7 @@ export default function AddCategoryForm() {
                 Add
               </Button>
             </div>
+
           </form>
         </CardContent>
       </Card>
