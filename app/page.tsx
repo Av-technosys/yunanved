@@ -2,11 +2,12 @@ import { Hero } from "@/components/landing/Hero";
 import { Categories } from "@/components/landing/Categories";
 import { FeaturedProducts } from "@/components/landing/FeaturedProducts";
 import { FAQ } from "@/components/landing/FAQ";
-import { Newsletter } from "@/components/landing/NewsLetter";
+
 import { Footer } from "@/components/landing/Footer";
 import NavBar from "@/components/landing/Navbar";
 import ProductCarousel from "@/components/landing/ProductCarousel";
-import {BentoGallery} from "@/components/landing/BentoGallery";
+import { BentoGallery } from "@/components/landing/BentoGallery";
+import { Newsletter } from "@/components/landing/Newsletter";
 
 export default function Home() {
   return (
