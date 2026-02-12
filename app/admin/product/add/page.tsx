@@ -2,213 +2,267 @@
 
 import React, { useRef, useState } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Upload, Plus, ImagePlus } from "lucide-react";
+import { Plus, ImagePlus, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createProduct } from "@/helper/index";;
+import { useFileUpload } from "@/helper/useFileUpload";
+
+
+
+type ImageItem = {
+  key: string;
+  preview: string;
+};
 
 export default function AddProductForm() {
+
   const router = useRouter();
+  // const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+
+  const { upload, uploading } = useFileUpload();
+
+
   const [isActive, setIsActive] = useState(true);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [banner, setBanner] = useState<ImageItem | null>(null);
+  const [gallery, setGallery] = useState<ImageItem[]>([]);
 
-  const handleFileChange = (file?: File) => {
+  const bannerRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
+
+
+
+  const validatePrices = (form: HTMLFormElement) => {
+    const price = Number((form.elements.namedItem("price") as HTMLInputElement).value);
+    const stp = Number((form.elements.namedItem("strikethroughPrice") as HTMLInputElement).value);
+
+    if (stp >= price) {
+      setPriceError("Strike through price must be less than price");
+      return false;
+    }
+
+    setPriceError(null);
+    return true;
+  };
+
+  const handleBanner = async (file?: File) => {
     if (!file) return;
+    const folder = 'product'
+    const { preview, fileKey } = await upload(file, folder);
 
-    if (!file.type.startsWith("image/")) return;
-
-    const url = URL.createObjectURL(file);
-    setPreview(url);
+    setBanner({
+      key: fileKey,
+      preview,
+    });
   };
 
-  const submitHandler = (e: any) => {
-    e.preventDefault();
-    const productData = {
-      name: e.target.name.value,
-      basePrice: e.target.price.value,
-      quantity: e.target.quantity.value,
-      description: e.target.description.value,
-      isActive: isActive,
-      bannerImage: preview,
-    };
-    console.log(productData);
+
+  const handleGallery = async (files: FileList | null) => {
+    if (!files) return;
+    const folder = 'product'
+    for (const file of Array.from(files)) {
+      const { preview, fileKey } = await upload(file, folder);
+
+      setGallery(prev => [...prev, { key: fileKey, preview }]);
+    }
   };
+
+
   return (
-    <div className="w-full p-1">
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-slate-900">
-            Add Product
-          </CardTitle>
-          <CardDescription className="text-sm text-slate-500">
-            Add your product list it.
-          </CardDescription>
-        </CardHeader>
+    <div className="max-w-6xl mx-auto p-1">
+      <form action={createProduct} onSubmit={(e) => {
+        if (!validatePrices(e.currentTarget)) {
+          e.preventDefault();
+        }
+      }} className="space-y-8">
 
-        <CardContent>
-          <form onSubmit={(e) => submitHandler(e)}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Left Column: Form Fields */}
 
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="productName"
-                    className="text-slate-600 font-medium"
-                  >
-                    Product Name
-                  </Label>
-                  <Input
-                    id="productName"
-                    name="name"
-                    placeholder="Enter Category Name"
-                    className="h-12 bg-slate-50/50"
-                  />
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Basic Information</CardTitle>
+            <CardDescription>Main product details</CardDescription>
+          </CardHeader>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="price"
-                      className="text-slate-600 font-medium"
-                    >
-                      Product Price
-                    </Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      name="price"
-                      placeholder="Enter Product Price"
-                      className="h-12 bg-slate-50/50 "
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="quantity"
-                      className="text-slate-600 font-medium"
-                    >
-                      Product Quantity
-                    </Label>
-                    <Input
-                      id="quantity"
-                      type="number"
-                      name="quantity"
-                      placeholder="Set Product Quantity"
-                      className="h-12 bg-slate-50/50"
-                    />
-                  </div>
-                </div>
+          <CardContent className="grid md:grid-cols-2 gap-8">
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="description"
-                    className="text-slate-600 font-medium"
-                  >
-                    Description
-                  </Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    placeholder="Enter Description"
-                    className="min-h-[150px] bg-slate-50/50 resize-none"
-                  />
-                </div>
+            <div className="space-y-5">
+
+              <div className="space-y-2">
+                <Label>Product Name</Label>
+                <Input name="name" required />
               </div>
 
-              {/* Right Column: Media & Visibility */}
-              <div className="space-y-6">
-                <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">
-                    Category Image
-                  </Label>
-
-                  <div
-                    onClick={() => inputRef.current?.click()}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      handleFileChange(e.dataTransfer.files?.[0]);
-                    }}
-                    className="border-2 border-dashed border-slate-200 rounded-xl p-10 flex flex-col items-center justify-center bg-white hover:bg-slate-50/50 transition-colors cursor-pointer min-h-[220px]"
-                  >
-                    {preview ? (
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="max-h-40 object-contain"
-                      />
-                    ) : (
-                      <>
-                        <ImagePlus className="w-10 h-10 text-slate-400 mb-3" />
-                        <p className="text-sm font-medium text-slate-600">
-                          Click to upload image or drag & drop
-                        </p>
-                        <p className="text-xs text-slate-400 mt-1">
-                          SVG, JPG, PNG (max. 2 MB)
-                        </p>
-                      </>
-                    )}
-                  </div>
-
-                  <input
-                    ref={inputRef}
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={(e) => handleFileChange(e.target.files?.[0])}
-                  />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Price</Label>
+                  <Input name="price"  type="number" min={0}    required />
                 </div>
 
+
                 <div className="space-y-2">
-                  <Label className="text-slate-600 font-medium">
-                    Visibility Status
-                  </Label>
-                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-slate-700">
-                        Active
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        Product is visible to customers
-                      </p>
+                  <Label>Strike through Price</Label>
+                  <Input name="strikethroughPrice"  type="number" min={0}   required />
+                  {priceError && (
+                    <p className="text-sm text-destructive">{priceError}</p>
+                  )}
+                </div>
+
+              </div>
+
+
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea name="description" className="min-h-32" />
+              </div>
+
+              <div className="flex items-center justify-between border rounded-lg p-4">
+                <div className="space-y-1">
+                  <p className="font-medium">Active</p>
+                  <p className="text-xs text-muted-foreground">
+                    Visible to customers
+                  </p>
+                </div>
+                <Switch checked={isActive} onCheckedChange={setIsActive} />
+                <input type="hidden" name="isActive" value={String(isActive)} />
+              </div>
+
+            </div>
+
+
+            <div className="space-y-3">
+              <Label>Banner Image</Label>
+
+              <div
+                onClick={() => bannerRef.current?.click()}
+                className="border-4  max-w-xl border-dashed rounded-xl h-72 flex items-center justify-center cursor-pointer hover:bg-muted/40 relative"
+              >
+                {!banner && (
+                  <div>
+                    <div className="p-6 bg-primary/10 rounded-full group-hover:scale-110 transition-transform">
+                      <ImagePlus size={68} className="text-primary" />
                     </div>
-                    <Switch
-                      checked={isActive}
-                      onCheckedChange={setIsActive}
-                      className="data-[state=checked]:bg-emerald-500"
-                    />
+                    <p className="mt-3 text-sm font-semibold">Upload images</p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
                   </div>
+                )}
+
+                {banner && (
+                  <img src={banner.preview} className="w-full h-full object-contain" />
+                )}
+
+                {uploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
+                    <Loader2 className="animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              <input
+                ref={bannerRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => handleBanner(e.target.files?.[0])}
+              />
+
+              {banner && (
+                <input type="hidden" name="bannerImage" value={banner.key} />
+              )}
+            </div>
+
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Product Gallery</CardTitle>
+            <CardDescription>Additional product images</CardDescription>
+          </CardHeader>
+
+          {/* Main Container: Grid layout for side-by-side split */}
+          <CardContent className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <div className="lg:col-span-4 w-full">
+              <div
+                onClick={() => galleryRef.current?.click()}
+                className="flex flex-col items-center justify-center border-3 border-dashed border-muted-foreground/20 rounded-xl h-48 hover:bg-muted/50 transition-all cursor-pointer group"
+              >
+                <div className="p-4 bg-primary/10 rounded-full group-hover:scale-110 transition-transform">
+                  <ImagePlus size={32} className="text-primary" />
                 </div>
+                <p className="mt-3 text-sm font-semibold">Upload images</p>
+                <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
               </div>
             </div>
-            <div className="flex justify-end gap-4 pt-6">
-              <Button
-                onClick={() => router.push("/admin/product")}
-                variant="outline"
-                className="px-10 h-12 rounded-full border-slate-300 text-slate-600 hover:bg-slate-50"
-              >
-                Cancle
-              </Button>
-              <Button
-                type="submit"
-                className="px-10 min-w-36 h-12 rounded-full bg-[#2D5A5D] hover:bg-[#234749] text-white flex items-center gap-2"
-              >
-                Add <Plus className="w-4 h-4" />
-              </Button>
+
+            <input
+              ref={galleryRef}
+              type="file"
+              multiple
+              accept="image/*"
+              hidden
+              onChange={(e) => handleGallery(e.target.files)}
+            />
+
+            <div className="lg:col-span-8 w-full">
+              {gallery.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {gallery.map((img, i) => (
+                    <div key={i} className="relative group aspect-square border rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={img.preview}
+                        className="h-full w-full object-cover"
+                        alt="preview"
+                      />
+
+                      <div className="absolute inset-0  opacity-100 transition-opacity flex items-center justify-center">
+                        <Button
+
+
+                          onClick={() => setGallery(prev => prev.filter((_, x) => x !== i))}
+
+                          className="cursor-pointer absolute top-1 right-1 bg-black/60 text-white rounded px-2 py-1 opacity-100"
+
+                        >
+
+                          <X size={14} />
+
+                        </Button>
+                      </div>
+
+                      <input type="hidden" name="media" value={img.key} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* Placeholder for right side when empty */
+                <div className="h-48 flex flex-col items-center justify-center border rounded-xl border-muted bg-muted/10 text-muted-foreground">
+                  <p className="text-sm">No images selected</p>
+                </div>
+              )}
             </div>
-          </form>
-        </CardContent>
-      </Card>
+
+          </CardContent>
+        </Card>
+
+
+        <div className="flex justify-end gap-4">
+          <Button type="button" variant="outline" onClick={() => router.push("/admin/product")}>
+            Cancel
+          </Button>
+          <Button type="submit">
+            Create Product
+          </Button>
+        </div>
+
+      </form>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/lib/db";
 import { product } from "@/db/productSchema";
 import ProductClient from "./productClient";

@@ -74,8 +74,8 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
         </CardHeader>
 
         <CardContent>
-          <div className="flex justify-end mb-4">
-            <Button onClick={() => router.push("/admin/product/add")}>
+          <div className="flex cursor-pointer justify-end mb-4">
+            <Button className="cursor-pointer" onClick={() => router.push("/admin/product/add")}>
               <Plus />
               Add Product
             </Button>

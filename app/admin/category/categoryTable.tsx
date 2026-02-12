@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 /* eslint-disable react-hooks/purity */
@@ -65,7 +66,7 @@ const CategoryTable = ({ page, categories }: CategoryTableProps) => {
                 <TableCell className="text-right">
                   <button
                     onClick={() => router.push(`${pathname}/${category.id}`)}
-                    className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
+                    className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
                     aria-label="Edit category"
                   >
                     <Pencil className="w-4 h-4" />

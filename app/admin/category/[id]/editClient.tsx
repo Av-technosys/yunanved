@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useRef, useState } from "react";
@@ -7,7 +8,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { updateCategory } from "@/helper/index";
 
 export default function EditCategory({ categoryInfo }: any) {
   const router = useRouter();
@@ -30,30 +31,18 @@ export default function EditCategory({ categoryInfo }: any) {
 
   const [form, setForm] = useState({
     name: categoryInfo.name,
-    parent: categoryInfo.parentId || "home",
-    description: categoryInfo.description,
-    isActive: categoryInfo.isActive || false,
+    parent: categoryInfo.parentId ?? "",
+    description: categoryInfo.description ?? "",
+    isActive: categoryInfo.isActive ?? false,
   });
 
   const [preview, setPreview] = useState<string | null>(
-    categoryInfo.bannerImage,
+    categoryInfo.bannerImage ?? null,
   );
 
   const handleFileChange = (file?: File) => {
     if (!file || !file.type.startsWith("image/")) return;
     setPreview(URL.createObjectURL(file));
-  };
-
-  const submitHandler = (e: any) => {
-    e.preventDefault();
-    const categoryData = {
-      name: form.name,
-      parent: form.parent,
-      description: form.description,
-      isActive: form.isActive,
-      bannerImage: preview,
-    };
-    console.log(categoryData);
   };
 
   return (
@@ -69,16 +58,25 @@ export default function EditCategory({ categoryInfo }: any) {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={(e) => submitHandler(e)}>
+          <form action={updateCategory}>
+
+            {/* CRITICAL: send required values to server action */}
+            <input type="hidden" name="id" value={categoryInfo.id} />
+            <input type="hidden" name="parentId" value={form.parent ?? ""} />
+            <input type="hidden" name="isActive" value={form.isActive ? "true" : "false"} />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+
               {/* Left column */}
               <div className="space-y-6">
+
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Category Name
                   </Label>
                   <Input
-                    value={form.name}
+                    name="name"
+                    defaultValue={categoryInfo.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     className="h-11"
                   />
@@ -95,7 +93,7 @@ export default function EditCategory({ categoryInfo }: any) {
                     }
                   >
                     <SelectTrigger className="h-11">
-                      <SelectValue />
+                      <SelectValue placeholder="Select parent" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="electronics">Electronics</SelectItem>
@@ -110,12 +108,10 @@ export default function EditCategory({ categoryInfo }: any) {
                     Description
                   </Label>
                   <Textarea
-                    value={form.description}
+                    name="description"
+                    defaultValue={categoryInfo.description}
                     onChange={(e) =>
-                      setForm({
-                        ...form,
-                        description: e.target.value,
-                      })
+                      setForm({ ...form, description: e.target.value })
                     }
                     className="min-h-[140px] resize-none"
                   />
@@ -124,6 +120,7 @@ export default function EditCategory({ categoryInfo }: any) {
 
               {/* Right column */}
               <div className="space-y-6">
+
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Category Image
@@ -178,16 +175,20 @@ export default function EditCategory({ categoryInfo }: any) {
                     />
                   </div>
                 </div>
+
               </div>
             </div>
+
             <div className="flex justify-end gap-4 px-0 pt-10">
               <Button
+                type="button"
                 onClick={() => router.push("/admin/category")}
                 variant="outline"
                 className="px-12 h-11 rounded-full"
               >
                 Cancel
               </Button>
+
               <Button
                 type="submit"
                 className="px-12 h-11 rounded-full bg-[#2D5A5D] hover:bg-[#234749] text-white"
@@ -195,6 +196,7 @@ export default function EditCategory({ categoryInfo }: any) {
                 Update
               </Button>
             </div>
+
           </form>
         </CardContent>
       </Card>
