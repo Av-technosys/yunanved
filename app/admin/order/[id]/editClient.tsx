@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CheckCircle2, Phone, Mail, ChevronDown } from "lucide-react";
 
 export default function EditOrder({ orderInfo }: any) {
-  //   console.log("orderInfo", orderInfo);
+
   const steps = [
     { label: "Order Confirmed", date: "Aug 16, 2023" },
     { label: "Order Shipped", date: "Aug 22, 2023" },

@@ -1,74 +1,117 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { category } from "@/db/productSchema";
+import { category, productCategory } from "@/db/productSchema";
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
 export async function createCategory(formData: FormData) {
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const parentId = formData.get("parentId") as string | null;
-//   const file = formData.get("image") as File | null;
-  //  const file = null
+
+  try {
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const parentId = formData.get("parentId") as string | null;
     const imagePath: string | null = null;
+    const slug = await generateUniqueSlug(db, name, category.slug);
+    await db.insert(category).values({
+      name,
+      slug,
+      description,
+      parentId: parentId || null,
+      bannerImage: imagePath,
+    });
 
-//   if (file && file.size > 0) {
-//     const bytes = await file.arrayBuffer();
-//     const buffer = Buffer.from(bytes);
 
-//     const fileName = Date.now() + "-" + file.name;
-//     const filePath = path.join(process.cwd(), "public/uploads", fileName);
+    revalidatePath("/admin/category");
+    redirect("/admin/category");
 
-//     await writeFile(filePath, buffer);
-//     imagePath = "/uploads/" + fileName;
-//   }
-
-  await db.insert(category).values({
-    name,
-    slug: slugify(name, { lower: true }),
-    description,
-    parentId: parentId || null,
-    bannerImage: imagePath,
-  });
-
-    console.log("Inserted successfully");
-
-     revalidatePath("/admin/category");
-    // move user after success
-  redirect("/admin/category");
-  
- 
+  } catch (error) {
+    console.error("Create category failed:", error);
+    throw new Error("Failed to create category");
+  }
 }
 
 
+
 export async function updateCategory(formData: FormData) {
-   
-  const id = formData.get("id") as string;
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const parentId = formData.get("parentId") as string | null;
-  const isActive = formData.get("isActive") === "true";
+  try {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const parentId = formData.get("parentId") as string | null;
+    const isActive = formData.get("isActive") === "true";
 
-   await db
-    .update(category)
-    .set({
-      name,
-      slug: slugify(name, { lower: true }),
-      description,
-      parentId: parentId || null,
-      isActive,
+    await db
+      .update(category)
+      .set({
+        name,
+        slug: slugify(name, { lower: true }),
+        description,
+        parentId: parentId || null,
+        isActive,
+      })
+      .where(eq(category.id, id));
+
+    revalidatePath("/admin/category");
+    revalidatePath(`/admin/category/${id}`);
+
+    redirect("/admin/category");
+
+  } catch (error) {
+
+    console.error("Update category failed:", error);
+    throw new Error("Failed to update category");
+  }
+}
+
+
+export const getCategories = async() => {
+  try{
+   const categories =  await db.select().from(category)
+    return categories;
+  }catch(error){
+    console.error("fetch category failed:", error);
+    throw new Error("Failed to fetch category");
+  }
+}
+
+export const attachProductCategory = async (
+  productId: string,
+  categoryId: string
+) => {
+  if (!categoryId) return;
+
+  await db.insert(productCategory).values({
+    productId,
+    categoryId,
+  });
+};
+
+
+export async function getProductCategory(productId: string) {
+  const result = await db
+    .select({
+      categoryId: productCategory.categoryId,
+      name: category.name,
     })
-    .where(eq(category.id, id))
-   
+    .from(productCategory)
+    .leftJoin(category, eq(category.id, productCategory.categoryId))
+    .where(eq(productCategory.productId, productId))
+    .limit(1);
 
-  
+  return result[0] ?? null;
+}
 
-  revalidatePath("/admin/category");
-  revalidatePath(`/admin/category/${id}`);
 
-  redirect("/admin/category");
+export async function updateProductCategory(productId: string, categoryId: string) {
+  await db.delete(productCategory).where(eq(productCategory.productId, productId));
+
+  await db.insert(productCategory).values({
+    productId,
+    categoryId,
+  });
 }

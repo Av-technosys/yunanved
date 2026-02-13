@@ -1,5 +1,5 @@
 // category
-export { createCategory, updateCategory } from "./category/action";
+export { createCategory, updateCategory , attachProductCategory , getCategories , getProductCategory, updateProductCategory} from "./category/action";
 
 // product
-export { createProduct, updateProduct, saveProductAttributes, getProductAttributes } from "./product/action";
+export { createProduct, updateProduct, saveProductAttributes, getProductAttributes  , getFullProduct} from "./product/action";

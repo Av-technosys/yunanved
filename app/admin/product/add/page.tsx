@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
@@ -9,11 +10,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, ImagePlus, Loader2, X } from "lucide-react";
+import { ImagePlus, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createProduct } from "@/helper/index";;
+import { createProduct, saveProductAttributes , getCategories ,  attachProductCategory } from "@/helper/index";;
 import { useFileUpload } from "@/helper/useFileUpload";
+import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
+import { validateImage } from "@/helper/image/validateImage";
+import { toast } from "sonner";
 
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import GallerySection from "../GallerySection";
+import AttributeSection from "../AttributeSection";
 
 
 type ImageItem = {
@@ -21,13 +41,20 @@ type ImageItem = {
   preview: string;
 };
 
+type AttributeValue = {
+  id?: string;
+  value: string;
+};
+
 export default function AddProductForm() {
 
-  const router = useRouter();
-  // const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+
+   const router = useRouter();
 
   const { upload, uploading } = useFileUpload();
 
+const [categories, setCategories] = useState<any[]>([]);
+const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [isActive, setIsActive] = useState(true);
   const [banner, setBanner] = useState<ImageItem | null>(null);
@@ -37,13 +64,38 @@ export default function AddProductForm() {
   const galleryRef = useRef<HTMLInputElement>(null);
   const [priceError, setPriceError] = useState<string | null>(null);
 
+const [productAttributes, setProductAttributes] =
+  useState<Record<string, AttributeValue>>({});
 
+
+
+  useEffect(() => {
+  async function load() {
+    const data = await getCategories();
+    setCategories(data);
+  }
+  load();
+}, []);
+function handleValueChange(attribute: string, value: string, id?: string) {
+  setProductAttributes((prev) => ({
+    ...prev,
+    [attribute]: {
+      id: prev[attribute]?.id ?? id,
+      value,
+    },
+  }));
+}
 
   const validatePrices = (form: HTMLFormElement) => {
     const price = Number((form.elements.namedItem("price") as HTMLInputElement).value);
     const stp = Number((form.elements.namedItem("strikethroughPrice") as HTMLInputElement).value);
 
-    if (stp >= price) {
+    if (!stp) {
+    setPriceError(null);
+    return true;
+  }
+
+    if (stp > price) {
       setPriceError("Strike through price must be less than price");
       return false;
     }
@@ -52,39 +104,95 @@ export default function AddProductForm() {
     return true;
   };
 
-  const handleBanner = async (file?: File) => {
-    if (!file) return;
-    const folder = 'product'
+const handleBanner = async (file?: File) => {
+  if (!file) return;
+
+  try {
+    // validate BEFORE upload
+    await validateImage(file, {
+      maxSizeMB: 2,
+      maxWidth: 400,
+      maxHeight: 600,
+      ratio: 400 / 600,
+    });
+
+    const folder = "product";
     const { preview, fileKey } = await upload(file, folder);
 
     setBanner({
       key: fileKey,
       preview,
     });
-  };
+    
+ toast.success("Image uploaded")
+  } catch (err: any) {
+    toast.info(err.message); 
+  }
+};
 
+const handleGallery = async (files: FileList | null) => {
+  if (!files) return;
 
-  const handleGallery = async (files: FileList | null) => {
-    if (!files) return;
-    const folder = 'product'
-    for (const file of Array.from(files)) {
+  const folder = "product";
+
+  for (const file of Array.from(files)) {
+    try {
+      // 🔍 Validate before upload
+      await validateImage(file, {
+        maxSizeMB: 2,
+        maxWidth: 400,
+        maxHeight: 600,
+        ratio: 400 / 600,
+      });
+
       const { preview, fileKey } = await upload(file, folder);
 
-      setGallery(prev => [...prev, { key: fileKey, preview }]);
+      setGallery((prev) => [...prev, { key: fileKey, preview }]);
+       toast.success("Image uploaded")
+    } catch (err: any) {
+     toast.info(err.message); 
+   
     }
-  };
+  }
+};
+
+
+  const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!validatePrices(e.currentTarget)) return;
+
+  const formData = new FormData(e.currentTarget);
+
+ 
+  const product = await createProduct(formData);
+  const productId = product.id;
+
+   
+// attach category
+if (selectedCategory) {
+  await attachProductCategory(productId, selectedCategory);
+}
+  const payload = Object.entries(productAttributes)
+    .map(([attribute, { value }]) => ({
+      attribute,
+      value: value.trim(),
+    }))
+    .filter((a) => a.value.length > 0);
+
+  if (payload.length > 0) {
+    await saveProductAttributes(productId, payload);
+  }
+
+  router.push("/admin/product");
+};
 
 
   return (
-    <div className="max-w-6xl mx-auto p-1">
-      <form action={createProduct} onSubmit={(e) => {
-        if (!validatePrices(e.currentTarget)) {
-          e.preventDefault();
-        }
-      }} className="space-y-8">
+    <div className="max-w-full ">
+     <form onSubmit={handleCreateProduct}>
 
-
-        <Card>
+        <Card className="m-1">
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
             <CardDescription>Main product details</CardDescription>
@@ -98,6 +206,7 @@ export default function AddProductForm() {
                 <Label>Product Name</Label>
                 <Input name="name" required />
               </div>
+  
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -108,7 +217,7 @@ export default function AddProductForm() {
 
                 <div className="space-y-2">
                   <Label>Strike through Price</Label>
-                  <Input name="strikethroughPrice"  type="number" min={0}   required />
+                  <Input name="strikethroughPrice"  type="number" min={0}    />
                   {priceError && (
                     <p className="text-sm text-destructive">{priceError}</p>
                   )}
@@ -133,6 +242,23 @@ export default function AddProductForm() {
                 <input type="hidden" name="isActive" value={String(isActive)} />
               </div>
 
+            <div className="space-y-2">
+  <Label>Category</Label>
+
+  <Select onValueChange={(v) => setSelectedCategory(v)}>
+    <SelectTrigger>
+      <SelectValue placeholder="Select category" />
+    </SelectTrigger>
+
+    <SelectContent>
+      {categories.map((cat) => (
+        <SelectItem key={cat.id} value={cat.id}>
+          {cat.name}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
             </div>
 
 
@@ -149,7 +275,7 @@ export default function AddProductForm() {
                       <ImagePlus size={68} className="text-primary" />
                     </div>
                     <p className="mt-3 text-sm font-semibold">Upload images</p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 2MB</p>
                   </div>
                 )}
 
@@ -180,80 +306,22 @@ export default function AddProductForm() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Product Gallery</CardTitle>
-            <CardDescription>Additional product images</CardDescription>
-          </CardHeader>
-
-          {/* Main Container: Grid layout for side-by-side split */}
-          <CardContent className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-            <div className="lg:col-span-4 w-full">
-              <div
-                onClick={() => galleryRef.current?.click()}
-                className="flex flex-col items-center justify-center border-3 border-dashed border-muted-foreground/20 rounded-xl h-48 hover:bg-muted/50 transition-all cursor-pointer group"
-              >
-                <div className="p-4 bg-primary/10 rounded-full group-hover:scale-110 transition-transform">
-                  <ImagePlus size={32} className="text-primary" />
-                </div>
-                <p className="mt-3 text-sm font-semibold">Upload images</p>
-                <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
-              </div>
-            </div>
-
-            <input
-              ref={galleryRef}
-              type="file"
-              multiple
-              accept="image/*"
-              hidden
-              onChange={(e) => handleGallery(e.target.files)}
-            />
-
-            <div className="lg:col-span-8 w-full">
-              {gallery.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {gallery.map((img, i) => (
-                    <div key={i} className="relative group aspect-square border rounded-lg overflow-hidden bg-muted">
-                      <img
-                        src={img.preview}
-                        className="h-full w-full object-cover"
-                        alt="preview"
-                      />
-
-                      <div className="absolute inset-0  opacity-100 transition-opacity flex items-center justify-center">
-                        <Button
+<GallerySection
+  gallery={gallery}
+  galleryRef={galleryRef}
+  handleGallery={handleGallery}
+  setGallery={setGallery}
+/>
 
 
-                          onClick={() => setGallery(prev => prev.filter((_, x) => x !== i))}
-
-                          className="cursor-pointer absolute top-1 right-1 bg-black/60 text-white rounded px-2 py-1 opacity-100"
-
-                        >
-
-                          <X size={14} />
-
-                        </Button>
-                      </div>
-
-                      <input type="hidden" name="media" value={img.key} />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                /* Placeholder for right side when empty */
-                <div className="h-48 flex flex-col items-center justify-center border rounded-xl border-muted bg-muted/10 text-muted-foreground">
-                  <p className="text-sm">No images selected</p>
-                </div>
-              )}
-            </div>
-
-          </CardContent>
-        </Card>
+<AttributeSection
+  productAttributes={productAttributes}
+  handleValueChange={handleValueChange}
+/>
 
 
-        <div className="flex justify-end gap-4">
+
+        <div className="flex m-6 justify-end gap-4">
           <Button type="button" variant="outline" onClick={() => router.push("/admin/product")}>
             Cancel
           </Button>

@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,21 +12,49 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { updateProduct } from "@/helper/index";;
-import { useFileUpload } from "@/helper/useFileUpload";
 
-type ImageItem = {
-  key: string;
-  preview: string;
-};
+import {
+  saveProductAttributes,
+  updateProduct,
+  getCategories,
+  getProductCategory,
+  updateProductCategory,
+} from "@/helper/index";
+
+import { useFileUpload } from "@/helper/useFileUpload";
+import { validateImage } from "@/helper/image/validateImage";
+import { toast } from "sonner";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
+import GallerySection from "../GallerySection";
+import AttributeSection from "../AttributeSection";
+
+type ImageItem = { key: string; preview: string };
+type AttributeValue = { id?: string; value: string };
+
 export default function EditProduct({ productInfo, media, attributes }: any) {
 
-
   const router = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const { upload } = useFileUpload();
 
   const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
   const toPublic = (key: string | null) => key ? `${BASE}/${key}` : null;
+
 
   const [gallery, setGallery] = useState<ImageItem[]>(
     media.map((m: any) => ({
@@ -38,17 +62,68 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
       preview: `${BASE}/${m.mediaURL}`,
     }))
   );
+
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const [bannerKey, setBannerKey] = useState<string | null>(productInfo.bannerImage);
+  const [preview, setPreview] = useState<string | null>(toPublic(productInfo.bannerImage));
+  const [uploading, setUploading] = useState(false);
+
+  const fileRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
-  const { upload } = useFileUpload();
+
+  const baseAttributes = Object.fromEntries(
+    PRODUCT_ATTRIBUTES.flatMap(group =>
+      group.elements.map(el => [el, { id: undefined, value: "" }])
+    )
+  );
+
+  const existingAttributes = Object.fromEntries(
+    (attributes || []).map((a: any) => [
+      a.attribute,
+      { id: a.id, value: a.value }
+    ])
+  );
+
+  const [productAttributes, setProductAttributes] =
+    useState<Record<string, AttributeValue>>({
+      ...baseAttributes,
+      ...existingAttributes,
+    });
+
+  const [isActive, setIsActive] = useState(!productInfo.isDeleted);
   const [priceError, setPriceError] = useState<string | null>(null);
 
 
+
+  useEffect(() => {
+    async function load() {
+      const cats = await getCategories();
+      setCategories(cats);
+
+      const current = await getProductCategory(productInfo.id);
+      if (current) setSelectedCategory(current.categoryId);
+    }
+    load();
+  }, [productInfo.id]);
+
+  /* ---------------- HANDLERS ---------------- */
+
+  function handleValueChange(attribute: string, value: string, id?: string) {
+    setProductAttributes(prev => ({
+      ...prev,
+      [attribute]: { id: prev[attribute]?.id ?? id, value },
+    }));
+  }
 
   const validatePrices = (form: HTMLFormElement) => {
     const price = Number((form.elements.namedItem("price") as HTMLInputElement).value);
     const stp = Number((form.elements.namedItem("strikethroughPrice") as HTMLInputElement).value);
 
-    if (stp >= price) {
+    if (!stp) return true;
+
+    if (stp > price) {
       setPriceError("Strike through price must be less than price");
       return false;
     }
@@ -57,50 +132,87 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
     return true;
   };
 
-  const [isActive, setIsActive] = useState(!productInfo.isDeleted);
-  const [bannerKey, setBannerKey] = useState<string | null>(productInfo.bannerImage);
-  const [preview, setPreview] = useState<string | null>(toPublic(productInfo.bannerImage));
-  const [uploading, setUploading] = useState(false);
 
-  /* upload new banner */
   const handleBanner = async (file?: File) => {
     if (!file) return;
 
-    setUploading(true);
-    setPreview(URL.createObjectURL(file));
-    const folder = 'product'
-    const { fileKey } = await upload(file, folder);
+    try {
+      await validateImage(file, { maxSizeMB: 2, maxWidth: 400, maxHeight: 600, ratio: 400 / 600 });
 
-    setBannerKey(fileKey);
-    setPreview(toPublic(fileKey));
-    setUploading(false);
+      setUploading(true);
+
+      const tempPreview = URL.createObjectURL(file);
+      setPreview(tempPreview);
+
+      const { fileKey } = await upload(file, "product");
+
+      setBannerKey(fileKey);
+      setPreview(toPublic(fileKey));
+
+      URL.revokeObjectURL(tempPreview);
+
+      toast.success("Banner uploaded");
+
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setUploading(false);
+    }
   };
-
 
 
   const handleGallery = async (files: FileList | null) => {
     if (!files) return;
-    const folder = "product";
 
     for (const file of Array.from(files)) {
-      const { preview, fileKey } = await upload(file, folder);
-      setGallery(prev => [...prev, { key: fileKey, preview }]);
+      try {
+        await validateImage(file, { maxSizeMB: 2, maxWidth: 400, maxHeight: 600, ratio: 400 / 600 });
+
+        const { preview, fileKey } = await upload(file, "product");
+        setGallery(prev => [...prev, { key: fileKey, preview }]);
+
+        toast.success(`${file.name} uploaded`);
+
+      } catch (err: any) {
+        toast.error(`${file.name}: ${err.message}`);
+      }
     }
   };
-  return (
-    <div className="max-w-5xl mx-auto p-1">
-      <form action={updateProduct} onSubmit={(e) => {
-        if (!validatePrices(e.currentTarget)) {
-          e.preventDefault();
-        }
-      }} className="space-y-6">
 
-        {/* IMPORTANT hidden fields */}
+
+  const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validatePrices(e.currentTarget)) return;
+
+    const formData = new FormData(e.currentTarget);
+
+    gallery.forEach(img => formData.append("existingMedia", img.key));
+
+    await updateProduct(formData);
+
+    if (selectedCategory)
+      await updateProductCategory(productInfo.id, selectedCategory);
+
+    const payload = Object.entries(productAttributes)
+      .map(([attribute, { value }]) => ({ attribute, value: value.trim() }))
+      .filter(a => a.value.length > 0);
+
+    await saveProductAttributes(productInfo.id, payload);
+
+    router.push("/admin/product");
+  };
+
+
+  return (
+    <div className="max-w-full">
+      <form onSubmit={handleUpdateProduct} className="space-y-6">
+
         <input type="hidden" name="id" value={productInfo.id} />
         <input type="hidden" name="isActive" value={String(isActive)} />
         {bannerKey && <input type="hidden" name="bannerImage" value={bannerKey} />}
 
-        <Card>
+        {/* BASIC INFO */}
+        <Card className="m-1">
           <CardHeader>
             <CardTitle>Manage Product</CardTitle>
             <CardDescription>Edit product information</CardDescription>
@@ -108,102 +220,63 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
 
           <CardContent className="grid md:grid-cols-2 gap-10">
 
-            {/* LEFT SIDE */}
             <div className="space-y-5">
 
               <div className="space-y-2">
                 <Label>Product Name</Label>
-                <Input
-                  name="name"
-                  defaultValue={productInfo.name}
-                  required
-                />
+                <Input name="name" defaultValue={productInfo.name} required />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Price</Label>
-                  <Input
-                    name="price"
-                    type="number"
-                    defaultValue={productInfo.basePrice}
-                    required
-                  />
+                  <Input name="price" type="number" defaultValue={productInfo.basePrice} required />
                 </div>
 
                 <div className="space-y-2">
                   <Label>StrikethroughPrice</Label>
-                  <Input
-                    name="strikethroughPrice"
-                    type="number"
-                    defaultValue={productInfo.strikethroughPrice}
-                  />
-                  {priceError && (
-                    <p className="text-sm text-destructive">{priceError}</p>
-                  )}
+                  <Input name="strikethroughPrice" type="number" defaultValue={productInfo.strikethroughPrice} />
+                  {priceError && <p className="text-sm text-destructive">{priceError}</p>}
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Description</Label>
-                <Textarea
-                  name="description"
-                  defaultValue={productInfo.description}
-                  className="min-h-32"
-                />
+                <Textarea name="description" defaultValue={productInfo.description} className="min-h-32" />
               </div>
 
               <div className="flex items-center justify-between border rounded-lg p-4">
-                <div>
-                  <p className="font-medium">Active</p>
-                  <p className="text-xs text-muted-foreground">
-                    Visible to customers
-                  </p>
-                </div>
-
-                <Switch
-                  checked={isActive}
-                  onCheckedChange={setIsActive}
-                />
+                <Label>Active</Label>
+                <Switch checked={isActive} onCheckedChange={setIsActive} />
               </div>
+
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={selectedCategory ?? undefined} onValueChange={setSelectedCategory}>
+                  <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                  <SelectContent>
+                    {categories.map(cat => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
             </div>
 
-            {/* RIGHT SIDE — BANNER */}
+            {/* BANNER */}
             <div className="space-y-3">
               <Label>Banner Image</Label>
-
               <div
                 onClick={() => fileRef.current?.click()}
-                className="border-2 border-dashed rounded-xl h-72 flex items-center justify-center cursor-pointer hover:bg-muted/40 relative overflow-hidden"
+                className="border-2 border-dashed rounded-xl h-72 flex items-center justify-center cursor-pointer relative overflow-hidden"
               >
-                {!preview && (
-                  <div className="text-muted-foreground text-center">
-                    <ImagePlus className="mx-auto mb-2" />
-                    Upload image
-                  </div>
-                )}
-
-                {preview && (
-                  <>
-                    <img
-                      src={preview}
-                      className="w-full h-full object-contain"
-                    />
-
-                    {uploading && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white">
-                        <Loader2 className="animate-spin" />
-                      </div>
-                    )}
-                  </>
-                )}
+                {!preview && <ImagePlus />}
+                {preview && <img src={preview} className="w-full h-full object-contain" />}
+                {uploading && <Loader2 className="absolute animate-spin" />}
               </div>
 
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                hidden
+              <input ref={fileRef} type="file" hidden accept="image/*"
                 onChange={(e) => handleBanner(e.target.files?.[0])}
               />
             </div>
@@ -211,128 +284,35 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
           </CardContent>
         </Card>
 
+<GallerySection
+  gallery={gallery}
+  galleryRef={galleryRef}
+  handleGallery={handleGallery}
+  setGallery={setGallery}
+/>
+
+<AttributeSection
+  productAttributes={productAttributes}
+  handleValueChange={handleValueChange}
+/>
 
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Product Gallery</CardTitle>
-            <CardDescription>Additional product images</CardDescription>
-          </CardHeader>
+<div className="flex justify-end gap-4 m-6">
 
-          {/* Main Container: Grid layout for side-by-side split */}
-          <CardContent className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <Button
+    type="button"
+    variant="outline"
+    onClick={() => router.push("/admin/product")}
+  >
+    Cancel
+  </Button>
 
-            <div className="lg:col-span-4 w-full">
-              <div
-                onClick={() => galleryRef.current?.click()}
-                className="flex flex-col items-center justify-center border-3 border-dashed border-muted-foreground/20 rounded-xl h-48 hover:bg-muted/50 transition-all cursor-pointer group"
-              >
-                <div className="p-4 bg-primary/10 rounded-full group-hover:scale-110 transition-transform">
-                  <ImagePlus size={32} className="text-primary" />
-                </div>
-                <p className="mt-3 text-sm font-semibold">Upload images</p>
-                <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
-              </div>
-            </div>
+  <Button type="submit">
+    Update Product
+  </Button>
 
-            <input
-              ref={galleryRef}
-              type="file"
-              multiple
-              accept="image/*"
-              hidden
-              onChange={(e) => handleGallery(e.target.files)}
-            />
+</div>
 
-            <div className="lg:col-span-8 w-full">
-              {gallery.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {gallery.map((img, i) => (
-                    <div key={i} className="relative group aspect-square border rounded-lg overflow-hidden bg-muted">
-                      <img
-                        src={img.preview}
-                        className="h-full w-full object-cover"
-                        alt="preview"
-                      />
-
-                      <div className="absolute inset-0  opacity-100 transition-opacity flex items-center justify-center">
-                        <Button
-
-
-                          onClick={() => setGallery(prev => prev.filter((_, x) => x !== i))}
-
-                          className="cursor-pointer absolute top-1 right-1 bg-black/60 text-white rounded px-2 py-1 opacity-100"
-
-                        >
-
-                          <X size={14} />
-
-                        </Button>
-                      </div>
-
-                      <input type="hidden" name="media" value={img.key} />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                /* Placeholder for right side when empty */
-                <div className="h-48 flex flex-col items-center justify-center border rounded-xl border-muted bg-muted/10 text-muted-foreground">
-                  <p className="text-sm">No images selected</p>
-                </div>
-              )}
-            </div>
-
-          </CardContent>
-        </Card>
-
-
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle> Product Attributes</CardTitle>
-            </div>
-
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => router.push(`/admin/product/${productInfo.id}/attributes?edit=true`)}
-            >
-              {attributes?.length ? "Edit Attributes" : "Add Attributes"}
-
-            </Button>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            {attributes.map((attr: any) => (
-              <div
-                key={attr.id}
-                className="grid grid-cols-2 gap-4 items-center "
-              >
-                <Label className="text-muted-foreground">
-                  {attr.attribute}
-                </Label>
-
-                <Input
-                  value={attr.value ?? ""}
-                  readOnly
-                  className="bg-muted/40 pointer-events-none"
-                />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => router.push("/admin/product")}>
-            Cancel
-          </Button>
-
-          <Button type="submit">
-            Update Product
-          </Button>
-        </div>
 
       </form>
     </div>
