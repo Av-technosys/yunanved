@@ -197,3 +197,10 @@ export async function getFullProduct(productId: string) {
     throw new Error("Unable to fetch product");
   }
 }
+
+export async function deleteProduct(id: string) {
+  await db.delete(productMedia).where(eq(productMedia.productId, id));
+  await db.delete(product).where(eq(product.id, id));
+
+  revalidatePath("/admin/product");
+}

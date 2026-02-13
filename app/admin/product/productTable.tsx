@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -8,16 +9,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import ProductPagination from "@/components/pagination";
-import { Edit } from "lucide-react";
+
+import { Edit, Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { deleteProduct } from "@/helper/index";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
 
 const ProductTable = ({ products, total, currentPage }: any) => {
-  const totalPages = Math.ceil(total / PAGE_SIZE);
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  function handleDelete(id: string) {
+    const ok = confirm("Delete this product permanently?");
+    if (!ok) return;
+
+    startTransition(async () => {
+      try {
+        await deleteProduct(id);
+        toast.success("Product deleted");
+      } catch {
+        toast.error("Failed to delete product");
+      }
+    });
+  }
 
   return (
     <>
@@ -44,14 +62,30 @@ const ProductTable = ({ products, total, currentPage }: any) => {
                 <TableCell>{item.isCancelable ? "Yes" : "No"}</TableCell>
                 <TableCell>{item.isReturnable ? "Yes" : "No"}</TableCell>
                 <TableCell>{item.isDeleted ? "Yes" : "No"}</TableCell>
-                <TableCell>
+
+                <TableCell className="flex gap-2">
+
+                  {/* EDIT */}
                   <Button
-                    className="cursor-pointer"
-                    variant={"outline"}
+                    variant="outline"
                     onClick={() => router.push(`/admin/product/${item.id}`)}
                   >
-                    <Edit />
+                    <Edit size={16} />
                   </Button>
+
+                  {/* DELETE */}
+                  <Button
+                    variant="outline"
+                    disabled={isPending}
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    {isPending ? (
+                      <Loader2 className="animate-spin" size={16} />
+                    ) : (
+                      <Trash2 size={16} />
+                    )}
+                  </Button>
+
                 </TableCell>
               </TableRow>
             ))

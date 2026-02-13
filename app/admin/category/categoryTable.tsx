@@ -13,6 +13,10 @@ import {
 } from "@/components/ui/table";
 import { Pencil } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+// import { deleteCategory } from "@/helper";
+import { toast } from "sonner";
+import { useTransition } from "react";
 
 interface CategoryTableProps {
   page: number;
@@ -23,7 +27,19 @@ const PAGE_SIZE = 3;
 
 const CategoryTable = ({ page, categories }: CategoryTableProps) => {
   const startIndex = (page - 1) * PAGE_SIZE;
+const [isPending, startTransition] = useTransition();
 
+
+const handleDelete = (id: string) => {
+  if (!confirm("Delete this category?")) return;
+
+  startTransition(async () => {
+    //const res = await deleteCategory(id);
+
+    // if (res.success) toast.success(res.message);
+    // else toast.error(res.message);
+  });
+};
   const router = useRouter();
   const pathname = usePathname();
 
@@ -63,15 +79,31 @@ const CategoryTable = ({ page, categories }: CategoryTableProps) => {
                   {new Date(category.createdAt).toLocaleDateString()}
                 </TableCell>
 
-                <TableCell className="text-right">
-                  <button
-                    onClick={() => router.push(`${pathname}/${category.id}`)}
-                    className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
-                    aria-label="Edit category"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </TableCell>
+              <TableCell className="text-right">
+  <div className="flex justify-end gap-2">
+
+    {/* EDIT */}
+    <button
+      onClick={() => router.push(`${pathname}/${category.id}`)}
+      className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
+      aria-label="Edit category"
+    >
+      <Pencil className="w-4 h-4" />
+    </button>
+
+    {/* DELETE */}
+    <button
+      disabled={isPending}
+      onClick={() => handleDelete(category.id)}
+      className="inline-flex items-center justify-center rounded-md p-2 text-red-500 hover:text-red-700 hover:bg-red-50 transition disabled:opacity-50"
+      aria-label="Delete category"
+    >
+      <Trash2 className="w-4 h-4" />
+    </button>
+
+  </div>
+</TableCell>
+
               </TableRow>
             );
           })}
