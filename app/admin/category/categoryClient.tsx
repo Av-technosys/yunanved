@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Select } from "@/components/select";
@@ -10,13 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Plus, Search, Loader2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import CategoryTable from "./categoryTable";
 import ProductPagination from "@/components/pagination";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
 import {
@@ -24,6 +22,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { getCategories } from "@/helper";
 
 interface Props {
   categories: any[];
@@ -33,28 +32,54 @@ interface Props {
 
 const CategoryClient = ({ categories, total, currentPage }: Props) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const updateQuery = useUpdateQuery();
 
-  const [searchText, setSearchText] = useState("");
+  const [isPending, startTransition] = useTransition();
 
+
+  const [searchText, setSearchText] = useState("");
   const debouncedSearch = useDebounce(searchText, 800);
 
   useEffect(() => {
-    updateQuery("search", debouncedSearch);
+    startTransition(() => updateQuery("search", debouncedSearch));
   }, [debouncedSearch]);
-
-  const VISIBILITY = [
-    { value: "visible", label: "Visible" },
-    { value: "hidden", label: "Hidden" },
-  ];
-
-  const [selectedVisibility, setSelectedVisibility] = useState<
-    string | undefined
-  >();
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchText(e.target.value);
   }
+
+
+  const [categoryOptions, setCategoryOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getCategories();
+
+      setCategoryOptions(
+        data.map((c: any) => ({
+          value: c.slug,
+          label: c.name,
+        }))
+      );
+    }
+    load();
+  }, []);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+
+  useEffect(() => {
+    setSelectedCategory(searchParams.get("category") ?? undefined);
+  }, [searchParams]);
+
+
+  const [selectedVisibility, setSelectedVisibility] = useState<string>();
+
+  useEffect(() => {
+    setSelectedVisibility(searchParams.get("visibility") ?? undefined);
+  }, [searchParams]);
 
   return (
     <div className="w-full min-h-screen">
@@ -64,21 +89,24 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
           <CardDescription>Manage your categories here</CardDescription>
         </CardHeader>
 
-
-
         <CardContent>
-   <div className="flex justify-end">
-  <Button asChild>
-    <Link href={`${pathname}/add`}>
-      <Plus />
-      Add Category
-    </Link>
-  </Button>
-</div>
 
-          <div className="flex gap-3">
+          {/* ADD */}
+          <div className="flex justify-end mb-4">
+            <Button asChild>
+              <Link href={`${pathname}/add`}>
+                <Plus />
+                Add Category
+              </Link>
+            </Button>
+          </div>
+
+          {/* FILTER BAR */}
+          <div className="flex gap-3 mb-6">
+
+            {/* SEARCH */}
             <div className="w-full max-w-xl">
-              <InputGroup className="flex items-center  bg-white rounded-full   py-2 shadow-none">
+              <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none">
                 <InputGroupAddon>
                   <Search className="text-gray-500" />
                 </InputGroupAddon>
@@ -88,22 +116,48 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
                   value={searchText}
                   type="text"
                   placeholder="Search By Category Name"
-                  className="bg-transparent  focus:outline-none w-32 focus:w-56 transition-all duration-200"
+                  className="bg-transparent focus:outline-none w-32 focus:w-56 transition-all duration-200"
                 />
+
               </InputGroup>
             </div>
 
+            {/* CATEGORY SELECT */}
+            <Select
+              placeholder="Select Category"
+              label="Category"
+              selectItems={categoryOptions}
+              value={selectedCategory}
+              onValueChange={(val) =>
+                startTransition(() => updateQuery("category", val))
+              }
+            />
+
+            {/* VISIBILITY */}
             <Select
               placeholder="Select Visibility"
               label="Visibility"
-              selectItems={VISIBILITY}
+              selectItems={[
+                { value: "visible", label: "Visible" },
+                { value: "hidden", label: "Hidden" },
+              ]}
               value={selectedVisibility}
-              onValueChange={setSelectedVisibility}
+              onValueChange={(val) =>
+                startTransition(() => updateQuery("visibility", val))
+              }
             />
           </div>
 
-          {/* page is controlled by URL */}
-          <CategoryTable page={currentPage} categories={categories} />
+          {/* TABLE + LOADING OVERLAY */}
+          <div className="relative">
+            {isPending && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+                <Loader2 className="animate-spin w-6 h-6 text-primary" />
+              </div>
+            )}
+
+            <CategoryTable page={currentPage} categories={categories} />
+          </div>
 
           <ProductPagination currentPage={currentPage} totalPages={total} />
         </CardContent>

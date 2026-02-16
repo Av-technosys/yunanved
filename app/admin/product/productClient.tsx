@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client'
 
 import {useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -116,11 +116,6 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
                   className="bg-transparent focus:outline-none w-32 focus:w-56 transition-all duration-200"
                 />
 
-                {isPending && (
-                  <InputGroupAddon>
-                    <Loader2 className="animate-spin text-muted-foreground w-4 h-4" />
-                  </InputGroupAddon>
-                )}
               </InputGroup>
             </div>
 

@@ -3,11 +3,19 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { product, productMedia, productAttribute } from "@/db/productSchema";
+import { product, productMedia, productAttribute, category, productCategory } from "@/db/productSchema";
 import slugify from "slugify";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { and, asc, eq, ilike, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
+
+
+interface GetProductsOptions {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  category?: string;
+}
 
 function str(fd: FormData, key: string) {
   const v = fd.get(key);
@@ -34,11 +42,11 @@ export async function createProduct(formData: FormData) {
     const strikethroughPrice = Number(formData.get("strikethroughPrice"));
     const bannerImage = str(formData, "bannerImage");
     const mediaUrls = parseMedia(formData);
-    
+
 
     const id = await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, name, product.slug);
-    console.log('slug generated', slug)
+      console.log('slug generated', slug)
       const [created] = await tx
         .insert(product)
         .values({
@@ -72,7 +80,7 @@ export async function createProduct(formData: FormData) {
     return { id };
 
   } catch (error) {
-   
+
     console.error("createProduct failed:", error);
     throw new Error("Unable to create product");
   }
@@ -150,7 +158,7 @@ export async function saveProductAttributes(
     return { success: true };
 
   } catch (error) {
-   
+
     console.error("saveProductAttributes failed:", error);
     throw new Error("Unable to save product attributes");
   }
@@ -199,8 +207,80 @@ export async function getFullProduct(productId: string) {
 }
 
 export async function deleteProduct(id: string) {
-  await db.delete(productMedia).where(eq(productMedia.productId, id));
-  await db.delete(product).where(eq(product.id, id));
+  try {
+    await db.delete(productMedia).where(eq(productMedia.productId, id));
+    await db.delete(product).where(eq(product.id, id));
+ 
+     
+    revalidatePath("/admin/product");
 
-  revalidatePath("/admin/product");
+      return {
+        success: true,
+        message: "This product has deleted "
+      };
+  } catch (error : any) {
+        const pgCode =
+      error?.code ||
+      error?.cause?.code ||
+      error?.cause?.cause?.code;
+
+    if (pgCode === "23503") {
+      return {
+        success: false,
+        message: "This product cannot be deleted because other data depends on it."
+      };
+    }
+
+    console.error("delete product failed:", error);
+    throw new Error("Failed to delete product");
+  }
+}
+
+
+export async function getProducts({
+  page = 1,
+  pageSize = 10,
+  search = "",
+  category: categorySlug,
+}: GetProductsOptions) {
+  const filters = [];
+
+  if (search.trim() !== "") {
+    filters.push(ilike(product.name, `%${search}%`));
+  }
+
+  if (categorySlug) {
+    filters.push(eq(category.slug, categorySlug));
+  }
+
+  const whereClause = filters.length ? and(...filters) : undefined;
+  const offset = (page - 1) * pageSize;
+  const [rawItems, total] = await Promise.all([
+    db
+      .select()
+      .from(product)
+      .leftJoin(productCategory, eq(productCategory.productId, product.id))
+      .leftJoin(category, eq(category.id, productCategory.categoryId))
+      .where(whereClause)
+      .orderBy(asc(product.createdAt))
+      .limit(pageSize)
+      .offset(offset),
+
+    db
+      .select({ count: sql<number>`count(distinct ${product.id})` })
+      .from(product)
+      .leftJoin(productCategory, eq(productCategory.productId, product.id))
+      .leftJoin(category, eq(category.id, productCategory.categoryId))
+      .where(whereClause),
+  ]);
+
+  const items = rawItems.map(row => row.products);
+
+  const totalPages = Math.ceil(total[0].count / pageSize);
+
+  return {
+    items,
+    totalPages,
+    page,
+  };
 }

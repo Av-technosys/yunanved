@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
 
 import {
   Table,
@@ -17,25 +16,41 @@ import { deleteProduct } from "@/helper/index";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-const PAGE_SIZE = 10;
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ProductTable = ({ products, total, currentPage }: any) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  function handleDelete(id: string) {
-    const ok = confirm("Delete this product permanently?");
-    if (!ok) return;
+  
+const handleDelete = (id: string) => {
+  startTransition(async () => {
+    try {
+      const res = await deleteProduct(id);
 
-    startTransition(async () => {
-      try {
-        await deleteProduct(id);
-        toast.success("Product deleted");
-      } catch {
-        toast.error("Failed to delete product");
+      if (!res?.success) {
+        toast.error(res?.message ?? "Failed to delete product");
+        return;
       }
-    });
-  }
+
+      toast.success(res.message ?? "Product deleted");
+
+    } catch {
+      toast.error("Server crashed while deleting");
+    }
+  });
+};
+
 
   return (
     <>
@@ -54,7 +69,7 @@ const ProductTable = ({ products, total, currentPage }: any) => {
 
         <TableBody>
           {products.length > 0 ? (
-            products?.map((item: any) => (
+            products.map((item: any) => (
               <TableRow key={item.id}>
                 <TableCell>{item.name}</TableCell>
                 <TableCell>₹{item.basePrice}</TableCell>
@@ -74,17 +89,44 @@ const ProductTable = ({ products, total, currentPage }: any) => {
                   </Button>
 
                   {/* DELETE */}
-                  <Button
-                    variant="outline"
-                    disabled={isPending}
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    {isPending ? (
-                      <Loader2 className="animate-spin" size={16} />
-                    ) : (
-                      <Trash2 size={16} />
-                    )}
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" disabled={isPending}>
+                        <Trash2 size={16} className="text-red-500" />
+                      </Button>
+                    </AlertDialogTrigger>
+
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Delete product permanently?
+                        </AlertDialogTitle>
+
+                        <AlertDialogDescription>
+                          This action cannot be undone. The product and all its
+                          data will be permanently removed.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isPending}>
+                          Cancel
+                        </AlertDialogCancel>
+
+                        <AlertDialogAction
+                          disabled={isPending}
+                          onClick={() => handleDelete(item.id)}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          {isPending ? (
+                            <Loader2 className="animate-spin" size={16} />
+                          ) : (
+                            "Delete"
+                          )}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
 
                 </TableCell>
               </TableRow>
