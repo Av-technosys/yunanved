@@ -13,13 +13,13 @@ interface PageProps {
 
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
-console.log('id is', id)
+
   const categoryInfo = await db
     .select()
     .from(category)
     .where(eq(category.id, id));
 
- console.log('cate info', categoryInfo)
+
   
   return (
     <>

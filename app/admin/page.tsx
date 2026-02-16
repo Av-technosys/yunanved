@@ -8,7 +8,6 @@ import { productTable } from "@/db/schema"
 
 export default async function DashboardPage() {
   const data = await db.select().from(productTable)
-  console.log(JSON.stringify(data))
   return (
     <div className="space-y-6 p-3">
       {/* Page Header */}

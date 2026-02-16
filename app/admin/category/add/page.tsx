@@ -38,6 +38,8 @@ export default function AddCategoryForm() {
     setPreview(url);
   };
 
+
+  
   return (
     <div className="w-full p-1">
       <Card className="border-none shadow-none">

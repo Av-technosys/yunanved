@@ -1,7 +1,8 @@
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client'
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import {useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Search } from "lucide-react";
-import { CATEGORY_1 } from "@/const";
+import { Plus, Search, Loader2 } from "lucide-react";
 import ProductTable from "./productTable";
 import { Select } from "@/components/select";
 import ProductPagination from "@/components/pagination";
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/input-group";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
+import { getCategories } from "@/helper";
 
 interface Props {
   products: any[];
@@ -33,22 +34,40 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
   const router = useRouter();
   const updateQuery = useUpdateQuery();
 
-  const [searchText, setSearchText] = useState("");
+  const [isPending, startTransition] = useTransition();
 
+
+  const [searchText, setSearchText] = useState("");
   const debouncedSearch = useDebounce(searchText, 800);
 
   useEffect(() => {
-    updateQuery("search", debouncedSearch);
+    startTransition(() => updateQuery("search", debouncedSearch));
   }, [debouncedSearch]);
 
-  const CATEGORY = useMemo(
-    () =>
-      CATEGORY_1.map((c) => ({
-        value: c.slug,
-        label: c.name,
-      })),
-    [],
-  );
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearchText(e.target.value);
+  }
+
+
+  const [categories, setCategories] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getCategories();
+
+      setCategories(
+        data.map((c: any) => ({
+          value: c.slug,
+          label: c.name,
+        }))
+      );
+    }
+    load();
+  }, []);
+
+
   const searchParams = useSearchParams();
 
   const [selectedCategory, setSelectedCategory] = useState<string>();
@@ -61,9 +80,7 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
     setSelectedVisibility(searchParams.get("visibility") ?? undefined);
   }, [searchParams]);
 
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearchText(e.target.value);
-  }
+  /* ---------------- UI ---------------- */
 
   return (
     <div className="w-full p-1">
@@ -74,16 +91,19 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
         </CardHeader>
 
         <CardContent>
+          {/* ADD BUTTON */}
           <div className="flex cursor-pointer justify-end mb-4">
-            <Button className="cursor-pointer" onClick={() => router.push("/admin/product/add")}>
+            <Button onClick={() => router.push("/admin/product/add")}>
               <Plus />
               Add Product
             </Button>
           </div>
 
+          {/* FILTER BAR */}
           <div className="flex gap-3 mb-6">
+            {/* SEARCH */}
             <div className="w-full max-w-xl">
-              <InputGroup className="flex items-center  bg-white rounded-full   py-2 shadow-none">
+              <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none">
                 <InputGroupAddon>
                   <Search className="text-gray-500" />
                 </InputGroupAddon>
@@ -93,19 +113,24 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
                   value={searchText}
                   type="text"
                   placeholder="Search By Product Name"
-                  className="bg-transparent  focus:outline-none w-32 focus:w-56 transition-all duration-200"
+                  className="bg-transparent focus:outline-none w-32 focus:w-56 transition-all duration-200"
                 />
+
               </InputGroup>
             </div>
 
+            {/* CATEGORY */}
             <Select
               placeholder="Select Category"
               label="Category"
-              selectItems={CATEGORY}
+              selectItems={categories}
               value={selectedCategory}
-              onValueChange={(val) => updateQuery("category", val)}
+              onValueChange={(val) =>
+                startTransition(() => updateQuery("category", val))
+              }
             />
 
+            {/* STOCK */}
             <Select
               placeholder="Select Stock Status"
               label="Stock Status"
@@ -114,19 +139,12 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
                 { value: "out_of_stock", label: "Out of Stock" },
               ]}
               value={selectedStockStatus}
-              onValueChange={(val) => updateQuery("stock", val)}
+              onValueChange={(val) =>
+                startTransition(() => updateQuery("stock", val))
+              }
             />
 
-            {/* <Select
-              placeholder="Select Visibility"
-              label="Visibility"
-              selectItems={[
-                { value: "visible", label: "Visible" },
-                { value: "hidden", label: "Hidden" },
-              ]}
-              value={selectedVisibility}
-              onValueChange={setSelectedVisibility}
-            /> */}
+            {/* VISIBILITY */}
             <Select
               placeholder="Select Visibility"
               label="Visibility"
@@ -135,14 +153,27 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
                 { value: "hidden", label: "Hidden" },
               ]}
               value={selectedVisibility}
-              onValueChange={(val) => updateQuery("visibility", val)}
+              onValueChange={(val) =>
+                startTransition(() => updateQuery("visibility", val))
+              }
             />
           </div>
-          <ProductTable
-            products={products}
-            total={total}
-            currentPage={currentPage}
-          />
+
+          {/* TABLE + OVERLAY LOADER */}
+          <div className="relative">
+            {isPending && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+                <Loader2 className="animate-spin w-6 h-6 text-primary" />
+              </div>
+            )}
+
+            <ProductTable
+              products={products}
+              total={total}
+              currentPage={currentPage}
+            />
+          </div>
+
           <ProductPagination currentPage={currentPage} totalPages={total} />
         </CardContent>
       </Card>

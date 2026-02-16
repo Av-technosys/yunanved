@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
 
-/* eslint-disable react-hooks/purity */
 
 import {
   Table,
@@ -11,8 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { deleteCategory } from "@/helper/index";
+import { toast } from "sonner";
+import { useTransition } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+
 
 interface CategoryTableProps {
   page: number;
@@ -23,7 +38,18 @@ const PAGE_SIZE = 3;
 
 const CategoryTable = ({ page, categories }: CategoryTableProps) => {
   const startIndex = (page - 1) * PAGE_SIZE;
+const [isPending, startTransition] = useTransition();
 
+
+const handleDelete = (id: string) => {
+
+  startTransition(async () => {
+    const res = await deleteCategory(id);
+
+    if (res.success) toast.success(res.message);
+    else toast.error(res.message);
+  });
+};
   const router = useRouter();
   const pathname = usePathname();
 
@@ -62,16 +88,55 @@ const CategoryTable = ({ page, categories }: CategoryTableProps) => {
                 <TableCell>
                   {new Date(category.createdAt).toLocaleDateString()}
                 </TableCell>
+<TableCell className="text-right">
+  <div className="flex justify-end gap-2">
 
-                <TableCell className="text-right">
-                  <button
-                    onClick={() => router.push(`${pathname}/${category.id}`)}
-                    className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
-                    aria-label="Edit category"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                </TableCell>
+    {/* EDIT */}
+    <Button
+      variant="outline"
+      onClick={() => router.push(`${pathname}/${category.id}`)}
+    >
+      <Pencil size={16} />
+    </Button>
+
+    {/* DELETE */}
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" disabled={isPending}>
+          <Trash2 size={16} className="text-red-500" />
+        </Button>
+      </AlertDialogTrigger>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Delete category permanently?
+          </AlertDialogTitle>
+
+          <AlertDialogDescription>
+            This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending}>
+            Cancel
+          </AlertDialogCancel>
+
+          <AlertDialogAction
+            disabled={isPending}
+            onClick={() => handleDelete(category.id)}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            {isPending ? <Loader2 className="animate-spin" size={16} /> : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+  </div>
+</TableCell>
+
               </TableRow>
             );
           })}

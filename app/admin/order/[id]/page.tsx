@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/lib/db";
 import EditOrder from "./editClient";
 import { order } from "@/db/orderSchema";
