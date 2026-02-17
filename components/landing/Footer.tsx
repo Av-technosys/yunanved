@@ -13,7 +13,7 @@ import {
 export const Footer = () => {
   return (
     <footer className="w-full bg-white">
-      <div className="max-w-6xl mx-auto px-4  lg:px-8 pt-12 sm:pt-16 pb-8">
+      <div className="max-w-6xl mx-auto px-2  lg:px-0 pt-12 sm:pt-16 pb-8">
         {/* Top Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-16">
           {/* Brand Section */}
