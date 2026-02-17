@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { db } from "@/lib/db";
@@ -14,6 +15,7 @@ import { revalidatePath } from "next/cache";
 import { productCategoryTable } from "@/db/schema";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
+import { paginate } from "@/lib/pagination";
 
 interface GetCategoriesOptions {
   page?: number;
@@ -138,9 +140,10 @@ export async function updateProductCategory(
   }
 }
 
+
 export async function getCategoriesPagination({
   page = 1,
-  pageSize,
+  pageSize = 10,
   search = "",
   category: categorySlug,
 }: GetCategoriesOptions) {
@@ -149,37 +152,27 @@ export async function getCategoriesPagination({
   if (search.trim() !== "") {
     filters.push(ilike(categoryTable.name, `%${search}%`));
   }
+
   if (categorySlug) {
     filters.push(eq(categoryTable.slug, categorySlug));
   }
 
   const whereClause = filters.length ? and(...filters) : undefined;
-  const offset = (page - 1) * pageSize;
 
-  const [items, total] = await Promise.all([
-    db
-      .select()
-      .from(categoryTable)
-      .where(whereClause)
-      .orderBy(asc(categoryTable.createdAt))
-      .limit(pageSize)
-      .offset(offset),
-
-    db
-      .select({ count: sql<number>`count(*)` })
-      .from(categoryTable)
-      .where(whereClause),
-  ]);
-
-  const totalPages = Math.ceil(total[0].count / pageSize);
+  const result = await paginate({
+    table: categoryTable,
+    page,
+    pageSize,
+    where: whereClause,
+    orderBy: asc(categoryTable.createdAt),
+  });
 
   return {
-    items,
-    totalPages,
-    page,
+    items: result.data,
+    totalPages: result.meta.totalPages,
+    page: result.meta.page,
   };
 }
-
 export async function deleteCategory(id: string) {
   try {
     const usage = await db

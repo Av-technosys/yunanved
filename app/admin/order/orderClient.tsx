@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Select } from "@/components/select";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import ProductPagination from "@/components/pagination";
@@ -21,25 +20,53 @@ import {
 } from "@/components/ui/input-group";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
-
+import { useTransition } from "react";
+import { Loader2 } from "lucide-react";
 interface Props {
   order: any[];
   total: number;
   currentPage: number;
+  pageSize: number;
+  status: any
+
 }
 
-const OrderClient = ({ order, total, currentPage }: Props) => {
+const OrderClient = ({ order, total, currentPage, pageSize, status }: Props) => {
+
+
+  const [isPending, startTransition] = useTransition();
+
   const updateQuery = useUpdateQuery();
+  const [selectedOrderStatus, setSelectedOrderStatus] = useState<string | undefined>();
 
   const [searchText, setSearchText] = useState("");
 
   const debouncedSearch = useDebounce(searchText, 800);
 
+
+
+
+
   useEffect(() => {
-    updateQuery("search", debouncedSearch);
+    startTransition(() => {
+      updateQuery("status", selectedOrderStatus);
+    });
+  }, [selectedOrderStatus]);
+
+  useEffect(() => {
+    startTransition(() => {
+      updateQuery("search", debouncedSearch);
+    });
   }, [debouncedSearch]);
 
-  const ORDER_STATUS = [
+
+  useEffect(() => {
+    setSelectedOrderStatus(status)
+  }, [status])
+
+
+
+const ORDER_STATUS = [
     { value: "pending", label: "Pending" },
     { value: "completed", label: "Completed" },
     { value: "cancelled", label: "Cancelled" },
@@ -48,16 +75,13 @@ const OrderClient = ({ order, total, currentPage }: Props) => {
     { value: "delivered", label: "Delivered" },
   ];
 
-  const [selectedOrderStatus, setSelectedOrderStatus] = useState<
-    string | undefined
-  >();
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchText(e.target.value);
   }
 
   return (
-    <div className="w-full p-2">
+    <div className="w-full p-1">
       <Card>
         <CardHeader>
           <CardTitle>Order Management</CardTitle>
@@ -65,12 +89,7 @@ const OrderClient = ({ order, total, currentPage }: Props) => {
         </CardHeader>
 
         <CardContent>
-          <div className="flex justify-end">
-            <Button>
-              <Plus />
-              Add Category
-            </Button>
-          </div>
+
 
           <div className="flex gap-3">
             <div className="w-full max-w-xl">
@@ -99,7 +118,15 @@ const OrderClient = ({ order, total, currentPage }: Props) => {
           </div>
 
           {/* URL-driven pagination */}
-          <OrderTable page={currentPage} orders={order} />
+          <div className="relative">
+            {isPending && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+                <Loader2 className="animate-spin w-6 h-6 text-primary" />
+              </div>
+            )}
+
+            <OrderTable page={currentPage} orders={order} pageSize={pageSize} />
+          </div>
           <ProductPagination currentPage={currentPage} totalPages={total} />
         </CardContent>
       </Card>

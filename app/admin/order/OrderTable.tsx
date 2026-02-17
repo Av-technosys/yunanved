@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 /* eslint-disable react-hooks/purity */
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -12,31 +12,28 @@ import {
 } from "@/components/ui/table";
 import { Eye } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-
-const STATUS_BADGE_COLORS: Record<string, string> = {
-  pending:
-    "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
-  completed: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
-  cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
-  failed: "bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
-  shipped: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
-  delivered:
-    "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
-};
-
-export const getStatusBadgeColor = (status: string) =>
-  STATUS_BADGE_COLORS[status] ??
-  "bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-300";
+import { useTransition } from "react";
+import { Select } from "@/components/select";
+import { updateOrderStatus } from "@/helper/index";
 
 interface OrderTableProps {
   page: number;
   orders: any;
+  pageSize: number;
 }
 
-const PAGE_SIZE = 3;
+const ORDER_STATUS = [
+  { value: "pending", label: "Pending" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "failed", label: "Failed" },
+  { value: "shipped", label: "Shipped" },
+  { value: "delivered", label: "Delivered" },
+];
 
-const OrderTable = ({ page, orders }: OrderTableProps) => {
-  const startIndex = (page - 1) * PAGE_SIZE;
+const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
+  const startIndex = (page - 1) * pageSize;
+  const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -62,18 +59,34 @@ const OrderTable = ({ page, orders }: OrderTableProps) => {
               const rowNumber = Number(startIndex) + index + 1;
 
               return (
-                <TableRow key={rowNumber}>
+                <TableRow
+                  key={rowNumber}
+                  className={isPending ? "opacity-60" : ""}
+                >
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
                       <p>{rowNumber}</p>
                     </div>
                   </TableCell>
+
                   <TableCell>{order.id}</TableCell>
+
                   <TableCell>
-                    <Badge className={getStatusBadgeColor(order.status)}>
-                      {order.status}
-                    </Badge>
+                    <div className="flex items-center gap-2 min-w-[140px]">
+                      <Select
+                        placeholder="Status"
+                        label="Status"
+                        value={order.status}
+                        selectItems={ORDER_STATUS}
+                        onValueChange={(value) => {
+                          startTransition(() => {
+                            updateOrderStatus(order.id, value);
+                          });
+                        }}
+                      />
+                    </div>
                   </TableCell>
+
                   <TableCell>{order.totalAmountPaid}</TableCell>
                   <TableCell>{order.addressLine1}</TableCell>
                   <TableCell>{order.addressLine2}</TableCell>

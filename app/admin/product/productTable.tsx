@@ -31,25 +31,24 @@ import {
 const ProductTable = ({ products, total, currentPage }: any) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+ 
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      try {
+        const res = await deleteProduct(id);
 
-  
-const handleDelete = (id: string) => {
-  startTransition(async () => {
-    try {
-      const res = await deleteProduct(id);
+        if (!res?.success) {
+          toast.error(res?.message ?? "Failed to delete product");
+          return;
+        }
 
-      if (!res?.success) {
-        toast.error(res?.message ?? "Failed to delete product");
-        return;
+        toast.success(res.message ?? "Product deleted");
+
+      } catch {
+        toast.error("Server crashed while deleting");
       }
-
-      toast.success(res.message ?? "Product deleted");
-
-    } catch {
-      toast.error("Server crashed while deleting");
-    }
-  });
-};
+    });
+  };
 
 
   return (

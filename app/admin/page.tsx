@@ -7,7 +7,7 @@ import { db } from "@/lib/tb"
 import { productTable } from "@/db/schema"
 
 export default async function DashboardPage() {
-  const data = await db.select().from(productTable)
+  // const data = await db.select().from(productTable)
   return (
     <div className="space-y-6 p-3">
       {/* Page Header */}

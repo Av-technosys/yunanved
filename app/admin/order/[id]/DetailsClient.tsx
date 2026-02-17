@@ -7,7 +7,35 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CheckCircle2, Phone, Mail, ChevronDown } from "lucide-react";
 
-export default function EditOrder({ orderInfo }: any) {
+import { useEffect, useState, useTransition } from "react";
+import { Loader2 } from "lucide-react";
+import { fetchOrderDetails } from "@/helper/index"; // server action
+export default function Details({ id }: { id: string }) {
+  const [orderInfo, setOrderInfo] = useState<any>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+
+  const toPublic = (key: string | null) =>
+    key ? `${BASE}/${key}` : "/placeholder.png";
+
+  const formatCurrency = (amount: number | null | undefined) =>
+    amount ? `₹${(amount / 100).toLocaleString("en-IN")}` : "₹0";
+
+  const formatDate = (date: string | Date) =>
+    new Date(date).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+  useEffect(() => {
+    startTransition(async () => {
+      const data = await fetchOrderDetails(id);
+      console.log(data)
+      setOrderInfo(data);
+    });
+  }, [id]);
 
   const steps = [
     { label: "Order Confirmed", date: "Aug 16, 2023" },
@@ -16,6 +44,17 @@ export default function EditOrder({ orderInfo }: any) {
     { label: "Delivered", date: "Aug 28, 2023" },
   ];
 
+  if (isPending || !orderInfo) {
+    return (
+      <div className="flex items-center justify-center h-[70vh] w-full">
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-sm">Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-full mx-auto p-1 space-y-5">
       {/* Top Grid */}
@@ -23,10 +62,12 @@ export default function EditOrder({ orderInfo }: any) {
         {/* Left Card: Timeline */}
         <Card className="md:col-span-5 flex flex-col justify-between">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-slate-900 tracking-tight">
-              OrderId : #{orderInfo.id}
+            <CardTitle className="text-md font-bold text-slate-900 tracking-tight">
+              OrderId : #{orderInfo?.order?.id}
             </CardTitle>
-            <p className="text-sm text-slate-500">Placed on Aug 24, 2023</p>
+            <p className="text-sm text-slate-500">          
+                  Placed on {formatDate(orderInfo?.order?.createdAt)}
+</p>
           </CardHeader>
           <CardContent className="space-y-12">
             <div className="relative space-y-10 ml-1">
@@ -69,19 +110,20 @@ export default function EditOrder({ orderInfo }: any) {
             </CardHeader>
             <CardContent className="flex items-center gap-5">
               <Avatar className="h-24 w-24">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage/>
+                <AvatarFallback>    
+                   {orderInfo?.user.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <h3 className="font-bold text-lg">John Doe</h3>
-                <p className="text-md text-slate-400">12 previous orders</p>
+                <h3 className="font-bold text-lg">{orderInfo?.user?.name}</h3>
+                {/* <p className="text-md text-slate-400">12 previous orders</p> */}
                 <div className="flex flex-col gap-1 pt-1">
                   <span className="flex items-center gap-2 text-md text-slate-600">
-                    <Phone className="w-4 h-4 text-slate-400" /> +1 2536989865
+                    <Phone className="w-4 h-4 text-slate-400" />{orderInfo?.user?.number}
                   </span>
                   <span className="flex items-center gap-2 text-md text-slate-600">
                     <Mail className="w-4 h-4 text-slate-400" />{" "}
-                    doe.john@gmail.com
+                    {orderInfo?.user?.email}
                   </span>
                 </div>
               </div>
@@ -98,15 +140,15 @@ export default function EditOrder({ orderInfo }: any) {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Subtotal</span>
-                <span className="font-semibold">$35.86</span>
+                <span className="font-semibold">{''}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Shipping</span>
-                <span className="font-semibold">$5.00</span>
+                <span className="font-semibold">{''}</span>
               </div>
               <div className="border-t border-slate-100 pt-3 flex justify-between items-center">
                 <span className="font-bold">Total</span>
-                <span className="font-bold text-lg text-[#D4AF37]">$43.73</span>
+                <span className="font-bold text-lg text-[#D4AF37]">₹ {orderInfo?.order?.totalAmountPaid}</span>
               </div>
             </CardContent>
           </Card>
@@ -114,7 +156,7 @@ export default function EditOrder({ orderInfo }: any) {
       </div>
 
       {/* Bottom Table Card */}
-      <Card>
+       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -126,36 +168,50 @@ export default function EditOrder({ orderInfo }: any) {
                   <th className="px-6 py-4 text-right">Total</th>
                 </tr>
               </thead>
+
               <tbody className="text-sm">
-                <tr className="border-b last:border-0">
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-14 border-2 border-slate-100">
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>{" "}
-                      <div>
-                        <p className="font-bold text-slate-900">
-                          Nike Air Jordon
-                        </p>
-                        <p className="text-xs text-slate-400">SKU-FRT-234</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 text-center">
-                    <Badge
-                      variant="secondary"
-                      className="bg-emerald-50 text-emerald-600 hover:bg-emerald-50 border-none px-3 py-1"
-                    >
-                      Delivered <ChevronDown className="ml-1 w-4 h-4" />
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-5 text-center text-slate-600">1x</td>
-                  <td className="px-6 py-5 text-right font-bold text-slate-900">
-                    $299
-                  </td>
-                </tr>
+               {orderInfo?.items.map((item: any) => {
+                    const total = item.productPrice * item.quantity;
+                    const product = item.product;
+
+                  return (
+                    <tr key={item.id} className="border-b last:border-0">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-12 w-14 border-2 border-slate-100">
+                            <AvatarImage src={toPublic(product?.bannerImage)} />
+                            <AvatarFallback>P</AvatarFallback>
+                          </Avatar>
+
+                          <div>
+                            <p className="font-bold text-slate-900">
+                              {item.productName}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {product?.slug ?? item.productSlug}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5 text-center">
+                        <Badge className="bg-emerald-50 text-emerald-600 border-none px-3 py-1">
+                          {orderInfo?.order.status}
+                        </Badge>
+                      </td>
+
+                      <td className="px-6 py-5 text-center text-slate-600">
+                        {item.quantity}
+                      </td>
+
+                      <td className="px-6 py-5 text-right font-bold text-slate-900">
+                        ₹ {total}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
+
             </table>
           </div>
         </CardContent>

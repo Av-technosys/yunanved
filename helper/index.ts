@@ -22,3 +22,6 @@ export {
   getProductInfoByProductSlug,
   getProductSimilarProducts,
 } from "./product/action";
+
+//order
+export{ fetchOrders ,fetchOrderDetails , updateOrderStatus} from "./order/action"
