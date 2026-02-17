@@ -1,51 +1,47 @@
-import { db } from "@/lib/db";
 import OrderClient from "./orderClient";
-import { order } from "@/db/orderSchema";
-import { and, asc, or, sql } from "drizzle-orm";
+import { fetchOrders } from "@/helper/index";
 
 interface PageProps {
   searchParams: {
     page?: string;
     page_size?: string;
     search?: string;
+     status?: string;
   };
 }
 
 const PAGE_SIZE = 3;
 
+function toInt(value: string | undefined, fallback: number) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
 const Page = async ({ searchParams }: PageProps) => {
-  const params = await searchParams;
+  const params =  await searchParams;
 
-  const page = Number(params.page ?? "1");
-  const pageSize = Number(params.page_size ?? PAGE_SIZE);
-  const text = params.search ?? "";
+  const page = toInt(params.page, 1);
+  const pageSize = toInt(params.page_size, PAGE_SIZE);
+  const search = params.search ?? "";
+const status = params.status ?? "";
 
-  const filters = [];
+const result = await fetchOrders({
+  page,
+  pageSize,
+  search,
+  status,
+});
 
-  if (text && text.trim() !== "") {
-    filters.push(or(sql`${order.id}::text ILIKE ${`%${text}%`}`));
-  }
-  const whereClause = filters.length > 0 ? and(...filters) : undefined;
-  const offset = (page - 1) * pageSize;
+  return (
+<OrderClient
+  order={result.data}
+  total={result.meta.totalPages}
+  currentPage={result.meta.page}
+  pageSize={result.meta.pageSize}
+  status={status}
+/>
 
-  const orders = await db
-    .select()
-    .from(order)
-    .orderBy(asc(order.createdAt))
-    .limit(PAGE_SIZE)
-    .offset(offset)
-    .where(whereClause);
-
-  const totalOrders = await db
-    .select({
-      count: sql`count(*)`,
-    })
-    .from(order)
-    .where(whereClause);
-
-  const totalPages = Math.ceil((totalOrders[0].count as any) / PAGE_SIZE);
-
-  return <OrderClient order={orders} total={totalPages} currentPage={page} />;
+  );
 };
 
 export default Page;
