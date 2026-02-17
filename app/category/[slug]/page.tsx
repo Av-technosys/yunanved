@@ -1,4 +1,3 @@
-import React from "react";
 import prod1 from "@/public/prod1.png";
 import prod2 from "@/public/prod2.png";
 import prod3 from "@/public/prod3.png";
@@ -40,106 +39,108 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import Link from "next/link";
 import ProductCard from "@/components/productCard";
-import { FilterSidebar } from "./filterSidebar";
+import { FilterSidebar } from "../filterSidebar";
 
-const products = [
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 1,
-    rating: 4.5,
-    stock: "In Stock",
-    price: "$145.00",
-    image: prod1,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 2,
-    rating: 3.5,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod6,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 3,
-    rating: 2.5,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod10,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 4,
-    rating: 4.5,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod2,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 5,
-    rating: 4.9,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod3,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 6,
-    rating: 4.8,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod4,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 7,
-    rating: 3.5,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod5,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 8,
-    rating: 2.5,
-    stock: "In Stock",
-    price: "$145.00",
-    image: prod6,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 9,
-    rating: 1.5,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod7,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 10,
-    rating: 5.0,
-    stock: "In Stock",
-    price: "$145.00",
-    image: prod8,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 11,
-    rating: 4.5,
-    stock: "Out of Stock",
-    price: "$145.00",
-    image: prod9,
-  },
-  {
-    name: "Gradient Graphic T-shirt",
-    id: 12,
-    rating: 4.5,
-    stock: "In Stock",
-    price: "$145.00",
-    image: prod10,
-  },
-];
+import { getAllProductsByCategorySlug } from "@/helper/category/action";
+
+// const products = [
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 1,
+//     rating: 4.5,
+//     stock: "In Stock",
+//     price: "$145.00",
+//     image: prod1,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 2,
+//     rating: 3.5,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod6,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 3,
+//     rating: 2.5,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod10,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 4,
+//     rating: 4.5,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod2,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 5,
+//     rating: 4.9,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod3,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 6,
+//     rating: 4.8,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod4,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 7,
+//     rating: 3.5,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod5,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 8,
+//     rating: 2.5,
+//     stock: "In Stock",
+//     price: "$145.00",
+//     image: prod6,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 9,
+//     rating: 1.5,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod7,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 10,
+//     rating: 5.0,
+//     stock: "In Stock",
+//     price: "$145.00",
+//     image: prod8,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 11,
+//     rating: 4.5,
+//     stock: "Out of Stock",
+//     price: "$145.00",
+//     image: prod9,
+//   },
+//   {
+//     name: "Gradient Graphic T-shirt",
+//     id: 12,
+//     rating: 4.5,
+//     stock: "In Stock",
+//     price: "$145.00",
+//     image: prod10,
+//   },
+// ];
 
 const breadcrumb = [
   {
@@ -152,30 +153,23 @@ const breadcrumb = [
   },
 ];
 
-const Page = () => {
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
+
+const Page = async (props: PageProps) => {
+  const { slug } = await props.params;
+
+  const products = await getAllProductsByCategorySlug(slug);
+
   return (
     <>
       <Navbar />
       <div className="max-w-6xl  mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0 ">
         <div className="col-span-1 hidden md:flex flex-col  gap-3">
           <div className="sticky top-4">
-            <div className="my-2 hidden md:block ">
-              <Breadcrumb>
-                <BreadcrumbList>
-                  {breadcrumb.map((item, index) => (
-                    <div
-                      className="flex items-center justify-center gap-1"
-                      key={index}
-                    >
-                      <BreadcrumbItem>
-                        <Link href={item.href}>{item.name}</Link>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                    </div>
-                  ))}
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
             <Card>
               <CardContent>
                 <CardTitle className="flex w-full my-5 items-center justify-between">
@@ -283,7 +277,7 @@ const Page = () => {
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {products.map((product: any, index) => {
-              return <ProductCard product={product} key={index} />;
+              return <ProductCard product={product} key={index} slug={slug} />;
             })}
           </div>
         </div>

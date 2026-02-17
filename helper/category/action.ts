@@ -1,12 +1,17 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { category as categoryTable, product, productCategory } from "@/db/productSchema";
+import {
+  category as categoryTable,
+  product,
+  productCategory,
+} from "@/db/productSchema";
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { productCategoryTable } from "@/db/schema";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 
@@ -14,10 +19,9 @@ interface GetCategoriesOptions {
   page?: number;
   pageSize?: any;
   search?: string;
-  category:any
+  category: any;
 }
 export async function createCategory(formData: FormData) {
-
   try {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
@@ -32,17 +36,13 @@ export async function createCategory(formData: FormData) {
       bannerImage: imagePath,
     });
 
-
     revalidatePath("/admin/category");
     redirect("/admin/category");
-
   } catch (error) {
     console.error("Create category failed:", error);
     throw new Error("Failed to create category");
   }
 }
-
-
 
 export async function updateCategory(formData: FormData) {
   try {
@@ -67,93 +67,89 @@ export async function updateCategory(formData: FormData) {
     revalidatePath(`/admin/category/${id}`);
 
     redirect("/admin/category");
-
   } catch (error) {
-
     console.error("Update category failed:", error);
     throw new Error("Failed to update category");
   }
 }
 
-
-export const getCategories = async() => {
-  try{
-   const categories =  await db.select().from(categoryTable)
-    return categories;
-  }catch(error){
-    console.error("fetch category failed:", error);
-    throw new Error("Failed to fetch category");
-  }
-}
+// export const getCategories = async () => {
+//   try {
+//     const categories = await db.select().from(categoryTable);
+//     return categories;
+//   } catch (error) {
+//     console.error("fetch category failed:", error);
+//     throw new Error("Failed to fetch category");
+//   }
+// };
 
 export const attachProductCategory = async (
   productId: string,
-  categoryId: string
+  categoryId: string,
 ) => {
-  try{
-  if (!categoryId) return;
+  try {
+    if (!categoryId) return;
 
-  await db.insert(productCategory).values({
-    productId,
-    categoryId,
-  });
-} catch(error){
-      console.error("attach Product Category failed:", error);
+    await db.insert(productCategory).values({
+      productId,
+      categoryId,
+    });
+  } catch (error) {
+    console.error("attach Product Category failed:", error);
     throw new Error("attach Product Category failed");
-}
+  }
 };
 
-
 export async function getProductCategory(productId: string) {
-  try{
-  const result = await db
-    .select({
-      categoryId: productCategory.categoryId,
-      name: categoryTable.name,
-    })
-    .from(productCategory)
-    .leftJoin(categoryTable, eq(categoryTable.id, productCategory.categoryId))
-    .where(eq(productCategory.productId, productId))
-    .limit(1);
+  try {
+    const result = await db
+      .select({
+        categoryId: productCategory.categoryId,
+        name: categoryTable.name,
+      })
+      .from(productCategory)
+      .leftJoin(categoryTable, eq(categoryTable.id, productCategory.categoryId))
+      .where(eq(productCategory.productId, productId))
+      .limit(1);
 
-  return result[0] ?? null;
-  }catch(error){
-        console.error("fetch product category failed:", error);
+    return result[0] ?? null;
+  } catch (error) {
+    console.error("fetch product category failed:", error);
     throw new Error("fetch product category failed");
   }
 }
 
+export async function updateProductCategory(
+  productId: string,
+  categoryId: string,
+) {
+  try {
+    await db
+      .delete(productCategory)
+      .where(eq(productCategory.productId, productId));
 
-export async function updateProductCategory(productId: string, categoryId: string) {
-  try{
-  await db.delete(productCategory).where(eq(productCategory.productId, productId));
-
-  await db.insert(productCategory).values({
-    productId,
-    categoryId,
-  });
-}catch(error){
-      console.error("Update product category failed:", error);
+    await db.insert(productCategory).values({
+      productId,
+      categoryId,
+    });
+  } catch (error) {
+    console.error("Update product category failed:", error);
     throw new Error("Failed to update category");
+  }
 }
-}
-
-
-
 
 export async function getCategoriesPagination({
   page = 1,
   pageSize,
   search = "",
- category: categorySlug,
+  category: categorySlug,
 }: GetCategoriesOptions) {
-
   const filters = [];
 
   if (search.trim() !== "") {
     filters.push(ilike(categoryTable.name, `%${search}%`));
   }
-    if (categorySlug) {
+  if (categorySlug) {
     filters.push(eq(categoryTable.slug, categorySlug));
   }
 
@@ -181,8 +177,7 @@ export async function getCategoriesPagination({
     items,
     totalPages,
     page,
-  }; 
-
+  };
 }
 
 export async function deleteCategory(id: string) {
@@ -213,5 +208,45 @@ export async function deleteCategory(id: string) {
       success: false,
       message: "Something went wrong while deleting category",
     };
+  }
+}
+export async function getCategories() {
+  try {
+    return await db
+      .select()
+      .from(categoryTable)
+      .orderBy(asc(categoryTable.createdAt));
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+export async function getAllProductsByCategorySlug(slug: string) {
+  try {
+    const products = await db
+      .select({
+        id: product.id,
+        name: product.name,
+        basePrice: product.basePrice,
+        slug: product.slug,
+        bannerImage: product.bannerImage,
+        rating: product.rating,
+      })
+      .from(product)
+      .innerJoin(
+        productCategoryTable,
+        eq(product.id, productCategoryTable.productId),
+      )
+      .innerJoin(
+        categoryTable,
+        eq(categoryTable.id, productCategoryTable.categoryId),
+      )
+      .where(eq(categoryTable.slug, slug));
+
+    return products;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
 }

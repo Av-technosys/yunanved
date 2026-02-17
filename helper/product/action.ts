@@ -1,14 +1,18 @@
-
-
 "use server";
 
 import { db } from "@/lib/db";
-import { product, productMedia, productAttribute, category, productCategory } from "@/db/productSchema";
+import {
+  product,
+  productMedia,
+  productAttribute,
+  category,
+  productCategory,
+} from "@/db/productSchema";
 import slugify from "slugify";
 import { revalidatePath } from "next/cache";
-import { and, asc, eq, ilike, sql } from "drizzle-orm";
+import { and, asc, eq, ilike, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
-
+import { reviewsTable } from "@/db/schema";
 
 interface GetProductsOptions {
   page?: number;
@@ -28,10 +32,8 @@ function num(fd: FormData, key: string) {
 }
 
 function parseMedia(fd: FormData) {
-  return fd.getAll("media").filter(v => typeof v === "string") as string[];
+  return fd.getAll("media").filter((v) => typeof v === "string") as string[];
 }
-
-
 
 export async function createProduct(formData: FormData) {
   try {
@@ -43,10 +45,9 @@ export async function createProduct(formData: FormData) {
     const bannerImage = str(formData, "bannerImage");
     const mediaUrls = parseMedia(formData);
 
-
     const id = await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, name, product.slug);
-      console.log('slug generated', slug)
+      console.log("slug generated", slug);
       const [created] = await tx
         .insert(product)
         .values({
@@ -66,11 +67,11 @@ export async function createProduct(formData: FormData) {
 
       if (mediaUrls.length) {
         await tx.insert(productMedia).values(
-          mediaUrls.map(url => ({
+          mediaUrls.map((url) => ({
             productId,
             mediaType: "image",
             mediaURL: url,
-          }))
+          })),
         );
       }
 
@@ -78,14 +79,11 @@ export async function createProduct(formData: FormData) {
     });
 
     return { id };
-
   } catch (error) {
-
     console.error("createProduct failed:", error);
     throw new Error("Unable to create product");
   }
 }
-
 
 export async function updateProduct(formData: FormData): Promise<void> {
   try {
@@ -111,68 +109,60 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
     const submittedMedia = formData.getAll("media") as string[];
 
-    await db.delete(productMedia)
-      .where(eq(productMedia.productId, id));
+    await db.delete(productMedia).where(eq(productMedia.productId, id));
 
     if (submittedMedia.length) {
       await db.insert(productMedia).values(
-        submittedMedia.map(key => ({
+        submittedMedia.map((key) => ({
           productId: id,
           mediaType: "image",
           mediaURL: key,
-        }))
+        })),
       );
     }
-
   } catch (error) {
     console.error("updateProduct failed:", error);
     throw new Error("Unable to update product");
   }
 }
 
-
-
 export async function saveProductAttributes(
   productId: string,
-  payload: { attribute: string; value: string }[]
+  payload: { attribute: string; value: string }[],
 ) {
   try {
     if (!productId) throw new Error("Missing product id");
 
     await db.transaction(async (tx) => {
-      await tx.delete(productAttribute)
+      await tx
+        .delete(productAttribute)
         .where(eq(productAttribute.productId, productId));
 
       if (payload.length) {
         await tx.insert(productAttribute).values(
-          payload.map(a => ({
+          payload.map((a) => ({
             productId,
             attribute: a.attribute,
             value: a.value,
-          }))
+          })),
         );
       }
     });
 
     revalidatePath(`/admin/product/${productId}`);
     return { success: true };
-
   } catch (error) {
-
     console.error("saveProductAttributes failed:", error);
     throw new Error("Unable to save product attributes");
   }
 }
 
-
 export async function getProductAttributes(productId: string) {
-
   try {
     return await db
       .select()
       .from(productAttribute)
       .where(eq(productAttribute.productId, productId));
-
   } catch (error) {
     console.error("getProductAttributes failed:", error);
     throw new Error("Unable to fetch attributes");
@@ -180,7 +170,6 @@ export async function getProductAttributes(productId: string) {
 }
 
 export async function getFullProduct(productId: string) {
-
   try {
     if (!productId) throw new Error("Missing product id");
 
@@ -189,17 +178,18 @@ export async function getFullProduct(productId: string) {
         where: eq(product.id, productId),
       }),
 
-      db.select()
+      db
+        .select()
         .from(productMedia)
         .where(eq(productMedia.productId, productId)),
 
-      db.select()
+      db
+        .select()
         .from(productAttribute)
         .where(eq(productAttribute.productId, productId)),
     ]);
 
     return { productInfo, media, attributes };
-
   } catch (error) {
     console.error("getFullProduct failed:", error);
     throw new Error("Unable to fetch product");
@@ -210,24 +200,22 @@ export async function deleteProduct(id: string) {
   try {
     await db.delete(productMedia).where(eq(productMedia.productId, id));
     await db.delete(product).where(eq(product.id, id));
- 
-     
+
     revalidatePath("/admin/product");
 
-      return {
-        success: true,
-        message: "This product has deleted "
-      };
-  } catch (error : any) {
-        const pgCode =
-      error?.code ||
-      error?.cause?.code ||
-      error?.cause?.cause?.code;
+    return {
+      success: true,
+      message: "This product has deleted ",
+    };
+  } catch (error: any) {
+    const pgCode =
+      error?.code || error?.cause?.code || error?.cause?.cause?.code;
 
     if (pgCode === "23503") {
       return {
         success: false,
-        message: "This product cannot be deleted because other data depends on it."
+        message:
+          "This product cannot be deleted because other data depends on it.",
       };
     }
 
@@ -235,7 +223,6 @@ export async function deleteProduct(id: string) {
     throw new Error("Failed to delete product");
   }
 }
-
 
 export async function getProducts({
   page = 1,
@@ -274,7 +261,7 @@ export async function getProducts({
       .where(whereClause),
   ]);
 
-  const items = rawItems.map(row => row.products);
+  const items = rawItems.map((row) => row.products);
 
   const totalPages = Math.ceil(total[0].count / pageSize);
 
@@ -283,4 +270,69 @@ export async function getProducts({
     totalPages,
     page,
   };
+}
+
+export async function getProductInfoByProductSlug(slug: string | any) {
+  try {
+    const productInfo = await db
+      .select()
+      .from(product)
+      .where(eq(product.slug, slug));
+
+    const productId = productInfo[0].id;
+    const media = await db
+      .select()
+      .from(productMedia)
+      .where(eq(productMedia.productId, productId));
+
+    const reviews = await db
+      .select()
+      .from(reviewsTable)
+      .where(eq(reviewsTable.productId, productId));
+
+    const fullProductData = { ...productInfo[0], media, reviews };
+
+    return fullProductData;
+  } catch (error) {
+    return {};
+  }
+}
+
+export async function getProductSimilarProducts(slug: string | any) {
+  try {
+    const productWithCategory = await db
+      .select({
+        productId: product.id,
+        categoryId: productCategory.categoryId,
+      })
+      .from(product)
+      .innerJoin(productCategory, eq(product.id, productCategory.productId))
+      .where(eq(product.slug, slug));
+
+    if (!productWithCategory.length) return [];
+
+    const { productId, categoryId } = productWithCategory[0];
+
+    const similarProducts = await db
+      .select({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        basePrice: product.basePrice,
+        bannerImage: product.bannerImage,
+        rating: product.rating,
+      })
+      .from(productCategory)
+      .innerJoin(product, eq(product.id, productCategory.productId))
+      .where(
+        and(
+          eq(productCategory.categoryId, categoryId),
+          ne(product.id, productId), // current product exclude
+        ),
+      );
+
+    return similarProducts;
+  } catch (error) {
+    return [];
+  }
 }

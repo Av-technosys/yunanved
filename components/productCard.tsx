@@ -6,15 +6,15 @@ import { Button } from "./ui/button";
 import { ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ProductCard = ({ product, index, className = "" }: any) => {
+const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
   return (
     <>
       <Card key={index}>
         <CardContent className="p-2">
-          <Link href={`product/${product.id}`}>
+          <Link href={`/product/${product.slug}`}>
             <div className={cn(`relative h-48 w-full`, className)}>
               <Image
-                src={product.image}
+                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
                 alt={product.name}
                 fill
                 className="object-cover rounded-md"
@@ -33,16 +33,16 @@ const ProductCard = ({ product, index, className = "" }: any) => {
                   </span>
                 ))}
               </div>
-              <p
+              {/* <p
                 className={`${product.stock === "In Stock" ? "text-green-600" : "text-red-600"}`}
               >
                 {product.stock}
-              </p>
+              </p> */}
             </div>
           </CardDescription>
 
           <div className="flex w-full mt-3 items-center justify-between">
-            <div>{product.price}</div>
+            <div>₹{product.basePrice}</div>
 
             <Button className="bg-[#235A62] ">
               <span className="hidden md:block"> Add to Cart</span>{" "}
