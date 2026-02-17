@@ -193,7 +193,7 @@ const ProductClient = ({
               <div className="w-full md:w-1/2 flex flex-col gap-2 text-sm text-gray-800">
                 <h3 className="font-semibold text-base mb-2">Item Details</h3>
 
-                {leftAttributes.map((item: any) => (
+                {leftAttributes.map((item: any, index: number) => (
                   <div key={item.id}>
                     <div className="flex justify-between py-2">
                       <span className="text-gray-600">{item.attribute}</span>
@@ -201,7 +201,9 @@ const ProductClient = ({
                         {item.value}
                       </span>
                     </div>
-                    <Separator />
+                    <Separator
+                      className={`${index === leftAttributes.length - 1 ? "hidden" : ""}`}
+                    />
                   </div>
                 ))}
               </div>
@@ -209,7 +211,7 @@ const ProductClient = ({
               <div className="w-full md:w-1/2 flex flex-col gap-2 text-sm text-gray-800">
                 <h3 className="font-semibold text-base mb-2">More Details</h3>
 
-                {rightAttributes.map((item: any) => (
+                {rightAttributes.map((item: any, index: number) => (
                   <div key={item.id}>
                     <div className="flex justify-between py-2">
                       <span className="text-gray-600">{item.attribute}</span>
@@ -217,7 +219,9 @@ const ProductClient = ({
                         {item.value}
                       </span>
                     </div>
-                    <Separator />
+                    <Separator
+                      className={`${index === rightAttributes.length - 1 ? "hidden" : ""}`}
+                    />
                   </div>
                 ))}
               </div>

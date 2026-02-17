@@ -12,8 +12,7 @@ export const fetchOrders = async ({
   page = 1,
   pageSize = 3,
   search = "",
-  status = "",  
-
+  status = "",
 }) => {
   const filters = [];
 
@@ -21,7 +20,7 @@ export const fetchOrders = async ({
     filters.push(or(sql`${order.id}::text ILIKE ${`%${search}%`}`));
   }
 
- if (status && status.trim() !== "") {
+  if (status && status.trim() !== "") {
     filters.push(eq(order.status, status));
   }
 
@@ -35,7 +34,6 @@ export const fetchOrders = async ({
     orderBy: asc(order.createdAt),
   });
 };
-
 
 export const fetchOrderDetails = async (orderId: string) => {
   try {
@@ -53,7 +51,7 @@ export const fetchOrderDetails = async (orderId: string) => {
 
     if (!orderInfo.length) return null;
 
-     const rawItems = await db
+    const rawItems = await db
       .select({
         item: orderItem,
         product: product,
@@ -77,7 +75,6 @@ export const fetchOrderDetails = async (orderId: string) => {
   }
 };
 
-
 export const changeOrderStatus = async (id: string, status: string) => {
   const result = await db
     .update(order)
@@ -91,9 +88,7 @@ export const changeOrderStatus = async (id: string, status: string) => {
   return result[0];
 };
 
-
-
-export async function updateOrderStatus(id: string, status: string) {
+export async function updateOrderStatus(id: string, status: string | any) {
   await changeOrderStatus(id, status);
   revalidatePath("/admin/orders");
 }
