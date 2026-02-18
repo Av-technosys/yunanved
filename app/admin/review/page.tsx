@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/lib/db";
 
 import ReviewClient from "./reviewClient";
 import { review } from "@/db/reviewSchema";
 import { and, asc, ilike, sql } from "drizzle-orm";
+import { pageSize } from "@/const/globalconst";
 
 interface PageProps {
   searchParams: {
@@ -12,7 +14,8 @@ interface PageProps {
   };
 }
 
-const PAGE_SIZE = 3;
+  const PAGE_SIZE = pageSize
+
 
 const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;

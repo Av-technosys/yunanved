@@ -222,3 +222,6 @@ export const ORDER_STATUS = [
         color: "#10b981", // Teal / Success
     },
 ];
+
+
+export const pageSize =  3

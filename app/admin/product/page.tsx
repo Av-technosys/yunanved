@@ -1,3 +1,4 @@
+import { pageSize } from "@/const/globalconst";
 import ProductClient from "./productClient";
 import { getProducts } from "@/helper/index";
 
@@ -12,10 +13,10 @@ interface PageProps {
 
 const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
-
+  const PAGE_SIZE = pageSize
   const result = await getProducts({
     page: Number(params.page ?? "1"),
-    pageSize: Number(params.page_size ?? "3"),
+    pageSize: Number(PAGE_SIZE),
     search: params.search ?? "",
     category: params.category,
   });

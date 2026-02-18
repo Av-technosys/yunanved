@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/lib/db";
 import { SQL, sql } from "drizzle-orm";
-
+import {pageSize} from "@/const/globalconst"
 interface PaginateOptions<T> {
   table: T;
   page?: number;
-  pageSize?: number;
+  pageSize?: any;
   where?: SQL | undefined;
   orderBy?: SQL | SQL[];
 }
@@ -13,7 +13,7 @@ interface PaginateOptions<T> {
 export async function paginate<T>({
   table,
   page = 1,
-  pageSize = 10,
+ 
   where,
   orderBy,
 }: PaginateOptions<T>) {

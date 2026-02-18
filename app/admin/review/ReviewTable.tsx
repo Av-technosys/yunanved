@@ -1,4 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { toggleApproveReview, deleteReview } from "@/helper/index";
+import { useTransition, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import {
   Table,
   TableBody,
@@ -7,28 +19,96 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Check, Star, Trash2 } from "lucide-react";
+import { pageSize } from "@/const/globalconst";
+
+import {
+  Mail,
+  Star,
+  Trash2,
+  Check,
+  Loader2,
+  Undo2,
+} from "lucide-react";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import { toast } from "sonner";
 
 interface ReviewTableProps {
   page: number;
   reviews: any;
 }
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = pageSize;
 
 const ReviewTable = ({ page, reviews }: ReviewTableProps) => {
   const startIndex = (page - 1) * PAGE_SIZE;
+  const [isPending, startTransition] = useTransition();
+
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+
+async function handleApprove(id: string) {
+  startTransition(async () => {
+    const res = await toggleApproveReview(id);
+
+    if (res?.success) {
+      toast.success("Review approved");
+    } else {
+      toast.error(res?.message ?? "Failed to approve review");
+    }
+  });
+}
+
+
+
+async function handleDelete() {
+  if (!deleteId) return;
+
+  startTransition(async () => {
+    const res = await deleteReview(deleteId);
+
+    if (res?.success) {
+      toast.success("Review deleted");
+    } else {
+      toast.error(res?.message ?? "Failed to delete review");
+    }
+
+    setDeleteId(null);
+  });
+}
+
+
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 bg-background rounded-2xl p-4 relative">
+
+      {/* GLOBAL PENDING OVERLAY */}
+      {isPending && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+          <Loader2 className="animate-spin w-6 h-6 text-primary" />
+        </div>
+      )}
+
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>S.No</TableHead>
-            <TableHead>Customer Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead className="w-xl">Review and Rating</TableHead>
-            <TableHead className="w-[100px]">Action</TableHead>
+          <TableRow className="text-muted-foreground">
+            <TableHead className="w-[70px] pl-4">#</TableHead>
+            <TableHead>User</TableHead>
+            <TableHead>Contact</TableHead>
+            <TableHead className="w-[160px]">Rating</TableHead>
+            <TableHead className="w-[40%]">Message</TableHead>
+            <TableHead className="text-right pr-4 w-[150px]">Action</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -37,37 +117,119 @@ const ReviewTable = ({ page, reviews }: ReviewTableProps) => {
             const rowNumber = startIndex + index + 1;
 
             return (
-              <TableRow key={rowNumber}>
-                <TableCell>Review {rowNumber}</TableCell>
-                <TableCell>{review.name}</TableCell>
+              <TableRow key={rowNumber} className="hover:bg-muted/30 transition-colors">
+                {/* Serial */}
+                <TableCell className="pl-4 py-5 font-medium text-muted-foreground">
+                  {rowNumber}
+                </TableCell>
 
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <p>{review.email}</p>
+                {/* User */}
+                <TableCell className="py-5">
+                  <div className="flex items-center gap-3">
+                
+                    <span className="font-medium">{review.name}</span>
                   </div>
                 </TableCell>
 
-                <TableCell>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-1">
-                      {Array.from({ length: review?.rating ?? 0 }).map(
-                        (_, i) => (
-                          <Star key={i} size={18} />
-                        ),
-                      )}
-                    </div>
-
-                    <p>{review.message}</p>
+                {/* Email */}
+                <TableCell className="py-5">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Mail size={14} />
+                    <span className="text-sm">{review.email}</span>
                   </div>
                 </TableCell>
 
-                <TableCell className="flex gap-2">
-                  <Button variant="outline" className="w-fit">
-                    <Check />
-                  </Button>
-                  <Button variant="destructive" className="w-fit">
-                    <Trash2 />
-                  </Button>
+                {/* Rating */}
+                <TableCell className="py-5">
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) =>
+                      i < (review?.rating ?? 0) ? (
+                        <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
+                      ) : (
+                        <Star key={i} size={16} className="text-foreground/30" />
+                      )
+                    )}
+                  </div>
+                </TableCell>
+
+                {/* Message */}
+                <TableCell className="py-5">
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[520px] line-clamp-3">
+                    {review.message}
+                  </p>
+                </TableCell>
+
+                {/* Actions */}
+                <TableCell className="text-right pr-4 py-5">
+                  <div className="flex justify-end gap-2">
+
+                    {/* APPROVE */}
+                <TooltipProvider delayDuration={150}>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <span>
+        <Button
+  size="icon"
+  variant="secondary"
+  disabled={isPending || review.isAdminApproved}
+  onClick={() => handleApprove(review.id)}
+  className={
+    review.isAdminApproved
+      ? "bg-blue-100 text-blue-700 cursor-not-allowed"
+      : "bg-green-100 text-green-700 hover:bg-green-200"
+  }
+>
+  {review.isAdminApproved ? (
+    <Check size={18} strokeWidth={2.5} />
+  ) : (
+    <Check size={18} strokeWidth={2.5} />
+  )}
+</Button>
+
+      </span>
+    </TooltipTrigger>
+
+    {review.isAdminApproved && (
+      <TooltipContent>
+        Already approved
+      </TooltipContent>
+    )}
+  </Tooltip>
+</TooltipProvider>
+
+
+                    {/* DELETE CONFIRM */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="secondary"
+                          className="bg-red-100 text-red-700 hover:bg-red-200"
+                          disabled={isPending}
+                          onClick={() => setDeleteId(review.id)}
+                        >
+                          <Trash2 size={18} strokeWidth={2.5} />
+                        </Button>
+                      </AlertDialogTrigger>
+
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete this review?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. The review will be permanently removed from the database.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDelete}>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+
+                  </div>
                 </TableCell>
               </TableRow>
             );

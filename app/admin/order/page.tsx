@@ -1,3 +1,4 @@
+import { pageSize } from "@/const/globalconst";
 import OrderClient from "./orderClient";
 import { fetchOrders } from "@/helper/index";
 
@@ -10,7 +11,7 @@ interface PageProps {
   };
 }
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = pageSize
 
 function toInt(value: string | undefined, fallback: number) {
   const n = Number(value);

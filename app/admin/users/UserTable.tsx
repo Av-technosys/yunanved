@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -7,6 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import { pageSize } from "@/const/globalconst";
 
 const STATUS_BADGE_COLORS: Record<string, string> = {
   inactive:
@@ -24,9 +27,10 @@ interface UserTableProps {
   users: any;
 }
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = pageSize;
 
 const UserTable = ({ page, users }: UserTableProps) => {
+  
   const startIndex = (page - 1) * PAGE_SIZE;
 
   return (
