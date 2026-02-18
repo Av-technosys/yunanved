@@ -24,4 +24,15 @@ export {
 } from "./product/action";
 
 //order
-export{ fetchOrders ,fetchOrderDetails , updateOrderStatus} from "./order/action"
+export {
+  fetchOrders,
+  fetchOrderDetails,
+  updateOrderStatus,
+} from "./order/action";
+
+export {
+  getCoupons,
+  createCoupon,
+  updateCoupon,
+  deleteCoupon,
+} from "./coupon/action";
