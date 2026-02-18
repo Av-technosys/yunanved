@@ -21,6 +21,7 @@ export {
   getProducts,
   getProductInfoByProductSlug,
   getProductSimilarProducts,
+  getProductsForCart
 } from "./product/action";
 
 //order
