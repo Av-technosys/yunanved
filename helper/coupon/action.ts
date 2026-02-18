@@ -2,14 +2,25 @@
 
 import { userCoupons } from "@/db/schema";
 import { db } from "@/lib/db";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function getCoupons() {
+export async function getCoupons(
+  search = "",
+) {
+  const filters = [];
+  
+    if (search && search.trim() !== "") {
+      filters.push(or(sql`${userCoupons.code}::text ILIKE ${`%${search}%`}`));
+    }
+
+    const whereClause = filters.length ? and(...filters) : undefined;
+  
   try {
     return await db
       .select()
       .from(userCoupons)
+      .where(whereClause)
       .orderBy(asc(userCoupons.createdAt));
   } catch (error) {
     console.log(error);
