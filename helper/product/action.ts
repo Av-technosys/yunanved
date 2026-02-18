@@ -11,7 +11,7 @@ import {
 } from "@/db/productSchema";
 import slugify from "slugify";
 import { revalidatePath } from "next/cache";
-import { and, asc, eq, ilike, ne, sql } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { reviewsTable } from "@/db/schema";
 
@@ -295,7 +295,7 @@ export async function getProductInfoByProductSlug(slug: string | any) {
 
     return fullProductData;
   } catch (error) {
-    return {};
+     console.log(error)
   }
 }
 
@@ -336,4 +336,33 @@ export async function getProductSimilarProducts(slug: string | any) {
   } catch (error) {
     return [];
   }
+}
+
+
+export async function getProductsForCart(slugs: string[]) {
+  if (!slugs.length) return [];
+
+  const products = await db
+    .select()
+    .from(product)
+    .where(inArray(product.slug, slugs));
+
+  const productIds = products.map((p) => p.id);
+
+  const media = await db
+    .select()
+    .from(productMedia)
+    .where(inArray(productMedia.productId, productIds));
+
+  const mediaMap = new Map<string, any[]>();
+
+  media.forEach((m) => {
+    if (!mediaMap.has(m.productId)) mediaMap.set(m.productId, []);
+    mediaMap.get(m.productId)!.push(m);
+  });
+
+  return products.map((p) => ({
+    ...p,
+    media: mediaMap.get(p.id) ?? [],
+  }));
 }

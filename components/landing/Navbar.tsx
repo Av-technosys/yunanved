@@ -1,10 +1,16 @@
+"use client"
 import { Search, MapPin, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useCartStore } from "@/store/cartStore";
+import { useIsClient } from "@/app/hooks/useIsClient";
 
 import Link from "next/link";
 
 const Navbar = () => {
+  const isClient = useIsClient();
+const totalItems = useCartStore((s) => s.lineItems());
+
   return (
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
       <div
@@ -69,9 +75,11 @@ const Navbar = () => {
               </div>
               {/* Notification Badge */}
 
-              <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full border-2 border-white">
-                2
-              </span>
+             {isClient && totalItems > 0 && (
+  <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full border-2 border-white">
+    {totalItems}
+  </span>
+)}
             </Link>
           </div>
         </div>

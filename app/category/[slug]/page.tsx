@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import prod1 from "@/public/prod1.png";
 import prod2 from "@/public/prod2.png";
 import prod3 from "@/public/prod3.png";
@@ -9,6 +10,8 @@ import prod7 from "@/public/prod7.png";
 import prod8 from "@/public/prod8.png";
 import prod9 from "@/public/prod9.png";
 import prod10 from "@/public/prod10.png";
+import CategoryView from "@/components/category/CategoryView";
+
 import {
   Card,
   CardContent,
@@ -276,11 +279,10 @@ const Page = async (props: PageProps) => {
             </div>
             <div className="text-gray-600">Sort by : Latest Product</div>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-            {products.map((product: any, index) => {
-              return <ProductCard product={product} key={index} slug={slug} />;
-            })}
-          </div>
+      <CategoryView
+        products={products}
+        slug={slug}
+      />
         </div>
       </div>
       <Footer />
