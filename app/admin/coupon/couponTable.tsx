@@ -66,7 +66,8 @@ const CouponTable = ({ coupons }: any) => {
         </TableHeader>
 
         <TableBody>
-          {coupons?.map((coupon: any, index: number) => {
+          {coupons.length > 0 ? (
+            coupons?.map((coupon: any, index: number) => {
             return (
               <TableRow key={index}>
                 <TableCell className="font-medium">
@@ -142,8 +143,15 @@ const CouponTable = ({ coupons }: any) => {
                   </div>
                 </TableCell>
               </TableRow>
-            );
-          })}
+            )
+          })):(
+             <TableRow>
+              <TableCell colSpan={7} className="h-24 text-center text-gray-600">
+                No coupons found.
+              </TableCell>
+            </TableRow>
+          )
+          }
         </TableBody>
       </Table>
     </>

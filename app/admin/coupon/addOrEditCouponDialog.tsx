@@ -138,6 +138,7 @@ const AddOrEditCouponDialog = ({
                 <Input
                   onChange={(e) => updateHandler(e.target.value, "code")}
                   name="code"
+                  placeholder="E.g. SAVE20"
                   className="text-black"
                   value={couponInfo?.code}
                 />
