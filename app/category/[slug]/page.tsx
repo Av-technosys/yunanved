@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import prod1 from "@/public/prod1.png";
 import prod2 from "@/public/prod2.png";
 import prod3 from "@/public/prod3.png";

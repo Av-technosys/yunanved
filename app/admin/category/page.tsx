@@ -1,6 +1,6 @@
 import CategoryClient from "./categoryClient";
 import { getCategoriesPagination } from "@/helper/index";
-
+import {pageSize} from "@/const/globalconst"
 interface PageProps {
   searchParams: {
     page?: string;
@@ -10,7 +10,7 @@ interface PageProps {
   };
 }
 
-const PAGE_SIZE = 3
+const PAGE_SIZE = pageSize
 
 const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
