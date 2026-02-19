@@ -1,4 +1,4 @@
-import { coupon, couponTransaction, user } from "./userSchema";
+import { cart, cartItem, coupon, couponTransaction, user } from "./userSchema";
 import { category, featuredBanner, featuredCategory, featuredCategoryProduct, featuredProduct, product, productAttribute, productCategory, productMedia } from "./productSchema";
 import { review, reviewMedia } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
@@ -29,6 +29,8 @@ export const paymentTable = payment;
 export const userTable = user;
 export const userCoupons = coupon;
 export const usercouponTransaction = couponTransaction;
+export const userCart = cart;
+export const userCartItems = cartItem;
 
 
 export const contactTable = contact;
