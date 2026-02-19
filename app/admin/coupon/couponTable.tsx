@@ -29,6 +29,8 @@ const CouponTable = ({ coupons }: any) => {
   const [alertDialog, setAlertDialog] = useState(false);
   const [couponDetails, setCouponDetails] = useState({});
 
+ 
+
   const couponEditHandler = (value: any) => {
     setCouponDetails(value);
     setAlertDialog(true);
