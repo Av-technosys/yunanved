@@ -25,12 +25,7 @@ import { useFileUpload } from "@/helper/useFileUpload";
 import { validateImage } from "@/helper/image/validateImage";
 import { toast } from "sonner";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 
 import {
   Select,
@@ -92,7 +87,7 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
       ...existingAttributes,
     });
 
-  const [isActive, setIsActive] = useState(!productInfo.isDeleted);
+  const [isInStock, setIsInStock] = useState(productInfo.isInStock);
   const [priceError, setPriceError] = useState<string | null>(null);
 
 
@@ -208,7 +203,8 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
       <form onSubmit={handleUpdateProduct} className="space-y-6">
 
         <input type="hidden" name="id" value={productInfo.id} />
-        <input type="hidden" name="isActive" value={String(isActive)} />
+        <input type="hidden" name="isInStock" value={String(isInStock)} />
+
         {bannerKey && <input type="hidden" name="bannerImage" value={bannerKey} />}
 
         {/* BASIC INFO */}
@@ -221,12 +217,18 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
           <CardContent className="grid md:grid-cols-2 gap-10">
 
             <div className="space-y-5">
-
-              <div className="space-y-2">
+    <div className="grid md:grid-cols-2 gap-4">
+ <div className="space-y-2">
                 <Label>Product Name</Label>
                 <Input name="name" defaultValue={productInfo.name} required />
               </div>
 
+  <div className="space-y-2">
+    <Label>SKU</Label>
+<Input name="sku" defaultValue={productInfo.sku} required />
+  </div>
+</div>
+        
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Price</Label>
@@ -245,12 +247,18 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
                 <Textarea name="description" defaultValue={productInfo.description} className="min-h-32" />
               </div>
 
-              <div className="flex items-center justify-between border rounded-lg p-4">
-                <Label>Active</Label>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-              </div>
-
-              <div className="space-y-2">
+            <div className="flex items-center justify-between border rounded-lg p-4">
+             <div className="space-y-1">
+               <p className="font-medium">In Stock</p>
+               <p className="text-xs text-muted-foreground">
+                 Customers can purchase this product
+               </p>
+             </div>
+             <Switch checked={isInStock} onCheckedChange={setIsInStock} />
+             <input type="hidden" name="isInStock" value={String(isInStock)} />
+           </div>
+           
+              <div className="space-y-2 pl-1">
                 <Label>Category</Label>
                 <Select value={selectedCategory ?? undefined} onValueChange={setSelectedCategory}>
                   <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>

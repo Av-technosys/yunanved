@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { userTable } from "@/db/schema";
 import { user } from "@/db/userSchema";
