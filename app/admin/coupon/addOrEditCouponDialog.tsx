@@ -32,6 +32,8 @@ const AddOrEditCouponDialog = ({
     isDiscountPercentage: false,
     discountPercentage: "",
     discountFixedAmount: "",
+    maximumDiscountAmount: "",
+    minimumOrderAmount: "",
     useOnce: false,
   });
 
@@ -44,6 +46,8 @@ const AddOrEditCouponDialog = ({
         isDiscountPercentage: couponDetails?.isDiscountPercentage,
         discountPercentage: couponDetails?.discountPercentage,
         discountFixedAmount: couponDetails?.discountFixedAmount,
+        maximumDiscountAmount: couponDetails?.maximumDiscountAmount,
+        minimumOrderAmount: couponDetails?.minimumOrderValue,
         useOnce: couponDetails?.useOnce,
       });
     } else {
@@ -54,6 +58,8 @@ const AddOrEditCouponDialog = ({
         isDiscountPercentage: false,
         discountPercentage: "",
         discountFixedAmount: "",
+        maximumDiscountAmount: "",
+        minimumOrderAmount: "",
         useOnce: false,
       });
     }
@@ -72,6 +78,8 @@ const AddOrEditCouponDialog = ({
       isDiscountPercentage: couponInfo?.isDiscountPercentage,
       discountPercentage: couponInfo?.discountPercentage,
       discountFixedAmount: couponInfo?.discountFixedAmount,
+      maximumDiscountAmount: couponInfo?.maximumDiscountAmount,
+      minimumOrderValue: couponInfo?.minimumOrderAmount,
       useOnce: couponInfo?.useOnce,
     };
 
@@ -86,6 +94,8 @@ const AddOrEditCouponDialog = ({
           isDiscountPercentage: false,
           discountPercentage: "",
           discountFixedAmount: "",
+          maximumDiscountAmount: "",
+          minimumOrderAmount: "",
           useOnce: false,
         });
         toast.success("Coupon created successfully");
@@ -101,6 +111,8 @@ const AddOrEditCouponDialog = ({
           isDiscountPercentage: false,
           discountPercentage: "",
           discountFixedAmount: "",
+          maximumDiscountAmount: "",
+          minimumOrderAmount: "",
           useOnce: false,
         });
         toast.success("Coupon updated successfully");
@@ -114,7 +126,7 @@ const AddOrEditCouponDialog = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Edit Coupon</AlertDialogTitle>
-            <AlertDialogDescription className="flex w-full mt-3 flex-col gap-5">
+            <AlertDialogDescription className="flex w-full h-96 overflow-y-auto mt-3 flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="name-1">Coupon Name</Label>
                 <Input
@@ -195,6 +207,30 @@ const AddOrEditCouponDialog = ({
                   />
                 </div>
               )}
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name-1">Minimum Order Amount</Label>
+                <Input
+                  onChange={(e) =>
+                    updateHandler(e.target.value, "minimumOrderAmount")
+                  }
+                  name="minimumOrderAmount"
+                  className="text-black"
+                  value={couponInfo?.minimumOrderAmount}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name-1">Maximum Discount Amount</Label>
+                <Input
+                  onChange={(e) =>
+                    updateHandler(e.target.value, "maximumDiscountAmount")
+                  }
+                  name="maximumDiscountAmount"
+                  className="text-black"
+                  value={couponInfo?.maximumDiscountAmount}
+                />
+              </div>
 
               <div className="flex flex-col gap-2">
                 <div className="flex gap-6">
