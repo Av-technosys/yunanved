@@ -42,4 +42,9 @@ export {
 //reviews
 export {toggleApproveReview ,  deleteReview, getReviewStats } from "./review/action"
 
+//auth
 export { signUp , signIn} from "./authentication/action";
+
+//cart
+
+export {addProductToUserCart , increaseCartItem, decreaseCartItem, removeCartItem} from "./cart/action"

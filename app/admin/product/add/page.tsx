@@ -14,16 +14,9 @@ import { ImagePlus, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createProduct, saveProductAttributes , getCategories ,  attachProductCategory } from "@/helper/index";;
 import { useFileUpload } from "@/helper/useFileUpload";
-import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
 import { validateImage } from "@/helper/image/validateImage";
 import { toast } from "sonner";
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 
 import {
   Select,
@@ -56,7 +49,7 @@ export default function AddProductForm() {
 const [categories, setCategories] = useState<any[]>([]);
 const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const [isActive, setIsActive] = useState(true);
+const [isInStock, setIsInStock] = useState(true);
   const [banner, setBanner] = useState<ImageItem | null>(null);
   const [gallery, setGallery] = useState<ImageItem[]>([]);
 
@@ -202,11 +195,20 @@ if (selectedCategory) {
 
             <div className="space-y-5">
 
-              <div className="space-y-2">
-                <Label>Product Name</Label>
-                <Input name="name" required />
-              </div>
-  
+            <div className="grid md:grid-cols-2 gap-4">
+  <div className="space-y-2">
+    <Label>Product Name</Label>
+    <Input name="name" required />
+  </div>
+
+  <div className="space-y-2">
+    <Label>SKU</Label>
+    <Input
+      name="sku"
+    />
+  </div>
+</div>
+
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -231,22 +233,23 @@ if (selectedCategory) {
                 <Textarea name="description" className="min-h-32" />
               </div>
 
-              <div className="flex items-center justify-between border rounded-lg p-4">
-                <div className="space-y-1">
-                  <p className="font-medium">Active</p>
-                  <p className="text-xs text-muted-foreground">
-                    Visible to customers
-                  </p>
-                </div>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-                <input type="hidden" name="isActive" value={String(isActive)} />
-              </div>
+      <div className="flex items-center justify-between border rounded-lg p-4">
+  <div className="space-y-1">
+    <p className="font-medium">In Stock</p>
+    <p className="text-xs text-muted-foreground">
+      Customers can purchase this product
+    </p>
+  </div>
+  <Switch checked={isInStock} onCheckedChange={setIsInStock} />
+  <input type="hidden" name="isInStock" value={String(isInStock)} />
+</div>
 
-            <div className="space-y-2">
+
+    <div className="space-y-2 pl-1">
   <Label>Category</Label>
 
   <Select onValueChange={(v) => setSelectedCategory(v)}>
-    <SelectTrigger>
+    <SelectTrigger className="h-10">
       <SelectValue placeholder="Select category" />
     </SelectTrigger>
 
@@ -259,6 +262,8 @@ if (selectedCategory) {
     </SelectContent>
   </Select>
 </div>
+
+
             </div>
 
 

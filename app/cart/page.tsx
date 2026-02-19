@@ -12,7 +12,13 @@ import { Trash2, Loader2, RotateCcw, Star } from "lucide-react"; // Added Loader
 import { Card, CardDescription, CardFooter } from "@/components/ui/card";
 import { getProductsForCart } from "@/helper/index";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  increaseCartItem,
+  decreaseCartItem,
+  removeCartItem
+} from "@/helper/index";
 
+import { toast } from "sonner";
 import emptyCart from "../../public/emptycart.png";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
@@ -21,6 +27,7 @@ import { useIsClient } from "../hooks/useIsClient";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Footer from "@/components/landing/Footer";
+import { tempUserId } from "@/const/globalconst";
 
 const breadcrumb = [
   { name: "Home", href: "/" },
@@ -29,6 +36,9 @@ const breadcrumb = [
 
 export default function CartPage() {
   const isClient = useIsClient();
+  const [isPending, startTransition] = useTransition();
+
+  const userId = tempUserId; // later from auth/session
 
   const items = useCartStore((s) => s.items);
   const increase = useCartStore((s) => s.increase);
@@ -37,6 +47,11 @@ export default function CartPage() {
 
   const [freshProducts, setFreshProducts] = useState<any[]>([]);
 const [isFetching, setIsFetching] = useState(false);
+
+const productSlugs = useMemo(
+  () => items.map(i => i.slug).sort().join("|"),
+  [items]
+);
 
 useEffect(() => {
   let cancelled = false;
@@ -61,12 +76,59 @@ useEffect(() => {
   return () => {
     cancelled = true;
   };
-}, [items]);
+}, [productSlugs]);
+
 
 
   const productMap = useMemo(() => {
     return new Map(freshProducts.map((p) => [p.slug, p]));
   }, [freshProducts]);
+
+
+  const handleIncrease = (item: any) => {
+
+  increase(item.productId, item.attributes);
+
+
+  startTransition(async () => {
+    try {
+      await increaseCartItem(userId, item.productId);
+    } catch (e) {
+      console.log("error", e)
+      decrease(item.productId, item.attributes);
+      toast.error("Failed to update quantity");
+    }
+  });
+};
+
+const handleDecrease = (item: any) => {
+  decrease(item.productId, item.attributes);
+
+  startTransition(async () => {
+    try {
+      await decreaseCartItem(userId, item.productId);
+    } catch (e) {
+      console.log(e)
+      increase(item.productId, item.attributes);
+      toast.error("Failed to update quantity");
+    }
+  });
+};
+
+
+const handleRemove = (item: any) => {
+  removeItem(item.productId, item.attributes);
+
+  startTransition(async () => {
+    try {
+      await removeCartItem(userId, item.productId);
+    } catch (e) {
+      console.log(e)
+      useCartStore.getState().addItem(item);
+      toast.error("Failed to remove item");
+    }
+  });
+};
 
   const subtotal = useMemo(() => {
     let total = 0;
@@ -181,14 +243,16 @@ useEffect(() => {
       <div className="flex items-center justify-between w-full md:w-auto gap-6">
         <div className="flex items-center gap-3 bg-gray-50 border rounded-full px-2 py-1">
           <button
-            onClick={() => decrease(item.productId, item.attributes)}
+           disabled={isPending}
+            onClick={() => handleDecrease(item)}
             className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-gray-600"
           >
             −
           </button>
           <span className="w-4 text-center text-sm font-semibold">{item.quantity}</span>
           <button
-            onClick={() => increase(item.productId, item.attributes)}
+          disabled={isPending}
+           onClick={() => handleIncrease(item)}
             className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-gray-600"
           >
             +
@@ -196,7 +260,8 @@ useEffect(() => {
         </div>
 
         <button
-          onClick={() => removeItem(item.productId, item.attributes)}
+          disabled={isPending}
+          onClick={() => handleRemove(item)}
           className="p-2 text-red-500 bg-red-50 rounded-full transition-colors"
         >
           <Trash2 size={18} />

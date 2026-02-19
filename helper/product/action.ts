@@ -41,10 +41,11 @@ export async function createProduct(formData: FormData) {
     const name = str(formData, "name");
     const description = str(formData, "description");
     const price = num(formData, "price");
-    const isActive = str(formData, "isActive") === "true";
+    const isInStock = str(formData, "isInStock") === "true";
     const strikethroughPrice = Number(formData.get("strikethroughPrice"));
     const bannerImage = str(formData, "bannerImage");
     const mediaUrls = parseMedia(formData);
+    const sku = str(formData, "sku");
 
     const id = await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, name, product.slug);
@@ -54,11 +55,13 @@ export async function createProduct(formData: FormData) {
         .values({
           name,
           slug,
+          sku,
           description,
           basePrice: price,
           strikethroughPrice,
           bannerImage: bannerImage || null,
-          isDeleted: !isActive,
+          isInStock,
+          isDeleted: false,
           rating: 0,
           reviewCount: 0,
         })
@@ -94,16 +97,20 @@ export async function updateProduct(formData: FormData): Promise<void> {
     const price = Number(formData.get("price"));
     const strikethroughPrice = Number(formData.get("strikethroughPrice"));
     const bannerImage = formData.get("bannerImage") as string | null;
+    const sku = (formData.get("sku") as string).trim();
+    const isInStock = formData.get("isInStock") === "true";
 
     await db
       .update(product)
       .set({
         name,
+        sku,
         slug: slugify(name, { lower: true }),
         description,
         basePrice: price,
         strikethroughPrice,
         bannerImage,
+        isInStock,
         updatedAt: new Date(),
       })
       .where(eq(product.id, id));
