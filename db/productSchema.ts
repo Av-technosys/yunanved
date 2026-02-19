@@ -32,6 +32,7 @@ export const product = pgTable(
 
     //   all the filters
     isDeleted: boolean("is_deleted").notNull().default(false),
+    isFreeDelivery: boolean("is_free_delivery").notNull().default(false),
 
     // timestamp
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -80,15 +81,14 @@ export const featuredProduct = pgTable("featured_product", {
   productId: uuid("product_id").notNull().references(() => product.id),
 });
 
-export const featuredCategory = pgTable("featured_category", {
+export const featuredItems = pgTable("featured_items", {
   id: uuid("id").primaryKey().defaultRandom(),
-  categoryId: uuid("category_id").notNull().references(() => category.id),
-});
-export const featuredCategoryProduct = pgTable("featured_category_product", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  categoryId: uuid("category_id").notNull().references(() => category.id),
-  productId: uuid("product_id").notNull().references(() => product.id),
-});
+  categoryId: uuid("category_id").references(() => category.id),
+  productId: uuid("product_id").references(() => product.id),
+  isFeaturedProduct: boolean("is_featured_product").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+})
 
 export const featuredBanner = pgTable("featured_banner", {
   id: uuid("id").primaryKey().defaultRandom(),

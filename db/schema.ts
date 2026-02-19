@@ -1,5 +1,5 @@
-import { cart, cartItem, coupon, couponTransaction, user } from "./userSchema";
-import { category, featuredBanner, featuredCategory, featuredCategoryProduct, featuredProduct, product, productAttribute, productCategory, productMedia } from "./productSchema";
+import { cart, cartItem, contactus, coupon, couponTransaction, newsletter, user, userAddress } from "./userSchema";
+import { category, featuredBanner, featuredItems, featuredProduct, product, productAttribute, productCategory, productMedia } from "./productSchema";
 import { review, reviewMedia } from "./reviewSchema";
 import { contact, subscription } from "./contactSchema";
 import {
@@ -14,10 +14,8 @@ export const categoryTable = category
 export const productCategoryTable = productCategory
 export const productMediaTable = productMedia
 export const featuredProductTable = featuredProduct
-export const featuredCategoryTable = featuredCategory
-export const featuredCategoryProductTable = featuredCategoryProduct
+export const featuredItemsTable = featuredItems
 export const featuredBannerTable = featuredBanner
-// export const taileredFits = taileredFit;
 
 export const reviewsTable = review;
 export const reviewMediaTable = reviewMedia
@@ -31,6 +29,9 @@ export const userCoupons = coupon;
 export const usercouponTransaction = couponTransaction;
 export const userCart = cart;
 export const userCartItems = cartItem;
+export const userAddressTable = userAddress;
+export const contactusTable = contactus;
+export const newsletterTable = newsletter;
 
 
 export const contactTable = contact;

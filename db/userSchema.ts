@@ -80,3 +80,19 @@ export const cartItem = pgTable("cart_item", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const contactus = pgTable("contactus", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 20 }).notNull(),
+  email: varchar("email").unique().notNull(),
+  number: varchar("number"),
+  message: varchar("message"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const newsletter = pgTable("newsletter", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email").unique().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
