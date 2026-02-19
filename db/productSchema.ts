@@ -24,6 +24,7 @@ export const product = pgTable(
     strikethroughPrice: integer("strikethrough_price"),
     slug: varchar("slug").unique().notNull(),
     bannerImage: varchar("banner_image"),
+    isInStock: boolean("is_in_stock").notNull().default(true),
     isReturnable: boolean("is_returnable").notNull().default(false),
     isCancelable: boolean("is_cancelable").notNull().default(false),
     rating: integer("rating").notNull().default(0),

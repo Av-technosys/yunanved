@@ -22,6 +22,13 @@
       "when": 1770113140313,
       "tag": "0002_nebulous_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771475496522,
+      "tag": "0003_friendly_spectrum",
+      "breakpoints": true
     }
   ]
 }
