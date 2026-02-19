@@ -126,7 +126,8 @@ const AddOrEditCouponDialog = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Edit Coupon</AlertDialogTitle>
-            <AlertDialogDescription className="flex w-full h-96 overflow-y-auto mt-3 flex-col gap-5">
+          </AlertDialogHeader>
+           <div className="flex w-full h-96 overflow-y-auto mt-3 flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="name-1">Coupon Name</Label>
                 <Input
@@ -246,8 +247,7 @@ const AddOrEditCouponDialog = ({
                   </div>
                 </div>
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+            </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={(e) => submitHandler(e)} type="submit">
