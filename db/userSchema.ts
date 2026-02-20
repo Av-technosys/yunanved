@@ -14,6 +14,7 @@ export const user = pgTable("users", {
   email: varchar("email").unique().notNull(),
   number: varchar("number"),
   password: varchar("password"),
+  profileImage: varchar("profile_image"),
   user_type: varchar("user_type").notNull().default("0"),
   loyaltyPoints: integer("loyalty_points").notNull().default(0),
   //   timestamp

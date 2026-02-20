@@ -7,6 +7,7 @@ import {
   integer,
   boolean,
   index,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const product = pgTable(
@@ -57,10 +58,13 @@ export const category: any = pgTable("categories", {
 });
 
 export const productCategory = pgTable("product_category", {
-  id: uuid("id").primaryKey().defaultRandom(),
   productId: uuid("product_id").notNull().references(() => product.id),
   categoryId: uuid("category_id").notNull().references(() => category.id),
-});
+}, (table) => ({
+  pk: primaryKey({ columns: [table.productId, table.categoryId] }),
+}));
+
+
 
 export const productMedia = pgTable("product_media", {
   id: uuid("id").primaryKey().defaultRandom(),
