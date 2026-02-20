@@ -10,6 +10,9 @@ import {
   User,
   MessageSquare,
   Settings,
+  Code,
+  Feather,
+  ShoppingCart,
 } from "lucide-react";
 
 const navItems = [
@@ -19,7 +22,17 @@ const navItems = [
   { label: "Order", href: "/admin/order", icon: FileText },
   { label: "User", href: "/admin/users", icon: User },
   { label: "Review", href: "/admin/review", icon: MessageSquare },
-  { label: "Coupon", href: "/admin/coupon", icon: MessageSquare },
+  {
+    label: "Featured Products",
+    href: "/admin/featured-products",
+    icon: ShoppingCart ,
+  },
+  {
+    label: "Featured Categories",
+    href: "/admin/featured-categories",
+    icon: Feather ,
+  },
+  { label: "Coupon", href: "/admin/coupon", icon: Code },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
@@ -38,7 +51,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="space-y-3">
+      <nav className="space-y-3 overflow-y-auto h-[78vh]">
         {navItems.map(({ label, href, icon: Icon }) => {
           let active = false;
           if (href === "/admin") {
