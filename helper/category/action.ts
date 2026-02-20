@@ -39,11 +39,11 @@ export async function createCategory(formData: FormData) {
     });
 
     revalidatePath("/admin/category");
-    redirect("/admin/category");
   } catch (error) {
     console.error("Create category failed:", error);
     throw new Error("Failed to create category");
   }
+  redirect("/admin/category");
 }
 
 export async function updateCategory(formData: FormData) {
@@ -54,25 +54,25 @@ export async function updateCategory(formData: FormData) {
     const parentId = formData.get("parentId") as string | null;
     const isActive = formData.get("isActive") === "true";
 
+    console.log("parentId ", parentId)
     await db
       .update(categoryTable)
       .set({
         name,
         slug: slugify(name, { lower: true }),
         description,
-        parentId: parentId || null,
+        parrentId: parentId || null,
         isActive,
       })
       .where(eq(categoryTable.id, id));
 
     revalidatePath("/admin/category");
     revalidatePath(`/admin/category/${id}`);
-
-    redirect("/admin/category");
   } catch (error) {
     console.error("Update category failed:", error);
     throw new Error("Failed to update category");
   }
+  redirect("/admin/category");
 }
 
 // export const getCategories = async () => {
@@ -238,6 +238,18 @@ export async function getAllProductsByCategorySlug(slug: string) {
       .where(eq(categoryTable.slug, slug));
 
     return products;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+export async function getAllCategoriesMeta() {
+  try {
+    return await db.select({
+      id: categoryTable.id,
+      name: categoryTable.name
+    }).from(categoryTable);
   } catch (error) {
     console.log(error);
     return [];

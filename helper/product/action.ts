@@ -46,10 +46,11 @@ export async function createProduct(formData: FormData) {
     const bannerImage = str(formData, "bannerImage");
     const mediaUrls = parseMedia(formData);
     const sku = str(formData, "sku");
+    const category = formData.getAll("category[]");
+
 
     const id = await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, name, product.slug);
-      console.log("slug generated", slug);
       const [created] = await tx
         .insert(product)
         .values({
@@ -81,6 +82,15 @@ export async function createProduct(formData: FormData) {
 
       return productId;
     });
+
+
+    const categoryInsertData = category.map((cat: any) => ({
+      productId: id,
+      categoryId: cat as string,
+    }));
+
+
+    await db.insert(productCategory).values(categoryInsertData);
 
     return { id };
   } catch (error) {
@@ -302,7 +312,7 @@ export async function getProductInfoByProductSlug(slug: string | any) {
 
     return fullProductData;
   } catch (error) {
-     console.log(error)
+    console.log(error)
   }
 }
 

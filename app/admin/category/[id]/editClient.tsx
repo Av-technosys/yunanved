@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ import {
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updateCategory } from "@/helper/index";
+import { getAllCategoriesMeta } from "@/helper/category/action";
 
 export default function EditCategory({ categoryInfo }: any) {
   const router = useRouter();
@@ -35,6 +36,16 @@ export default function EditCategory({ categoryInfo }: any) {
     description: categoryInfo.description ?? "",
     isActive: categoryInfo.isActive ?? false,
   });
+
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [selectedParent, setSelectedParent] = useState<string>(categoryInfo.parrentId ?? "");
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categories = await getAllCategoriesMeta();
+      setCategories(categories);
+    };
+    fetchCategories();
+  }, []);
 
   const [preview, setPreview] = useState<string | null>(
     categoryInfo.bannerImage ?? null,
@@ -62,7 +73,7 @@ export default function EditCategory({ categoryInfo }: any) {
 
             {/* CRITICAL: send required values to server action */}
             <input type="hidden" name="id" value={categoryInfo.id} />
-            <input type="hidden" name="parentId" value={form.parent ?? ""} />
+            <input type="hidden" name="parentId" value={selectedParent} />
             <input type="hidden" name="isActive" value={form.isActive ? "true" : "false"} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
@@ -87,18 +98,20 @@ export default function EditCategory({ categoryInfo }: any) {
                     Parent Category
                   </Label>
                   <Select
-                    value={form.parent}
+                    value={selectedParent}
                     onValueChange={(value) =>
-                      setForm({ ...form, parent: value })
+                      setSelectedParent(value)
                     }
                   >
                     <SelectTrigger className="h-11">
                       <SelectValue placeholder="Select parent" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="electronics">Electronics</SelectItem>
-                      <SelectItem value="clothing">Clothing</SelectItem>
-                      <SelectItem value="home">Home & Garden</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

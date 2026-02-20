@@ -20,7 +20,7 @@ const Page = async ({ params }: PageProps) => {
     .where(eq(category.id, id));
 
 
-  
+
   return (
     <>
       <EditCategory categoryInfo={categoryInfo[0]} />

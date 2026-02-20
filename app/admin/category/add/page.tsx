@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/select";
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createCategory } from "@/helper/index";;
+import { createCategory } from "@/helper/index"; import { getAllCategoriesMeta } from "@/helper/category/action";
+;
 
 export default function AddCategoryForm() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function AddCategoryForm() {
   const [isActive, setIsActive] = useState(true);
   const [parentId, setParentId] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
   const handleFileChange = (file?: File) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -38,8 +40,13 @@ export default function AddCategoryForm() {
     setPreview(url);
   };
 
+  useEffect(() => {
+    getAllCategoriesMeta().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
-  
+
   return (
     <div className="w-full p-1">
       <Card className="border-none shadow-none">
@@ -84,9 +91,11 @@ export default function AddCategoryForm() {
                       <SelectValue placeholder="Select Parent Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="electronics">Electronics</SelectItem>
-                      <SelectItem value="clothing">Clothing</SelectItem>
-                      <SelectItem value="home">Home & Garden</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

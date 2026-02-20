@@ -38,6 +38,7 @@ import {
 import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
 import GallerySection from "../GallerySection";
 import AttributeSection from "../AttributeSection";
+import { MultiCategorySelect } from "@/components/multiCategorySelect";
 
 type ImageItem = { key: string; preview: string };
 type AttributeValue = { id?: string; value: string };
@@ -217,18 +218,18 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
           <CardContent className="grid md:grid-cols-2 gap-10">
 
             <div className="space-y-5">
-    <div className="grid md:grid-cols-2 gap-4">
- <div className="space-y-2">
-                <Label>Product Name</Label>
-                <Input name="name" defaultValue={productInfo.name} required />
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Product Name</Label>
+                  <Input name="name" defaultValue={productInfo.name} required />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>SKU</Label>
+                  <Input name="sku" defaultValue={productInfo.sku} required />
+                </div>
               </div>
 
-  <div className="space-y-2">
-    <Label>SKU</Label>
-<Input name="sku" defaultValue={productInfo.sku} required />
-  </div>
-</div>
-        
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Price</Label>
@@ -247,28 +248,21 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
                 <Textarea name="description" defaultValue={productInfo.description} className="min-h-32" />
               </div>
 
-            <div className="flex items-center justify-between border rounded-lg p-4">
-             <div className="space-y-1">
-               <p className="font-medium">In Stock</p>
-               <p className="text-xs text-muted-foreground">
-                 Customers can purchase this product
-               </p>
-             </div>
-             <Switch checked={isInStock} onCheckedChange={setIsInStock} />
-             <input type="hidden" name="isInStock" value={String(isInStock)} />
-           </div>
-           
-              <div className="space-y-2 pl-1">
-                <Label>Category</Label>
-                <Select value={selectedCategory ?? undefined} onValueChange={setSelectedCategory}>
-                  <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                  <SelectContent>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center justify-between border rounded-lg p-4">
+                <div className="space-y-1">
+                  <p className="font-medium">In Stock</p>
+                  <p className="text-xs text-muted-foreground">
+                    Customers can purchase this product
+                  </p>
+                </div>
+                <Switch checked={isInStock} onCheckedChange={setIsInStock} />
+                <input type="hidden" name="isInStock" value={String(isInStock)} />
               </div>
+
+              <MultiCategorySelect
+                selectedCategories={selectedCategory}
+                onCategoriesChange={setSelectedCategory}
+              />
 
             </div>
 
@@ -292,34 +286,34 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
           </CardContent>
         </Card>
 
-<GallerySection
-  gallery={gallery}
-  galleryRef={galleryRef}
-  handleGallery={handleGallery}
-  setGallery={setGallery}
-/>
+        <GallerySection
+          gallery={gallery}
+          galleryRef={galleryRef}
+          handleGallery={handleGallery}
+          setGallery={setGallery}
+        />
 
-<AttributeSection
-  productAttributes={productAttributes}
-  handleValueChange={handleValueChange}
-/>
+        <AttributeSection
+          productAttributes={productAttributes}
+          handleValueChange={handleValueChange}
+        />
 
 
-<div className="flex justify-end gap-4 m-6">
+        <div className="flex justify-end gap-4 m-6">
 
-  <Button
-    type="button"
-    variant="outline"
-    onClick={() => router.push("/admin/product")}
-  >
-    Cancel
-  </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/admin/product")}
+          >
+            Cancel
+          </Button>
 
-  <Button type="submit">
-    Update Product
-  </Button>
+          <Button type="submit">
+            Update Product
+          </Button>
 
-</div>
+        </div>
 
 
       </form>
