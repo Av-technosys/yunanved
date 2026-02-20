@@ -13,7 +13,11 @@ import { Button } from "@/components/ui/button";
 
 import ReviewCard from "@/app/product/reviewCard";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useCartStore } from "@/store/cartStore";
+import { addProductToUserCart } from "@/helper";
+import { toast } from "sonner";
+import { tempUserId } from "@/const";
 
 const productSpecifications = {
   brandName: "FORTUNE",
@@ -40,7 +44,39 @@ const ProductClient = ({
   productAttributes,
 }: any) => {
   const [bannerImage, setBannerImage] = useState<any>(productInfo.bannerImage);
-  console.log("product Attributes", productAttributes);
+  
+
+    const addItem = useCartStore((s) => s.addItem);
+  const [isPending, startTransition] = useTransition();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    addItem({
+      productId: productInfo.id,
+      sku: productInfo.sku,
+      slug: productInfo.slug,
+      title: productInfo.name,
+      image: productInfo.bannerImage,
+      price: productInfo.basePrice,
+      originalPrice: productInfo.strikethroughPrice ?? undefined,
+      attributes: [],
+    });
+
+    startTransition(async () => {
+      try {
+
+        await addProductToUserCart(tempUserId, productInfo.id, 1);
+
+        toast.success(`${productInfo.name} added to cart`);
+      } catch (err) {
+        console.error(err);
+
+        toast.error("Failed to sync cart");
+        useCartStore.getState().removeItem(productInfo.id, []);
+      }
+    });
+  };
 
   const attributes = productAttributes ?? [];
 
@@ -147,8 +183,12 @@ const ProductClient = ({
           </div>
 
           <div className="flex gap-4 mt-2">
-            <button className="flex-1 bg-teal-700 text-white py-2 rounded-full font-medium hover:bg-teal-800">
-              Add to cart
+            <button  onClick={handleAddToCart} className="flex-1 bg-teal-700 text-white py-2 rounded-full font-medium hover:bg-teal-800">
+              {isPending ? (
+                "Adding..."
+              ) : (
+                <span className="hidden md:block">Add to Cart</span>
+              )}
             </button>
 
             <button className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600">
