@@ -7,6 +7,7 @@ import { order, orderItem, payment } from "@/db/orderSchema";
 import { user } from "@/db/userSchema";
 import { product } from "@/db/productSchema";
 import { revalidatePath } from "next/cache";
+import { userCart, userCartItems } from "@/db/schema";
 
 export const fetchOrders = async ({
   page = 1,
@@ -91,4 +92,57 @@ export const changeOrderStatus = async (id: string, status: string) => {
 export async function updateOrderStatus(id: string, status: string | any) {
   await changeOrderStatus(id, status);
   revalidatePath("/admin/orders");
+}
+
+export async function createOrder(
+  data: any,
+  userId: string,
+  fixedAmount: number,
+) {
+  try {
+    await db.transaction(async (tx) => {
+      if (!data || data.length === 0) {
+        throw new Error("Order items are required");
+      }
+      const orderResult = await tx
+        .insert(order)
+        .values({
+          userId,
+          totalAmountPaid: fixedAmount,
+          status: "pending",
+        })
+        .returning({ id: order.id });
+
+      const orderId = orderResult[0].id;
+     
+      await tx.insert(orderItem).values(
+        data.map((item: any) => ({
+          orderId,
+          productId: item.productId,
+          quantity: item.quantity,
+          productName: item.title,
+          productSlug: item.slug,
+          productImage: item.image,
+          productSKU: item.sku,
+          productPrice: item.price,
+        })),
+      );
+
+      const userCartRecord = await tx.query.userCart.findFirst({
+        where: eq(userCart.userId, userId),
+      });
+
+      if (userCartRecord) {
+        await tx
+          .delete(userCartItems)
+          .where(eq(userCartItems.cartId, userCartRecord.id));
+
+        await tx.delete(userCart).where(eq(userCart.id, userCartRecord.id));
+      }
+    });
+    return { success: true, message: "Order created successfully" };
+  } catch (error) {
+    console.error("Error creating order:", error);
+    return { success: false, message: "Failed to create order" };
+  }
 }
