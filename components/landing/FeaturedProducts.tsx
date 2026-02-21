@@ -24,29 +24,26 @@ export async function FeaturedProducts() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1  items-stretch sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {products.map((product) => (
             <Card
               key={product.id}
-              className="overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow"
+  className="flex flex-col py-1  overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow"
             >
               {/* Image */}
               <Link href={`/product/${product.slug}`}>
-                <div className="h-52 flex items-center justify-center p-4">
+                <div className="h-36 flex items-center justify-center ">
                   <img
                     src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
                     alt={"Product Image"}
-                    className="object-contain h-full"
+                    className="object-contain h-full scale-150"
                   />
                 </div>
               </Link>
 
               {/* Content */}
-              <div className="p-4 bg-white border-t border-gray-100">
-
-                {/* Name + Category */}
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-sm text-black line-clamp-1">
+<div className="flex flex-col flex-1 p-4 bg-white border-t border-gray-100">                {/* Name + Category */}
+<div className="mt-auto flex justify-between items-center pt-3">                  <h3 className="font-bold text-sm text-black line-clamp-1">
                     {product.name}
                   </h3>
                 </div>
@@ -72,8 +69,8 @@ export async function FeaturedProducts() {
                 </p>
 
                 {/* Price + Button */}
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-lg text-black">
+<div className="mt-auto flex justify-between items-center pt-3">
+                    <span className="font-bold text-lg text-black">
                     ₹{product.basePrice}
                   </span>
 
