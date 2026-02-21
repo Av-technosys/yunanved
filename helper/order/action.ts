@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { paginate } from "@/lib/pagination";
-import { and, or, sql, asc, eq } from "drizzle-orm";
+import { and, or, sql, asc, eq ,desc, inArray  } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { order, orderItem, payment } from "@/db/orderSchema";
 import { user } from "@/db/userSchema";
@@ -145,4 +146,71 @@ export async function createOrder(
     console.error("Error creating order:", error);
     return { success: false, message: "Failed to create order" };
   }
+}
+export async function getOrdersByUserId(userId: string) {
+  //later we will take user id from req
+  const orders = await db
+    .select()
+    .from(order)
+    .where(eq(order.userId, userId))
+    .orderBy(desc(order.createdAt));
+
+  return orders;
+}
+
+
+
+export async function getOrderById(orderId: string) {
+  const orderRows = await db
+    .select()
+    .from(order)
+    .where(eq(order.id, orderId))
+    .limit(1);
+
+  if (!orderRows.length) return null;
+
+  const orderData = orderRows[0];
+
+  const items = await db
+    .select()
+    .from(orderItem)
+    .where(eq(orderItem.orderId, orderId));
+
+const productIds = [
+  ...new Set(
+    items
+      .map((item) => item.productId)
+      .filter((id): id is string => id !== null)
+  ),
+];
+
+  const products = productIds.length
+    ? await db
+        .select()
+        .from(product)
+        .where(inArray(product.id, productIds))
+    : [];
+
+  const productMap = Object.fromEntries(
+    products.map((p) => [p.id, p])
+  );
+
+  const itemsWithProduct = items.map((item:any) => ({
+    ...item,
+    product: productMap[item.productId] || null,
+  }));
+
+  const paymentRows = await db
+    .select()
+    .from(payment)
+    .where(eq(payment.orderId, orderId))
+    .limit(1);
+
+  const paymentData = paymentRows.length ? paymentRows[0] : null;
+
+  return {
+    ...orderData,
+    items: itemsWithProduct,
+    payment: paymentData,
+  };
 }

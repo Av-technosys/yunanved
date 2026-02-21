@@ -36,6 +36,8 @@ function parseMedia(fd: FormData) {
   return fd.getAll("media").filter((v) => typeof v === "string") as string[];
 }
 
+
+
 export async function createProduct(formData: FormData) {
   try {
     const name = str(formData, "name");
@@ -102,6 +104,8 @@ export async function createProduct(formData: FormData) {
 export async function updateProduct(formData: FormData): Promise<void> {
   try {
     const id = formData.get("id") as string;
+    if (!id) throw new Error("Product ID missing");
+
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const price = Number(formData.get("price"));
@@ -110,34 +114,53 @@ export async function updateProduct(formData: FormData): Promise<void> {
     const sku = (formData.get("sku") as string).trim();
     const isInStock = formData.get("isInStock") === "true";
 
-    await db
-      .update(product)
-      .set({
-        name,
-        sku,
-        slug: slugify(name, { lower: true }),
-        description,
-        basePrice: price,
-        strikethroughPrice,
-        bannerImage,
-        isInStock,
-        updatedAt: new Date(),
-      })
-      .where(eq(product.id, id));
-
     const submittedMedia = formData.getAll("media") as string[];
+    const categories = formData.getAll("category[]") as string[];
 
-    await db.delete(productMedia).where(eq(productMedia.productId, id));
+    await db.transaction(async (tx) => {
+      await tx
+        .update(product)
+        .set({
+          name,
+          sku,
+          slug: slugify(name, { lower: true }),
+          description,
+          basePrice: price,
+          strikethroughPrice,
+          bannerImage,
+          isInStock,
+          updatedAt: new Date(),
+        })
+        .where(eq(product.id, id));
 
-    if (submittedMedia.length) {
-      await db.insert(productMedia).values(
-        submittedMedia.map((key) => ({
-          productId: id,
-          mediaType: "image",
-          mediaURL: key,
-        })),
-      );
-    }
+      await tx
+        .delete(productMedia)
+        .where(eq(productMedia.productId, id));
+
+      if (submittedMedia.length) {
+        await tx.insert(productMedia).values(
+          submittedMedia.map((key) => ({
+            productId: id,
+            mediaType: "image",
+            mediaURL: key,
+          }))
+        );
+      }
+
+      await tx
+        .delete(productCategory)
+        .where(eq(productCategory.productId, id));
+
+      if (categories.length) {
+        await tx.insert(productCategory).values(
+          categories.map((catId) => ({
+            productId: id,
+            categoryId: catId,
+          }))
+        );
+      }
+    });
+
   } catch (error) {
     console.error("updateProduct failed:", error);
     throw new Error("Unable to update product");
