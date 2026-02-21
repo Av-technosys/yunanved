@@ -110,17 +110,18 @@ export async function getProductCategory(productId: string) {
         name: categoryTable.name,
       })
       .from(productCategory)
-      .leftJoin(categoryTable, eq(categoryTable.id, productCategory.categoryId))
-      .where(eq(productCategory.productId, productId))
-      .limit(1);
+      .leftJoin(
+        categoryTable,
+        eq(categoryTable.id, productCategory.categoryId)
+      )
+      .where(eq(productCategory.productId, productId));
 
-    return result[0] ?? null;
+    return result; // 🔥 return full array
   } catch (error) {
     console.error("fetch product category failed:", error);
     throw new Error("fetch product category failed");
   }
 }
-
 export async function updateProductCategory(
   productId: string,
   categoryId: string,

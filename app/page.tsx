@@ -7,7 +7,7 @@ import { Footer } from "@/components/landing/Footer";
 import NavBar from "@/components/landing/Navbar";
 import ProductCarousel from "@/components/landing/ProductCarousel";
 import { BentoGallery } from "@/components/landing/BentoGallery";
-import { Newsletter } from "@/components/landing/Newsletter";
+import { Newsletter } from "@/components/landing/NewsLetter";
 
 export default function Home() {
   return (

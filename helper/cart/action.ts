@@ -152,7 +152,6 @@ export async function removeCartItem(
         eq(cartItem.cartId, existingCart.id),
         eq(cartItem.productId, productId)
       ));
-
     return { success: true };
   });
 }

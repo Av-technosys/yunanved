@@ -1,47 +1,61 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { Label } from "./ui/label"
-import MultipleSelector from "./ui/multi-select"
+import { Label } from "./ui/label";
+import MultipleSelector from "./ui/multi-select";
 import { getCategories } from "@/helper";
 import { Loader2 } from "lucide-react";
+export const MultiCategorySelect = ({
+  selectedCategories,
+  onCategoriesChange,
+}: {
+  selectedCategories: string[];
+  onCategoriesChange: (ids: string[]) => void;
+}) => {
+  const [categories, setCategories] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [loading, setLoading] = useState(false);
 
-export const MultiCategorySelect = ({ selectedCategory, setSelectedCategory }: any) => {
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      const data = await getCategories();
 
-    const [categories, setCategories] = useState<any[]>();
-    const [loading, setLoading] = useState(false);
+      setCategories(
+        data.map((category: any) => ({
+          label: category.name,
+          value: category.id,
+        }))
+      );
 
+      setLoading(false);
+    }
 
-    useEffect(() => {
-        async function load() {
-            setLoading(true);
-            const data = await getCategories();
-            const categoriesValue = data.map((category: any) => ({
-                label: category.name,
-                value: category.id
-            }));
-            setCategories(categoriesValue);
-            setLoading(false);
-        }
-        load();
-    }, []);
+    load();
+  }, []);
 
+  const selectedObjects = categories.filter((cat) =>
+    selectedCategories.includes(cat.value)
+  );
 
+  return (
+    <div className="space-y-2 pl-1">
+      <Label>Category</Label>
 
-    return (
-        <div className="space-y-2 pl-1">
-            <Label>Category</Label>
-            {loading ? <Loader2 size={20} className="animate-spin" /> : <MultipleSelector
-                commandProps={{
-                    label: 'Select categories'
-                }}
-                onChange={(value) => setSelectedCategory(value)}
-                value={selectedCategory}
-                defaultOptions={categories}
-                placeholder='Select categories'
-                hideClearAllButton
-                hidePlaceholderWhenSelected
-                emptyIndicator={<p className='text-center text-sm'>No results found</p>}
-                className='w-full'
-            />}
-        </div>
-    )
-}
+      {loading ? (
+        <Loader2 size={20} className="animate-spin" />
+      ) : (
+        <MultipleSelector
+          value={selectedObjects}
+          defaultOptions={categories}
+          onChange={(values: any[]) => {
+            const ids = values.map((v) => v.value);
+            onCategoriesChange(ids);
+          }}
+          placeholder="Select categories"
+          className="w-full"
+        />
+      )}
+    </div>
+  );
+};

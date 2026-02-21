@@ -29,7 +29,10 @@ export {
   fetchOrders,
   fetchOrderDetails,
   updateOrderStatus,
-  createOrder
+  createOrder,
+  getOrdersByUserId,
+  getOrderById
+
 } from "./order/action";
 
 export {
@@ -56,3 +59,6 @@ export {getFeaturedProducts, deleteFeaturedProduct , addFeaturedProduct} from ".
 
 //featured categories
 export {getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory} from "./featuredCategory/action"
+//user
+
+export {getProfile , updateProfile, getAddresses, saveAddress, deleteAddress} from "./user/action"

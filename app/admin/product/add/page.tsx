@@ -39,7 +39,7 @@ export default function AddProductForm() {
 
   const { upload, uploading } = useFileUpload();
 
-  const [selectedCategory, setSelectedCategory] = useState<any>([]);
+const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const [isInStock, setIsInStock] = useState(true);
   const [banner, setBanner] = useState<ImageItem | null>(null);
@@ -133,40 +133,36 @@ export default function AddProductForm() {
   };
 
 
-  const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleCreateProduct = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
 
-    if (!validatePrices(e.currentTarget)) return;
+  if (!validatePrices(e.currentTarget)) return;
 
-    const formData = new FormData(e.currentTarget);
+  const formData = new FormData(e.currentTarget);
 
-    selectedCategory.forEach((item: any) => {
-      formData.append("category[]", item.value);
-    });
+  // 🔥 Append category IDs directly
+  selectedCategories.forEach((catId) => {
+    formData.append("category[]", catId);
+  });
 
+  const product = await createProduct(formData);
+  const productId = product.id;
 
-    const product = await createProduct(formData);
-    const productId = product.id;
+  const payload = Object.entries(productAttributes)
+    .map(([attribute, { value }]) => ({
+      attribute,
+      value: value.trim(),
+    }))
+    .filter((a) => a.value.length > 0);
 
+  if (payload.length > 0) {
+    await saveProductAttributes(productId, payload);
+  }
 
-    // attach category
-    // if (selectedCategory) {
-    //   await attachProductCategory(productId, selectedCategory);
-    // }
-    const payload = Object.entries(productAttributes)
-      .map(([attribute, { value }]) => ({
-        attribute,
-        value: value.trim(),
-      }))
-      .filter((a) => a.value.length > 0);
-
-    if (payload.length > 0) {
-      await saveProductAttributes(productId, payload);
-    }
-
-    router.push("/admin/product");
-  };
-
+  router.push("/admin/product");
+};
 
   return (
     <div className="max-w-full ">
@@ -232,8 +228,10 @@ export default function AddProductForm() {
 
 
 
-              <MultiCategorySelect selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
-
+<MultiCategorySelect
+  selectedCategories={selectedCategories}
+  onCategoriesChange={setSelectedCategories}
+/>
 
             </div>
 

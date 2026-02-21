@@ -1,10 +1,9 @@
-import { getFeaturedCategories } from "@/helper";
+import { getFeaturedCategories } from "@/helper/index";
 import React from "react";
 import Link from "next/link";
 
 export const BentoGallery = async () => {
   const cards = await getFeaturedCategories();
-  console.log("cardsss", cards);
 
   return (
     <section className="max-w-7xl mx-auto py-10 px-4">

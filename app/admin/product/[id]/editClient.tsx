@@ -27,13 +27,6 @@ import { toast } from "sonner";
 
 
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
 import GallerySection from "../GallerySection";
@@ -60,8 +53,7 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
   );
 
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
+const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [bannerKey, setBannerKey] = useState<string | null>(productInfo.bannerImage);
   const [preview, setPreview] = useState<string | null>(toPublic(productInfo.bannerImage));
   const [uploading, setUploading] = useState(false);
@@ -98,8 +90,12 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
       const cats = await getCategories();
       setCategories(cats);
 
-      const current = await getProductCategory(productInfo.id);
-      if (current) setSelectedCategory(current.categoryId);
+     const current:any= await getProductCategory(productInfo.id);
+
+
+if (current?.length) {
+  setSelectedCategories(current.map((c: any) => c.categoryId));
+}
     }
     load();
   }, [productInfo.id]);
@@ -176,28 +172,36 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
   };
 
 
-  const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!validatePrices(e.currentTarget)) return;
+const handleUpdateProduct = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
+  if (!validatePrices(e.currentTarget)) return;
 
-    gallery.forEach(img => formData.append("existingMedia", img.key));
+  const formData = new FormData(e.currentTarget);
 
-    await updateProduct(formData);
+  selectedCategories.forEach((catId) =>
+    formData.append("category[]", catId)
+  );
 
-    if (selectedCategory)
-      await updateProductCategory(productInfo.id, selectedCategory);
+  gallery.forEach((img) =>
+    formData.append("media", img.key)
+  );
 
-    const payload = Object.entries(productAttributes)
-      .map(([attribute, { value }]) => ({ attribute, value: value.trim() }))
-      .filter(a => a.value.length > 0);
+  await updateProduct(formData);
 
-    await saveProductAttributes(productInfo.id, payload);
+  const payload = Object.entries(productAttributes)
+    .map(([attribute, { value }]) => ({
+      attribute,
+      value: value.trim(),
+    }))
+    .filter((a) => a.value.length > 0);
 
-    router.push("/admin/product");
-  };
+  await saveProductAttributes(productInfo.id, payload);
 
+  router.push("/admin/product");
+};
 
   return (
     <div className="max-w-full">
@@ -226,7 +230,7 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
 
                 <div className="space-y-2">
                   <Label>SKU</Label>
-                  <Input name="sku" defaultValue={productInfo.sku} required />
+                  <Input name="sku" defaultValue={productInfo.sku}  />
                 </div>
               </div>
 
@@ -258,12 +262,10 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
                 <Switch checked={isInStock} onCheckedChange={setIsInStock} />
                 <input type="hidden" name="isInStock" value={String(isInStock)} />
               </div>
-
-              <MultiCategorySelect
-                selectedCategories={selectedCategory}
-                onCategoriesChange={setSelectedCategory}
-              />
-
+<MultiCategorySelect
+  selectedCategories={selectedCategories}
+  onCategoriesChange={setSelectedCategories}
+/>
             </div>
 
             {/* BANNER */}
