@@ -32,7 +32,9 @@ const Page = () => {
 
   if (!result.success) {
     const firstError = result.error.issues?.[0]?.message || "Invalid data";
-    toast.error(firstError);
+     toast.error(firstError, {
+        className: "!border !border-red-500 !text-red-500",
+      });
     return;
   }
 
