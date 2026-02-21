@@ -6,46 +6,28 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import { ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCartStore } from "@/store/cartStore";
+
 import StarRatings from "react-star-ratings";
-import { addProductToUserCart } from "@/helper/index";
-import { useTransition } from "react";
-import { toast } from "sonner";
-import { tempUserId } from "@/const/globalconst";
+
+import { useAddToCart } from "@/helper/useAddToCart";
 
 const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
+  
 
-  const addItem = useCartStore((s) => s.addItem);
-  const [isPending, startTransition] = useTransition();
+  const { handleAddToCart, isPending } = useAddToCart();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    addItem({
-      productId: product.id,
-      sku: product.sku,
-      slug: product.slug,
-      title: product.name,
-      image: product.bannerImage,
-      price: product.basePrice,
-      originalPrice: product.strikethroughPrice ?? undefined,
-      attributes: [],
-    });
-
-    startTransition(async () => {
-      try {
-
-        await addProductToUserCart(tempUserId, product.id, 1);
-
-        toast.success(`${product.name} added to cart`);
-      } catch (err) {
-        console.error(err);
-
-        toast.error("Failed to sync cart");
-        useCartStore.getState().removeItem(product.id, []);
-      }
-    });
+  const productDetailsForCart = {
+    productId: product.id,
+    sku: product.sku,
+    slug: product.slug,
+    title: product.name,
+    image: product.bannerImage,
+    price: product.basePrice,
+    originalPrice: product.strikethroughPrice ?? undefined,
+    attributes: [],
   };
+
+  
 
   return (
     <>
@@ -93,7 +75,7 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
                 "transition-colors bg-[#235A62] hover:bg-[#1b454c] text-white",
                 isPending && "opacity-70 pointer-events-none",
               )}
-              onClick={handleAddToCart}
+              onClick={() => handleAddToCart(productDetailsForCart)}
             >
               {isPending ? (
                 "Adding..."

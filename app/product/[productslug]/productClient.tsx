@@ -19,6 +19,7 @@ import { useCartStore } from "@/store/cartStore";
 import { addProductToUserCart } from "@/helper";
 import { toast } from "sonner";
 import { tempUserId } from "@/const";
+import { useAddToCart } from "@/helper/useAddToCart";
 
 const productSpecifications = {
   brandName: "FORTUNE",
@@ -45,38 +46,20 @@ const ProductClient = ({
   productAttributes,
 }: any) => {
   const [bannerImage, setBannerImage] = useState<any>(productInfo.bannerImage);
-  
 
-    const addItem = useCartStore((s) => s.addItem);
-  const [isPending, startTransition] = useTransition();
+ 
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const { handleAddToCart, isPending } = useAddToCart();
 
-    addItem({
-      productId: productInfo.id,
-      sku: productInfo.sku,
-      slug: productInfo.slug,
-      title: productInfo.name,
-      image: productInfo.bannerImage,
-      price: productInfo.basePrice,
-      originalPrice: productInfo.strikethroughPrice ?? undefined,
-      attributes: [],
-    });
-
-    startTransition(async () => {
-      try {
-
-        await addProductToUserCart(tempUserId, productInfo.id, 1);
-
-        toast.success(`${productInfo.name} added to cart`);
-      } catch (err) {
-        console.error(err);
-
-        toast.error("Failed to sync cart");
-        useCartStore.getState().removeItem(productInfo.id, []);
-      }
-    });
+  const productDetailsForCart = {
+    productId: productInfo.id,
+    sku: productInfo.sku,
+    slug: productInfo.slug,
+    title: productInfo.name,
+    image: productInfo.bannerImage,
+    price: productInfo.basePrice,
+    originalPrice: productInfo.strikethroughPrice ?? undefined,
+    attributes: [],
   };
 
   const attributes = productAttributes ?? [];
@@ -184,7 +167,10 @@ const ProductClient = ({
           </div>
 
           <div className="flex gap-4 mt-2">
-            <button  onClick={handleAddToCart} className="flex-1 bg-teal-700 text-white py-2 rounded-full font-medium hover:bg-teal-800">
+            <button
+              onClick={() => handleAddToCart(productDetailsForCart)}
+              className="flex-1 bg-teal-700 text-white py-2 rounded-full font-medium hover:bg-teal-800"
+            >
               {isPending ? (
                 "Adding..."
               ) : (

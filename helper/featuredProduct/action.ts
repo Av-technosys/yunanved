@@ -18,6 +18,7 @@ export async function getFeaturedProducts() {
         reviewCount: productTable.reviewCount,
         slug: productTable.slug,
         bannerImage: productTable.bannerImage,
+        strikethroughPrice: productTable.strikethroughPrice,
       })
       .from(featuredItemsTable)
       .innerJoin(

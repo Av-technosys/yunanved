@@ -49,11 +49,9 @@ const AddFeaturedProductDialog = ({
     startTransition(() => updateQuery("search", debouncedSearch));
   }, [debouncedSearch]);
 
-
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchText(e.target.value);
   }
-
 
   const addFeaturedProductHandler = (productId: string) => {
     startTransition(async () => {
@@ -71,14 +69,13 @@ const AddFeaturedProductDialog = ({
   return (
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="data-[size=default]:sm:max-w-xl overflow-x-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Add Featured Product</AlertDialogTitle>
 
             <div className="w-full my-3">
               <div className="w-full flex gap-3 mb-2">
-               
-                    <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none">
+                <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none">
                   <InputGroupAddon>
                     <Search className="text-gray-500" />
                   </InputGroupAddon>
@@ -91,12 +88,8 @@ const AddFeaturedProductDialog = ({
                     className="bg-transparent focus:outline-none w-32 focus:w-56 transition-all duration-200"
                   />
                 </InputGroup>
-               
-
-                
-            
               </div>
-              <div className="relative">
+              <div className="relative h-60 overflow-y-auto">
                 {isPending && (
                   <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
                     <Loader2 className="animate-spin w-6 h-6 text-primary" />
@@ -144,7 +137,9 @@ const AddFeaturedProductDialog = ({
                   </TableBody>
                 </Table>
               </div>
-              <ProductPagination currentPage={currentPage} totalPages={total} />
+             <div className="max-w-lg overflow-x-auto"> 
+               <ProductPagination currentPage={currentPage} totalPages={total} />
+              </div>
             </div>
           </AlertDialogHeader>
 
