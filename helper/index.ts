@@ -29,6 +29,10 @@ export {
   fetchOrders,
   fetchOrderDetails,
   updateOrderStatus,
+  createOrder,
+  getOrdersByUserId,
+  getOrderById
+
 } from "./order/action";
 
 export {
@@ -48,3 +52,13 @@ export { signUp , signIn} from "./authentication/action";
 //cart
 
 export {addProductToUserCart , increaseCartItem, decreaseCartItem, removeCartItem} from "./cart/action"
+
+
+//featured products
+export {getFeaturedProducts, deleteFeaturedProduct , addFeaturedProduct} from "./featuredProduct/action"
+
+//featured categories
+export {getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory} from "./featuredCategory/action"
+//user
+
+export {getProfile , updateProfile, getAddresses, saveAddress, deleteAddress} from "./user/action"

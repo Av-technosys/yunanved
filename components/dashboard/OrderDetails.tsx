@@ -18,6 +18,7 @@ export const OrderDetailsPage = ({ orderId, onBack }: { orderId: string, onBack:
       try {
         setLoading(true);
         const data = await getOrderById(orderId);
+        console.log("data", data)
         setOrderData(data);
       } catch (error) {
         console.error("Error fetching order:", error);
@@ -93,15 +94,19 @@ export const OrderDetailsPage = ({ orderId, onBack }: { orderId: string, onBack:
             <div className="space-y-4">
               <div className="flex gap-3">
                 <MapPin className="text-gray-400" size={20} />
-                <p className="text-sm text-gray-600">
-                  <span className="font-bold text-gray-800">Address: </span> 
-                  {orderData.addressLine1}, {orderData.city}, {orderData.state} ({orderData.pincode})
-                </p>
+               <p className="text-sm text-gray-600">
+  <span className="font-bold text-gray-800">Address: </span>
+
+  {orderData.addressLine1 && `${orderData.addressLine1}`}
+  {orderData.city && `, ${orderData.city}`}
+  {orderData.state && `, ${orderData.state}`}
+  {orderData.pincode && ` (${orderData.pincode})`}
+</p>
               </div>
               <div className="flex gap-3">
                 <User className="text-gray-400" size={20} />
                 {/* Note: John Doe is placeholder as userId doesn't contain name in this response */}
-                <p className="text-sm text-gray-600"><span className="font-bold text-gray-800">Customer ID:</span> {orderData.userId.slice(0, 13)}...</p>
+                <p className="text-sm text-gray-600"><span className="font-bold text-gray-800">Customer ID:</span> {orderData.userId}</p>
               </div>
             </div>
           </Card>

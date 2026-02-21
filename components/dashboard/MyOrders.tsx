@@ -206,7 +206,7 @@ export const MyOrdersPage = ({
             Order
           </span>
           <h3 className="font-bold text-gray-900 text-sm tracking-tight">
-            #{order.id.split('-')[0].toUpperCase()}
+            #{order.id}
           </h3>
           <Badge
             className={`${getStatusColor(order.status)} capitalize text-[11px] px-2.5 py-0.5 border-none shadow-none`}
@@ -227,9 +227,13 @@ export const MyOrdersPage = ({
       {/* Middle Section: Shipping Brief (Uses your City/Pincode) */}
       <div className="hidden md:flex flex-col border-l border-gray-100 pl-6">
         <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">Shipping To</p>
-        <p className="text-xs font-medium text-gray-700 capitalize">
-          {order.city}, {order.pincode}
-        </p>
+    {(order.city || order.pincode) && (
+  <p className="text-xs font-medium text-gray-700 capitalize">
+    {order.city && order.city}
+    {order.city && order.pincode && ", "}
+    {order.pincode && order.pincode}
+  </p>
+)}
       </div>
 
       {/* Right Section: Price and Action */}
