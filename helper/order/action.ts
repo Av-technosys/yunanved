@@ -94,40 +94,104 @@ export async function updateOrderStatus(id: string, status: string | any) {
   await changeOrderStatus(id, status);
   revalidatePath("/admin/orders");
 }
-
-export async function createOrder(
-  data: any,
-  userId: string,
-  fixedAmount: number,
-) {
+export async function createOrder({
+  items,
+  userId,
+  fixedAmount,
+  address,
+  razorpayPaymentId,
+  razorpayOrderId,
+}: {
+  items: { productId: string; quantity: number }[];
+  userId: string;
+  fixedAmount: number;
+  address: any;
+  razorpayPaymentId: string;
+  razorpayOrderId: string;
+}) {
   try {
-    await db.transaction(async (tx) => {
-      if (!data || data.length === 0) {
+    return await db.transaction(async (tx) => {
+      if (!items || items.length === 0) {
         throw new Error("Order items are required");
       }
-      const orderResult = await tx
+
+      const productIds = items.map((i) => i.productId);
+      const safeAmount = Math.round(Number(fixedAmount));
+      const products = await tx
+        .select()
+        .from(product)
+        .where(inArray(product.id, productIds));
+
+      if (products.length !== items.length) {
+        throw new Error("Some products not found");
+      }
+
+      const productMap = Object.fromEntries(
+        products.map((p) => [p.id, p])
+      );
+
+       
+      const insertedOrder = await tx
         .insert(order)
         .values({
           userId,
-          totalAmountPaid: fixedAmount,
-          status: "pending",
+          status: "paid",
+         totalAmountPaid:safeAmount,
+
+          addressLine1: address.addressLine1,
+          addressLine2: address.addressLine2,
+          city: address.city,
+          state: address.state,
+          pincode: address.pincode,
+          latitude: address.latitude ?? null,
+          longitude: address.longitude ?? null,
         })
         .returning({ id: order.id });
 
-      const orderId = orderResult[0].id;
-     
-      await tx.insert(orderItem).values(
-        data.map((item: any) => ({
-          orderId,
-          productId: item.productId,
-          quantity: item.quantity,
-          productName: item.title,
-          productSlug: item.slug,
-          productImage: item.image,
-          productSKU: item.sku,
-          productPrice: item.price,
-        })),
-      );
+      const orderId = insertedOrder[0].id;
+
+      
+const orderItemsToInsert = [];
+
+for (const item of items) {
+  const p = productMap[item.productId];
+
+  if (!p) {
+    throw new Error("Product not found");
+  }
+
+  if (
+    p.name == null ||
+    p.slug == null ||
+    p.basePrice == null
+  ) {
+    throw new Error("Invalid product data");
+  }
+
+  orderItemsToInsert.push({
+    orderId,
+    productId: p.id,
+    quantity: item.quantity,
+    productName: p.name,       
+    productSlug: p.slug,
+    productImage: p.bannerImage ?? null,
+    productSKU: p.sku ?? null,
+    productPrice: p.basePrice,     
+  });
+}
+
+await tx.insert(orderItem).values(orderItemsToInsert);
+
+      await tx.insert(payment).values({
+        orderId,
+        paymentId: razorpayPaymentId,
+        paymentStatus: "success",
+        paymentMethod: "razorpay",
+        paymentAmount: safeAmount,
+        paymentCurrency: "INR",
+        paymentDescription: "Order Payment",
+        paymentGatewayOrderId: razorpayOrderId,
+      });
 
       const userCartRecord = await tx.query.userCart.findFirst({
         where: eq(userCart.userId, userId),
@@ -138,17 +202,27 @@ export async function createOrder(
           .delete(userCartItems)
           .where(eq(userCartItems.cartId, userCartRecord.id));
 
-        await tx.delete(userCart).where(eq(userCart.id, userCartRecord.id));
+        await tx
+          .delete(userCart)
+          .where(eq(userCart.id, userCartRecord.id));
       }
+
+      return {
+        success: true,
+        orderId,
+      };
     });
-    return { success: true, message: "Order created successfully" };
   } catch (error) {
-    console.error("Error creating order:", error);
-    return { success: false, message: "Failed to create order" };
+    console.error("Order creation failed:", error);
+    return {
+      success: false,
+      message: "Failed to create order",
+    };
   }
 }
+
 export async function getOrdersByUserId(userId: string) {
-  //later we will take user id from req
+
   const orders = await db
     .select()
     .from(order)
