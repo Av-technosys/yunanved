@@ -39,7 +39,9 @@ const submitHandler = async (e: any) => {
 
   if (!result.success) {
    const firstError = result.error.issues[0].message;
-    toast.error(firstError);
+    toast.error(firstError, {
+        className: "!border !border-red-500 !text-red-500",
+      });
     return;
   }
 

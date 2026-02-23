@@ -100,7 +100,7 @@ const AddFeaturedCategoryDialog = ({
                   />
                 </InputGroup>
               </div>
-              <div className="relative">
+              <div className="relative  h-60 overflow-y-auto">
                 {isPending && (
                   <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
                     <Loader2 className="animate-spin w-6 h-6 text-primary" />
@@ -148,7 +148,9 @@ const AddFeaturedCategoryDialog = ({
                   </TableBody>
                 </Table>
               </div>
-              <ProductPagination currentPage={currentPage} totalPages={total} />
+             <div className="max-w-lg overflow-x-auto">
+               <ProductPagination currentPage={currentPage} totalPages={total} />
+             </div>
             </div>
           </AlertDialogHeader>
 
