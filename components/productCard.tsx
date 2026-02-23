@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "./ui/card";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,6 +15,8 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
   
 
   const { handleAddToCart, isPending } = useAddToCart();
+  const [isAdding, setIsAdding] = useState(false);
+  const clickLock = useRef(false);
 
   const productDetailsForCart = {
     productId: product.id,
@@ -27,7 +29,19 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
     attributes: [],
   };
 
-  
+  const handleClick = async () => {
+    if (clickLock.current || isAdding) return;
+
+    clickLock.current = true;
+    setIsAdding(true);
+
+    try {
+      await handleAddToCart(productDetailsForCart);
+    } finally {
+      setIsAdding(false);
+      clickLock.current = false;
+    }
+  };
 
   return (
     <>
@@ -69,21 +83,17 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
           <div className="flex w-full mt-3 items-center justify-between">
             <div>₹{product.basePrice}</div>
 
-            <Button
-              disabled={isPending}
-              className={cn(
-                "transition-colors bg-[#235A62] hover:bg-[#1b454c] text-white",
-                isPending && "opacity-70 pointer-events-none",
-              )}
-              onClick={() => handleAddToCart(productDetailsForCart)}
-            >
-              {isPending ? (
-                "Adding..."
-              ) : (
-                <span className="hidden md:block">Add to Cart</span>
-              )}
-              <ShoppingCart />
-            </Button>
+<Button
+  disabled={isAdding}
+  className={cn(
+    "transition-colors bg-[#235A62] hover:bg-[#1b454c] text-white",
+    isAdding && "opacity-70 pointer-events-none"
+  )}
+  onClick={handleClick}
+>
+  {isAdding ? "Adding..." : "Add to Cart"}
+  <ShoppingCart />
+</Button>
           </div>
         </CardContent>
       </Card>

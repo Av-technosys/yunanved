@@ -2,7 +2,7 @@
 "use server";
 
 import { paginate } from "@/lib/pagination";
-import { and, or, sql, asc, eq ,desc, inArray  } from "drizzle-orm";
+import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { order, orderItem, payment } from "@/db/orderSchema";
 import { user } from "@/db/userSchema";
@@ -110,34 +110,34 @@ export async function createOrder({
   razorpayOrderId: string;
 }) {
   try {
-    return await db.transaction(async (tx) => {
-      if (!items || items.length === 0) {
-        throw new Error("Order items are required");
-      }
+    if (!items || items.length === 0) {
+      throw new Error("Order items are required");
+    }
 
-      const productIds = items.map((i) => i.productId);
-      const safeAmount = Math.round(Number(fixedAmount));
-      const products = await tx
-        .select()
-        .from(product)
-        .where(inArray(product.id, productIds));
+    const productIds = items.map((i) => i.productId);
 
-      if (products.length !== items.length) {
-        throw new Error("Some products not found");
-      }
+    const products = await db
+      .select()
+      .from(product)
+      .where(inArray(product.id, productIds));
 
-      const productMap = Object.fromEntries(
-        products.map((p) => [p.id, p])
-      );
+    if (products.length !== items.length) {
+      throw new Error("Some products not found");
+    }
 
-       
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+ 
+    const safeAmount = Math.round(fixedAmount);
+
+
+    const result = await db.transaction(async (tx) => {
       const insertedOrder = await tx
         .insert(order)
         .values({
           userId,
           status: "paid",
-         totalAmountPaid:safeAmount,
-
+          totalAmountPaid: safeAmount,
           addressLine1: address.addressLine1,
           addressLine2: address.addressLine2,
           city: address.city,
@@ -150,68 +150,58 @@ export async function createOrder({
 
       const orderId = insertedOrder[0].id;
 
-      
-const orderItemsToInsert = [];
 
-for (const item of items) {
-  const p = productMap[item.productId];
+      const orderItemsToInsert = items.map((item) => {
+        const p = productMap.get(item.productId);
 
-  if (!p) {
-    throw new Error("Product not found");
-  }
+        if (!p || !p.name || !p.slug || p.basePrice == null) {
+          throw new Error("Invalid product data");
+        }
 
-  if (
-    p.name == null ||
-    p.slug == null ||
-    p.basePrice == null
-  ) {
-    throw new Error("Invalid product data");
-  }
-
-  orderItemsToInsert.push({
-    orderId,
-    productId: p.id,
-    quantity: item.quantity,
-    productName: p.name,       
-    productSlug: p.slug,
-    productImage: p.bannerImage ?? null,
-    productSKU: p.sku ?? null,
-    productPrice: p.basePrice,     
-  });
-}
-
-await tx.insert(orderItem).values(orderItemsToInsert);
-
-      await tx.insert(payment).values({
-        orderId,
-        paymentId: razorpayPaymentId,
-        paymentStatus: "success",
-        paymentMethod: "razorpay",
-        paymentAmount: safeAmount,
-        paymentCurrency: "INR",
-        paymentDescription: "Order Payment",
-        paymentGatewayOrderId: razorpayOrderId,
+        return {
+          orderId,
+          productId: p.id,
+          quantity: item.quantity,
+          productName: p.name,
+          productSlug: p.slug,
+          productImage: p.bannerImage ?? null,
+          productSKU: p.sku ?? null,
+          productPrice: p.basePrice,
+        };
       });
 
-      const userCartRecord = await tx.query.userCart.findFirst({
-        where: eq(userCart.userId, userId),
-      });
+      await Promise.all([
+        tx.insert(orderItem).values(orderItemsToInsert),
+        tx.insert(payment).values({
+          orderId,
+          paymentId: razorpayPaymentId,
+          paymentStatus: "success",
+          paymentMethod: "razorpay",
+          paymentAmount: safeAmount,
+          paymentCurrency: "INR",
+          paymentDescription: "Order Payment",
+          paymentGatewayOrderId: razorpayOrderId,
+        }),
+      ]);
 
-      if (userCartRecord) {
-        await tx
-          .delete(userCartItems)
-          .where(eq(userCartItems.cartId, userCartRecord.id));
-
-        await tx
-          .delete(userCart)
-          .where(eq(userCart.id, userCartRecord.id));
-      }
-
-      return {
-        success: true,
-        orderId,
-      };
+      return { orderId };
     });
+    const cart = await db.query.userCart.findFirst({
+      where: eq(userCart.userId, userId),
+    });
+
+    if (cart) {
+      await db.delete(userCartItems)
+        .where(eq(userCartItems.cartId, cart.id));
+
+      await db.delete(userCart)
+        .where(eq(userCart.id, cart.id));
+    }
+    return {
+      success: true,
+      orderId: result.orderId,
+    };
+
   } catch (error) {
     console.error("Order creation failed:", error);
     return {
@@ -235,56 +225,35 @@ export async function getOrdersByUserId(userId: string) {
 
 
 export async function getOrderById(orderId: string) {
-  const orderRows = await db
-    .select()
+  const rows = await db
+    .select({
+      order: order,
+      item: orderItem,
+      product: product,
+      payment: payment,
+    })
     .from(order)
-    .where(eq(order.id, orderId))
-    .limit(1);
+    .leftJoin(orderItem, eq(order.id, orderItem.orderId))
+    .leftJoin(product, eq(orderItem.productId, product.id))
+    .leftJoin(payment, eq(order.id, payment.orderId))
+    .where(eq(order.id, orderId));
 
-  if (!orderRows.length) return null;
+  if (!rows.length) return null;
 
-  const orderData = orderRows[0];
+  const orderData = rows[0].order;
 
-  const items = await db
-    .select()
-    .from(orderItem)
-    .where(eq(orderItem.orderId, orderId));
+  const items = rows
+    .filter((r) => r.item)
+    .map((r) => ({
+      ...r.item,
+      product: r.product ?? null,
+    }));
 
-const productIds = [
-  ...new Set(
-    items
-      .map((item) => item.productId)
-      .filter((id): id is string => id !== null)
-  ),
-];
-
-  const products = productIds.length
-    ? await db
-        .select()
-        .from(product)
-        .where(inArray(product.id, productIds))
-    : [];
-
-  const productMap = Object.fromEntries(
-    products.map((p) => [p.id, p])
-  );
-
-  const itemsWithProduct = items.map((item:any) => ({
-    ...item,
-    product: productMap[item.productId] || null,
-  }));
-
-  const paymentRows = await db
-    .select()
-    .from(payment)
-    .where(eq(payment.orderId, orderId))
-    .limit(1);
-
-  const paymentData = paymentRows.length ? paymentRows[0] : null;
+  const paymentData = rows[0].payment ?? null;
 
   return {
     ...orderData,
-    items: itemsWithProduct,
+    items,
     payment: paymentData,
   };
 }
