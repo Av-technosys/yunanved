@@ -43,7 +43,7 @@ export {
 
 
 //reviews
-export {toggleApproveReview ,  deleteReview, getReviewStats } from "./review/action"
+export {toggleApproveReview ,  deleteReview, getReviewStats ,createReview} from "./review/action"
 
 //auth
 export { signUp , signIn} from "./authentication/action";
