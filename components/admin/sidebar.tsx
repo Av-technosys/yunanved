@@ -13,6 +13,7 @@ import {
   Code,
   Feather,
   ShoppingCart,
+  IndianRupee
 } from "lucide-react";
 
 const navItems = [
@@ -22,6 +23,8 @@ const navItems = [
   { label: "Order", href: "/admin/order", icon: FileText },
   { label: "User", href: "/admin/users", icon: User },
   { label: "Review", href: "/admin/review", icon: MessageSquare },
+    { label: "Payment", href: "/admin/payment", icon: IndianRupee },
+
   {
     label: "Featured Products",
     href: "/admin/featured-products",
