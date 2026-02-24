@@ -32,6 +32,7 @@ import { PRODUCT_ATTRIBUTES } from "@/const/productAttribute";
 import GallerySection from "../GallerySection";
 import AttributeSection from "../AttributeSection";
 import { MultiCategorySelect } from "@/components/multiCategorySelect";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 type ImageItem = { key: string; preview: string };
 type AttributeValue = { id?: string; value: string };
@@ -41,7 +42,7 @@ export default function EditProduct({ productInfo, media, attributes }: any) {
   const router = useRouter();
   const { upload } = useFileUpload();
 
-  const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+  const BASE = NEXT_PUBLIC_S3_BASE_URL!;
   const toPublic = (key: string | null) => key ? `${BASE}/${key}` : null;
 
 

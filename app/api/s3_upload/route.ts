@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3 } from "@/lib/s3";
+import { AWS_BUCKET } from "@/env";
 
 export async function POST(req: Request) {
   const { fileName, fileType , folder } = await req.json();
@@ -9,7 +10,7 @@ export async function POST(req: Request) {
   const fileKey = `${folder}/${Date.now()}-${fileName}`;
 
   const command = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET!,
+    Bucket: AWS_BUCKET!,
     Key: fileKey,
     ContentType: fileType,
   });

@@ -10,11 +10,12 @@ import { CheckCircle2, Phone, Mail, ChevronDown } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { fetchOrderDetails } from "@/helper/index"; // server action
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 export default function Details({ id }: { id: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
 
-  const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+  const BASE = NEXT_PUBLIC_S3_BASE_URL!;
 
   const toPublic = (key: string | null) =>
     key ? `${BASE}/${key}` : "/placeholder.png";
