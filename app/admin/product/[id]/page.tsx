@@ -14,7 +14,7 @@ const Page = async ({ params }: PageProps) => {
     return;
   }
 
-  const { media, attributes, reviews, ...productInfo } = product;
+  const { media, attributes, reviewWithMedia, ...productInfo } = product;
 
   return (
     <EditProduct

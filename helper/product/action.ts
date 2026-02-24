@@ -12,7 +12,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
-import { reviewMediaTable, reviewsTable } from "@/db/schema";
+import { reviewMediaTable, reviewsTable, userTable } from "@/db/schema";
 import { isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
@@ -245,21 +245,37 @@ export async function getFullProduct(identifier: string) {
           rating: reviewsTable.rating,
           message: reviewsTable.message,
           createdAt: reviewsTable.createdAt,
-          image: reviewMediaTable.mediaURL,
+          image: userTable.profileImage,
         })
         .from(reviewsTable)
-        .innerJoin(
-          reviewMediaTable,
-          eq(reviewsTable.id, reviewMediaTable.reviewId),
-        )
+        .innerJoin(userTable, eq(reviewsTable.userId, userTable.id))
         .where(eq(reviewsTable.productId, productId)),
     ]);
+
+    const reviewWithMedia = await Promise.all(
+      reviews.map(async (review) => {
+        const reviewMedia = await db
+          .select({
+            id: reviewMediaTable.id,
+            reviewId: reviewMediaTable.reviewId,
+            mediaType: reviewMediaTable.mediaType,
+            mediaURL: reviewMediaTable.mediaURL,
+          })
+          .from(reviewMediaTable)
+          .where(eq(reviewMediaTable.reviewId, review.id));
+
+        return {
+          ...review,
+          media: reviewMedia,
+        };
+      }),
+    );
 
     return {
       ...productInfo,
       media,
       attributes,
-      reviews,
+      reviewWithMedia,
     };
   } catch (error) {
     console.error("getFullProduct failed:", error);

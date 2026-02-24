@@ -257,9 +257,9 @@ const ProductClient = ({
       <div className="max-w-6xl px-2 md:px-4 mb-10 lg:px-0 mt-5 mx-auto">
         <div className="text-lg mb-5 font-bold">Customer Reviews</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {productInfo.reviews.length > 0 ? (
-            productInfo.reviews.map((review: any, index: number) => (
-              <ReviewCard key={index} review={review} />
+          {productInfo.reviewWithMedia.length > 0 ? (
+            productInfo.reviewWithMedia.map((review: any, index: number) => (
+              <ReviewCard key={review.id} review={review} />
             ))
           ) : (
             <p className="text-sm text-gray-800">No Reviews Found.</p>

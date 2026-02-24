@@ -60,7 +60,7 @@ export async function getReviewStats() {
 
 export async function createReview(reviewData: any) {
   try {
-    const { userId, productId, rating, message, image } = reviewData;
+    const { userId, productId, rating, message, media } = reviewData;
     await db.transaction(async (tx) => {
       const userInfo = await tx.query.userTable.findFirst({
         where: eq(userTable.id, userId),
@@ -77,21 +77,25 @@ export async function createReview(reviewData: any) {
           productId,
           name: userInfo?.name || "",
           email: userInfo?.email || "",
-          rating:Number(rating),
+          rating: Number(rating),
           message,
         })
         .returning({ id: reviewsTable.id });
 
-      await tx.insert(reviewMediaTable).values({
-        reviewId: reviewId[0].id,
-        mediaType: "image",
-        mediaURL: image,
-      });
+      if (media?.length > 0) {
+        await tx.insert(reviewMediaTable).values(
+          media.map((image: any) => ({
+            reviewId: reviewId[0].id,
+            mediaType: "image",
+            mediaURL: image.fileKey,
+          })),
+        );
+      }
     });
 
     return { success: true };
   } catch (error) {
     console.error("Failed to create review:", error);
-    return { success: false  };
+    return { success: false };
   }
 }
