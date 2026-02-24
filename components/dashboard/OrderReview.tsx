@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Calendar, ChevronRight, Loader2, Star, Upload } from "lucide-react";
 import React, { useState } from "react";
@@ -17,6 +18,7 @@ import { useFileUpload } from "@/helper/useFileUpload";
 import { createReview } from "@/helper";
 import { toast } from "sonner";
 import { on } from "events";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any) => {
   const { upload, uploading } = useFileUpload();
@@ -177,7 +179,7 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
                           <div className="flex gap-3 items-center ">
                             <div className="w-12 h-12  overflow-hidden  relative rounded-md">
                               <Image
-                                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`}
+                                src={`${NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`}
                                 alt={item.productName}
                                 fill
                                 className="object-cover"

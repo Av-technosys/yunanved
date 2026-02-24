@@ -1,1 +1,11 @@
 export const DATABASE_URL: string = process.env.DATABASE_URL!;
+export const AWS_REGION: string = process.env.AWS_REGION!;
+export const AWS_ACCESS_KEY: string = process.env.AWS_ACCESS_KEY!;
+export const AWS_SECRET_KEY: string = process.env.AWS_SECRET_KEY!;
+export const AWS_BUCKET: string = process.env.AWS_BUCKET!;
+export const NEXT_PUBLIC_S3_BASE_URL: string = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+export const RAZORPAY_KEY_ID: string = process.env.RAZORPAY_KEY_ID!;
+export const RAZORPAY_KEY_SECRET: string = process.env.RAZORPAY_KEY_SECRET!;
+export const NEXT_PUBLIC_RAZORPAY_KEY_ID: string = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!;
+
+

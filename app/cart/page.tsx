@@ -30,6 +30,7 @@ import Link from "next/link";
 import Footer from "@/components/landing/Footer";
 import { tempUserId } from "@/const/globalconst";
 import { useRouter } from "next/navigation";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const breadcrumb = [
   { name: "Home", href: "/" },
@@ -288,7 +289,7 @@ initializeCheckout({
                             <div className="flex flex-1 items-start gap-4">
                               <div className="relative h-24 w-24 flex-shrink-0">
                                 <Image
-                                  src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${live.bannerImage}`}
+                                  src={`${NEXT_PUBLIC_S3_BASE_URL}/${live.bannerImage}`}
                                   alt={live.name}
                                   fill
                                   className="rounded-lg bg-gray-100 object-cover"

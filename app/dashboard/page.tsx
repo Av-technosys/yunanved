@@ -8,6 +8,7 @@ import { User, Phone, Mail, Camera, ChevronRight, Loader2 } from "lucide-react";
 import {toast} from "sonner";
 import { tempUserId } from "@/const";
 import { useFileUpload } from "@/helper/useFileUpload";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 
 export default function ProfilePage() {
@@ -107,7 +108,7 @@ return (
           <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 shadow-md border border-gray-200">
             {form.profileImage ? (
               <img
-                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${form.profileImage}`}
+                src={`${NEXT_PUBLIC_S3_BASE_URL}/${form.profileImage}`}
                 alt="Profile"
                 className="w-full h-full object-cover"
                 onError={(e: any) => {

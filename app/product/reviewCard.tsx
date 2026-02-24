@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Card,
   CardContent,
@@ -6,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 import Image from "next/image";
 import StarRatings from "react-star-ratings";
@@ -17,7 +19,7 @@ export default function ReviewCard({ review }: any) {
       <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
         <div className="relative w-14 h-14 rounded-full overflow-hidden shrink-0">
           <Image
-            src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${review.image}`}
+            src={`${NEXT_PUBLIC_S3_BASE_URL}/${review.image}`}
             alt="user image"
             fill
             className="object-cover"
