@@ -1,1 +1,1 @@
-//in db user table we have to add avtar section 
+nextjs
