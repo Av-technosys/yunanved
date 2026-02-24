@@ -1,6 +1,7 @@
 import { getFeaturedCategories } from "@/helper/index";
 import React from "react";
 import Link from "next/link";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 export const BentoGallery = async () => {
   const cards = await getFeaturedCategories();
@@ -21,7 +22,7 @@ export const BentoGallery = async () => {
             >
               {/* Background Image */}
               <img
-                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${card.bannerImage}`}
+                src={`${NEXT_PUBLIC_S3_BASE_URL}/${card.bannerImage}`}
                 alt={card.name}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />

@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import StarRatings from "react-star-ratings";
 
 import { useAddToCart } from "@/helper/useAddToCart";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
   
@@ -50,7 +51,7 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
           <Link href={`/product/${product.slug}`}>
             <div className={cn(`relative min-h-52 w-full`, className)}>
               <Image
-                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
+                src={`${NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
                 alt={product.name}
                 fill
                 className="object-cover rounded-md"

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import { getCategories } from "@/helper";
 import Link from "next/link";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 // const categories = [
 //   { name: "Electronics", image: "/category.jpg" },
@@ -64,7 +65,7 @@ export async function Categories() {
                         <div className="bg-white p-[2px] rounded-full">
                           <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 overflow-hidden rounded-full border border-slate-100 shadow-inner">
                             <img
-                              src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${cat.bannerImage}`}
+                              src={`${NEXT_PUBLIC_S3_BASE_URL}/${cat.bannerImage}`}
                               alt={cat.name}
                               className="w-full h-full object-cover"
                             />

@@ -20,6 +20,7 @@ import { addProductToUserCart } from "@/helper";
 import { toast } from "sonner";
 import { tempUserId } from "@/const";
 import { useAddToCart } from "@/helper/useAddToCart";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const ProductClient = ({
   productInfo,
@@ -84,7 +85,7 @@ const ProductClient = ({
                          `}
                 >
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${image.mediaURL}`}
+                    src={`${NEXT_PUBLIC_S3_BASE_URL}/${image.mediaURL}`}
                     alt="product thumbnail"
                     fill
                     className="object-cover rounded-md"
@@ -96,7 +97,7 @@ const ProductClient = ({
           <div className="w-full h-full md:w-3/4 order-1 md:order-2  flex  items-center justify-center bg-[#F5F5F5] rounded-lg">
             <div className="h-full w-full relative flex items-center justify-center">
               <Image
-                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${bannerImage ? bannerImage : productBannerImage}`}
+                src={`${NEXT_PUBLIC_S3_BASE_URL}/${bannerImage ? bannerImage : productBannerImage}`}
                 alt={"bannerImage"}
                 fill
                 className="object-contain rounded-md"
