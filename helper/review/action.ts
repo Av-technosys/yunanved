@@ -1,11 +1,11 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { review } from "@/db/reviewSchema";
+import { review, reviewMedia } from "@/db/reviewSchema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
-
+import { reviewMediaTable, reviewsTable, userTable } from "@/db/schema";
 
 export async function toggleApproveReview(id: string) {
   try {
@@ -42,8 +42,6 @@ export async function deleteReview(id: string) {
   }
 }
 
-
-
 export async function getReviewStats() {
   try {
     const [data] = await db
@@ -57,5 +55,43 @@ export async function getReviewStats() {
   } catch (error) {
     console.error("Failed to fetch review stats:", error);
     return { success: false };
+  }
+}
+
+export async function createReview(reviewData: any) {
+  try {
+    const { userId, productId, rating, message, image } = reviewData;
+    await db.transaction(async (tx) => {
+      const userInfo = await tx.query.userTable.findFirst({
+        where: eq(userTable.id, userId),
+        columns: {
+          name: true,
+          email: true,
+        },
+      });
+
+      const reviewId = await tx
+        .insert(reviewsTable)
+        .values({
+          userId,
+          productId,
+          name: userInfo?.name || "",
+          email: userInfo?.email || "",
+          rating:Number(rating),
+          message,
+        })
+        .returning({ id: reviewsTable.id });
+
+      await tx.insert(reviewMediaTable).values({
+        reviewId: reviewId[0].id,
+        mediaType: "image",
+        mediaURL: image,
+      });
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create review:", error);
+    return { success: false  };
   }
 }
