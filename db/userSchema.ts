@@ -10,13 +10,16 @@ import { product } from "./productSchema";
 
 export const user = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name"),
+  first_name: varchar("first_name").notNull(),
+  last_name: varchar("last_name"),
   email: varchar("email").unique().notNull(),
   number: varchar("number"),
   password: varchar("password"),
   profileImage: varchar("profile_image"),
   user_type: varchar("user_type").notNull().default("0"),
   loyaltyPoints: integer("loyalty_points").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  isVerified: boolean("is_verified").notNull().default(false),
   //   timestamp
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -32,7 +35,7 @@ export const userAddress = pgTable("user_address", {
   pincode: varchar("pincode"),
   latitude: varchar("latitude"),
   longitude: varchar("longitude"),
-  isDefault: boolean("is_default").notNull().default(false),
+  isPrimary: boolean("is_primary").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
