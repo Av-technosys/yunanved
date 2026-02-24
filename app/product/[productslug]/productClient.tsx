@@ -14,31 +14,12 @@ import { Button } from "@/components/ui/button";
 
 import ReviewCard from "@/app/product/reviewCard";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { addProductToUserCart } from "@/helper";
 import { toast } from "sonner";
 import { tempUserId } from "@/const";
 import { useAddToCart } from "@/helper/useAddToCart";
-
-const productSpecifications = {
-  brandName: "FORTUNE",
-  specialty: "Suitable for vegetarians",
-  dietType: "Vegetarian",
-  itemForm: "Raw",
-  regionOfOrigin: "South Asia",
-  manufacturer: "Adani Wilmar Atta",
-  customerReviews: {
-    totalReviews: 28974,
-    ratingText: "4.3 out of 5 stars",
-  },
-  bestSellersRank:
-    "#154 in Grocery & Gourmet Foods (See Top 100 in Grocery & Gourmet Foods) #9 in Wheat Flours",
-  itemWeight: "10000 Grams",
-  itemPackageWeight: "10 Kilograms",
-  numberOfItems: 1,
-  unitCount: "10000.0 Grams",
-};
 
 const ProductClient = ({
   productInfo,
@@ -47,8 +28,8 @@ const ProductClient = ({
 }: any) => {
   const [bannerImage, setBannerImage] = useState<any>(productInfo.bannerImage);
 
- 
-
+  const [isAdding, setIsAdding] = useState(false);
+  const clickLock = useRef(false);
   const { handleAddToCart, isPending } = useAddToCart();
 
   const productDetailsForCart = {
@@ -67,6 +48,22 @@ const ProductClient = ({
   const leftAttributes = attributes.slice(0, 5);
 
   const rightAttributes = attributes.slice(5);
+
+  const handleClick = async () => {
+    if (clickLock.current) return;
+
+    clickLock.current = true;
+    setIsAdding(true);
+
+    try {
+      await handleAddToCart(productDetailsForCart);
+    } catch (err) {
+      console.error("Add to cart failed", err);
+    } finally {
+      setIsAdding(false);
+      clickLock.current = false;
+    }
+  };
 
   return (
     <>
@@ -168,16 +165,14 @@ const ProductClient = ({
 
           <div className="flex gap-4 mt-2">
             <button
-              onClick={() => handleAddToCart(productDetailsForCart)}
-              className="flex-1 bg-teal-700 text-white py-2 rounded-full font-medium hover:bg-teal-800"
+              onClick={handleClick}
+              disabled={isAdding}
+              className={`flex-1 bg-teal-700 text-white py-2 rounded-full font-medium 
+              hover:bg-teal-800 transition
+              ${isAdding ? "opacity-70 pointer-events-none" : ""}`}
             >
-              {isPending ? (
-                "Adding..."
-              ) : (
-                <span className="hidden md:block">Add to Cart</span>
-              )}
+              {isAdding ? "Adding..." : "Add to Cart"}
             </button>
-
             <button className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600">
               Buy Now
             </button>

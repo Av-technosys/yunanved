@@ -14,7 +14,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col font-sans overflow-x-hidden">
       <NavBar />
       <main className="flex-1 w-full">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col gap-6">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col gap-2">
           <Hero />
           <Categories />
           <BentoGallery />

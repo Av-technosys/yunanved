@@ -1,5 +1,5 @@
 "use client"
-import { Search, MapPin, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/cartStore";
@@ -15,7 +15,7 @@ const totalItems = useCartStore((s) => s.lineItems());
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
       <div
         className={
-          "max-w-6xl mx-auto flex items-center justify-between gap-4 md:gap-8"
+          "max-w-6xl mx-auto flex items-center justify-between gap-4 md:gap-16"
         }
       >
         {/* Logo */}
@@ -27,7 +27,10 @@ const totalItems = useCartStore((s) => s.lineItems());
 
         {/* Location Picker */}
         <div className="hidden lg:flex items-center gap-2 text-[#1A2E35] cursor-pointer group">
-          <MapPin size={20} className="text-[#1A2E35]" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+  <path fillRule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clipRule="evenodd" />
+</svg>
+
           <div className="flex flex-col leading-tight">
             <span className="text-[10px] text-gray-500 font-medium">
               Deliver to
@@ -38,23 +41,21 @@ const totalItems = useCartStore((s) => s.lineItems());
           </div>
         </div>
 
-        {/* Search Bar Container */}
-        <div className="flex-grow max-w-2xl relative flex items-center">
-          <div className="relative w-full">
-            <Input
-              type="text"
-              placeholder="Search for Products, Brands & More"
-              className="w-full h-11 rounded-full border-slate-300 pr-14 pl-6 text-sm focus-visible:ring-1 focus-visible:ring-slate-400"
-            />
-            {/* Search Button integrated inside the bar */}
-            <Button
-              size="icon"
-              className="absolute right-1 top-1 h-9 w-9 rounded-full bg-[#3D3D3D] hover:bg-black text-white"
-            >
-              <Search size={18} />
-            </Button>
-          </div>
-        </div>
+    {/* Search Bar Container */}
+<div className="flex-grow max-w-2xl flex items-center gap-2">
+  <Input
+    type="text"
+    placeholder="Search for Products, Brands & More"
+    className="flex-1 h-11 rounded-full border-slate-300 pl-6 text-sm focus-visible:ring-1 focus-visible:ring-slate-400"
+  />
+
+  <Button
+    size="icon"
+    className="h-11 w-11 rounded-full bg-[#3D3D3D] hover:bg-black text-white"
+  >
+    <Search size={18} />
+  </Button>
+</div>
 
         {/* Actions (Sign Up, Login, Cart) */}
         <div className="flex items-center gap-3 md:gap-6">

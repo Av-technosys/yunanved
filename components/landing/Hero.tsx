@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Truck, RotateCcw, ShieldCheck, Headphones } from "lucide-react";
+import { Truck, RotateCcw, Headphones, Lock } from "lucide-react";
 import Link from "next/link";
 
 export const Hero = () => {
   return (
     <div className="w-full bg-white">
       {/* Top Category Nav */}
-      <nav className="hidden md:flex justify-center items-center gap-16 py-4  text-sm font-medium text-slate-600">
+      <nav className="hidden md:flex justify-center items-center gap-10 py-1  text-sm font-medium text-slate-700">
         {[
           "Mens wear",
           "Womens Wear",
@@ -28,7 +28,7 @@ export const Hero = () => {
         ))}
       </nav>
 
-      <div className="max-w-7xl mx-auto  py-10 space-y-10">
+      <div className="max-w-7xl mx-auto  py-4 space-y-10">
         {/* Main Hero Banner */}
         <div className="relative w-full h-[300px] md:h-[300px] rounded-xl overflow-hidden group">
           <img
@@ -51,7 +51,7 @@ export const Hero = () => {
         {/* Triple Promo Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1 - Essentials */}
-          <div className="bg-[#00CCEE] rounded-xl p-8 relative overflow-hidden h-64 flex flex-col justify-between">
+          <div className="bg-[#00CCEE] rounded-xl p-8 relative overflow-hidden h-52 flex flex-col justify-between">
             <div className="z-10">
               <h3 className="text-2xl font-bold text-slate-900 leading-tight">
                 Everyday Essentials,
@@ -72,7 +72,7 @@ export const Hero = () => {
           </div>
 
           {/* Card 2 - Grocery */}
-          <div className="bg-[#FFCC00] rounded-xl p-8 relative overflow-hidden h-64 flex flex-col justify-between">
+          <div className="bg-[#FFCC00] rounded-xl p-8 relative overflow-hidden h-52 flex flex-col justify-between">
             <div className="z-10">
               <h3 className="text-2xl font-bold text-slate-900 leading-tight">
                 Find Grocery At
@@ -93,7 +93,7 @@ export const Hero = () => {
           </div>
 
           {/* Card 3 - Fashion */}
-          <div className="bg-[#88DD66] rounded-xl p-8 relative overflow-hidden h-64 flex flex-col justify-between">
+          <div className="bg-[#88DD66] rounded-xl p-8 relative overflow-hidden h-52 flex flex-col justify-between">
             <div className="z-10">
               <h3 className="text-2xl font-bold text-slate-900 leading-tight">
                 Find Your Fit
@@ -111,40 +111,41 @@ export const Hero = () => {
             />
           </div>
         </div>
-
         {/* Feature Trust Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-5 border-t border-gray-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-16 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-4">
-            <div className="bg-slate-100 p-3 rounded-full">
-              <Truck size={24} />
-            </div>
+         <div className="bg-[#0a0e0f] p-3 rounded-full">
+  <Truck size={24} className="text-white" />
+</div>
             <div>
               <p className="font-bold text-sm">Free Shipping</p>
               <p className="text-xs text-slate-500">On order above $100</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="bg-slate-100 p-3 rounded-full">
-              <RotateCcw size={24} />
-            </div>
+          <div className="bg-[#0a0e0f] p-3 rounded-full">
+  <RotateCcw size={24} className="text-white" />
+</div>
+
             <div>
               <p className="font-bold text-sm">Easy Return</p>
               <p className="text-xs text-slate-500">30-day return policy</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="bg-slate-100 p-3 rounded-full">
-              <ShieldCheck size={24} />
-            </div>
+       <div className="bg-[#0a0e0f] p-3 rounded-full">
+  <Lock size={24} className="text-white" />
+</div>
+
             <div>
               <p className="font-bold text-sm">Secure Payment</p>
               <p className="text-xs text-slate-500">100% protected</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="bg-slate-100 p-3 rounded-full">
-              <Headphones size={24} />
-            </div>
+      <div className="bg-[#0a0e0f] p-3 rounded-full">
+    <Headphones size={24} className="text-white" />
+  </div>
             <div>
               <p className="font-bold text-sm">24/7 Support</p>
               <p className="text-xs text-slate-500">Dedicated assistance</p>

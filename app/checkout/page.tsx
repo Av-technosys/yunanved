@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/landing/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,38 +16,24 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { getAddresses } from "@/helper";
+import { tempUserId } from "@/const";
+import { useCheckoutStore } from "@/store/checkoutStore";
+import { initiateRazorpayPayment } from "@/lib/razorpay";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/cartStore";
 
-type Address = {
+
+type ApiAddress = {
   id: string;
-  label: string;
-  name: string;
-  phone: string;
-  address: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  pincode: string;
+  isDefault: boolean;
 };
-
-const addresses: Address[] = [
-  {
-    id: "home",
-    label: "Home",
-    name: "John Doe",
-    phone: "+91 6958362514",
-    address: "123, Downtown, Mansarovar Jaipur, Rajasthan, 302058",
-  },
-  {
-    id: "work",
-    label: "Work",
-    name: "John Doe",
-    phone: "+91 6958362514",
-    address: "123, Downtown, Mansarovar Jaipur, Rajasthan, 302058",
-  },
-  {
-    id: "shop",
-    label: "Shop",
-    name: "John Doe",
-    phone: "+91 6958362514",
-    address: "123, Downtown, Mansarovar Jaipur, Rajasthan, 302058",
-  },
-];
 
 const breadcrumb = [
   {
@@ -64,7 +51,82 @@ const breadcrumb = [
 ];
 
 export default function Checkout() {
-  const [selected, setSelected] = useState("home");
+
+const [selected, setSelected] = useState<string | null>(null);
+const [addresses, setAddresses] = useState<ApiAddress[]>([]);
+const router = useRouter();
+const [loading, setLoading] = useState(false);
+const items = useCheckoutStore((s) => s.items);
+const setPaymentStatus = useCheckoutStore((s) => s.setPaymentStatus);
+const clearCheckout = useCheckoutStore((s) => s.clearCheckout);
+const clearCart = useCartStore((s)=> s.clearCart)
+const userId:any = useCheckoutStore((s) => s.userId);
+
+const subtotal = items.reduce(
+  (acc, item) => acc + item.price * item.quantity,
+  0
+);
+
+const discount = subtotal * 0.2;
+const deliveryFee = subtotal > 0 ? 15 : 0;
+const finalTotal = subtotal - discount + deliveryFee;
+
+
+useEffect(() => {
+  const fetchAddresses = async () => {
+    try {
+      const data:any = await getAddresses(tempUserId);
+
+      setAddresses(data);
+
+      if (data?.length > 0) {
+        const defaultAddress =
+          data.find((addr: ApiAddress) => addr.isDefault) || data[0];
+
+        setSelected(defaultAddress.id);
+      }
+    } catch (err) {
+      console.error("Failed to fetch addresses", err);
+    }
+  };
+
+  fetchAddresses();
+}, []);
+
+
+const handlePayment = async () => {
+  if (!selected) {
+    toast.error("Please select a shipping address");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    setPaymentStatus("processing");
+
+console.log("Items received in backend:", JSON.stringify(items, null, 2));
+
+await initiateRazorpayPayment({
+  amount: finalTotal,
+  name: "YUNANVED",
+  description: "Order Payment",
+  items: items,
+  userId,
+  address: addresses.find(a => a.id === selected)
+});
+    setPaymentStatus("success");
+    clearCheckout();
+     clearCart()
+    toast.success("Payment Successful 🎉");
+    router.push("/order-confirmation");
+
+  } catch (err) {
+    setPaymentStatus("failed");
+    toast.error("Payment Failed ❌");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -100,50 +162,68 @@ export default function Checkout() {
               Shipping Address
             </h3>
 
-            <RadioGroup
-              value={selected}
-              onValueChange={setSelected}
-              className="space-y-3"
-            >
-              {addresses.map((item) => {
-                const isActive = selected === item.id;
+<RadioGroup
+  value={selected ?? ""}
+  onValueChange={setSelected}
+  className="space-y-3"
+>
+  {addresses.map((item) => {
+    const isActive = selected === item.id;
 
-                return (
-                  <Card
-                    key={item.id}
-                    className={`transition border cursor-pointer
-                ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}
-                  >
-                    <CardContent className="p-4 flex gap-3 items-start justify-between">
-                      <div className="w-full flex gap-3 items-start">
-                        <RadioGroupItem
-                          value={item.id}
-                          id={item.id}
-                          className="mt-1"
-                        />
+    return (
+      <Card
+        key={item.id}
+        className={`transition border cursor-pointer
+        ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}
+      >
+        <CardContent className="p-4 flex gap-3 items-start justify-between">
+          <div className="w-full flex gap-3 items-start">
+            <RadioGroupItem
+              value={item.id}
+              id={item.id}
+              className="mt-1"
+            />
 
-                        <Label
-                          htmlFor={item.id}
-                          className="flex flex-col items-start gap-0 justify-start cursor-pointer "
-                        >
-                          <p className="font-medium">{item.label}</p>
-                          <p className="text-sm text-gray-600">
-                            {item.name} · {item.phone}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {item.address}
-                          </p>
-                        </Label>
-                      </div>
+          <Label
+  htmlFor={item.id}
+  className="flex flex-col items-start gap-1 cursor-pointer w-full"
+>
+  <div className="flex items-center gap-2">
+    <p className="font-semibold text-gray-900">
+      {item.addressLine1}
+    </p>
 
-                      <Button variant="link" size="sm">
-                        Edit
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </RadioGroup>
+    {item.isDefault && (
+      <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+        Default
+      </span>
+    )}
+
+    {!item.isDefault && (
+      <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+        Saved
+      </span>
+    )}
+  </div>
+
+  <p className="text-sm text-gray-600">
+    {item.addressLine2}
+  </p>
+
+  <p className="text-sm text-gray-500">
+    {item.city}, {item.state} - {item.pincode}
+  </p>
+</Label>
+          </div>
+
+          <Button variant="link" size="sm">
+            Edit
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  })}
+</RadioGroup>
           </div>
 
           <div className="col-span-3  md:col-span-1  flex flex-col items-center justify-end">
@@ -157,17 +237,17 @@ export default function Checkout() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>$565</span>
+                    <span>₹ {subtotal.toFixed(0)}</span>
                   </div>
 
                   <div className="flex justify-between text-red-500">
                     <span>Discount (-20%)</span>
-                    <span>- $113</span>
+                   <span>- ₹ {discount.toFixed(0)}</span>
                   </div>
 
                   <div className="flex justify-between">
                     <span>Delivery Fee</span>
-                    <span>$15</span>
+                   <span>₹ {deliveryFee}</span>
                   </div>
                 </div>
 
@@ -175,17 +255,21 @@ export default function Checkout() {
 
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>$467</span>
+                <span>₹ {finalTotal.toFixed(0)}</span>
                 </div>
 
                 {/* <Button className="w-full rounded-full bg-teal-800 hover:bg-teal-900">
                   <Link href="/order-confirmation"> Continue</Link>
                 </Button> */}
-                <Link href="/order-confirmation">
-                  <Button className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3  rounded-full mt-4 hover:bg-teal-900">
-                    Continue
-                  </Button>
-                </Link>
+               
+               <Button
+  onClick={handlePayment}
+  disabled={loading}
+  className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3 rounded-full mt-4 hover:bg-teal-900"
+>
+  {loading ? "Processing..." : `Pay ₹${finalTotal.toFixed(0)}`}
+</Button>
+                
               </CardContent>
             </Card>
           </div>

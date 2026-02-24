@@ -2,21 +2,21 @@
 
 import { db } from "@/lib/db";
 import { cart, cartItem } from "@/db/userSchema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export async function addProductToUserCart(
   userId: string,
   productId: string,
-  quantity:number
+  quantity: number
 ) {
   return await db.transaction(async (transactionDb) => {
 
 
     let existingCart = await transactionDb
-    .select()
-    .from(cart)
-    .where(eq(cart.userId, userId))
-    .then(r => r[0]);
+      .select()
+      .from(cart)
+      .where(eq(cart.userId, userId))
+      .then(r => r[0]);
 
     if (!existingCart) {
       const createdCart = await transactionDb
@@ -27,17 +27,15 @@ export async function addProductToUserCart(
       existingCart = createdCart[0];
     }
 
- 
     const existingCartItem = await transactionDb
-    .select()
-    .from(cartItem)
-    .where(and(
+      .select()
+      .from(cartItem)
+      .where(and(
         eq(cartItem.cartId, existingCart.id),
         eq(cartItem.productId, productId)
-    ))
-    .then(r => r[0]);
+      ))
+      .then(r => r[0]);
 
-    
     if (existingCartItem) {
       await transactionDb
         .update(cartItem)
@@ -55,103 +53,95 @@ export async function addProductToUserCart(
   });
 }
 
-
 export async function increaseCartItem(
   userId: string,
   productId: string
 ) {
-  return await db.transaction(async (transactionDb) => {
+  const existingCart = await db
+    .select()
+    .from(cart)
+    .where(eq(cart.userId, userId))
+    .then(r => r[0]);
 
-    const existingCart = await transactionDb
-      .select()
-      .from(cart)
-      .where(eq(cart.userId, userId))
-      .then(r => r[0]);
+  if (!existingCart) return { success: false };
 
-    if (!existingCart) return { success: false };
+  await db
+    .update(cartItem)
+    .set({
+      quantity: sql`${cartItem.quantity} + 1`
+    })
+    .where(and(
+      eq(cartItem.cartId, existingCart.id),
+      eq(cartItem.productId, productId)
+    ));
 
-    const item = await transactionDb
-      .select()
-      .from(cartItem)
-      .where(and(
-        eq(cartItem.cartId, existingCart.id),
-        eq(cartItem.productId, productId)
-      ))
-      .then(r => r[0]);
-
-    if (!item) return { success: false };
-
-    await transactionDb
-      .update(cartItem)
-      .set({ quantity: item.quantity + 1 })
-      .where(eq(cartItem.id, item.id));
-
-    return { success: true };
-  });
+  return { success: true };
 }
-
 
 export async function decreaseCartItem(
   userId: string,
   productId: string
 ) {
-  return await db.transaction(async (transactionDb) => {
-
-    const existingCart = await transactionDb
-      .select()
+  try {
+    const existingCart = await db
+      .select({ id: cart.id })
       .from(cart)
       .where(eq(cart.userId, userId))
       .then(r => r[0]);
 
     if (!existingCart) return { success: false };
 
-    const item = await transactionDb
-      .select()
-      .from(cartItem)
+    await db
+      .update(cartItem)
+      .set({
+        quantity: sql`${cartItem.quantity} - 1`
+      })
       .where(and(
         eq(cartItem.cartId, existingCart.id),
-        eq(cartItem.productId, productId)
-      ))
-      .then(r => r[0]);
+        eq(cartItem.productId, productId),
+        sql`${cartItem.quantity} > 1`
+      ));
 
-    if (!item) return { success: false };
-
-    const newQty = item.quantity - 1;
-
-    if (newQty <= 0) {
-      await transactionDb.delete(cartItem).where(eq(cartItem.id, item.id));
-    } else {
-      await transactionDb
-        .update(cartItem)
-        .set({ quantity: newQty })
-        .where(eq(cartItem.id, item.id));
-    }
+    await db
+      .delete(cartItem)
+      .where(and(
+        eq(cartItem.cartId, existingCart.id),
+        eq(cartItem.productId, productId),
+        sql`${cartItem.quantity} <= 1`
+      ));
 
     return { success: true };
-  });
-}
 
+  } catch (error) {
+    console.error("decreaseCartItem failed:", error);
+    return { success: false };
+  }
+}
 
 export async function removeCartItem(
   userId: string,
   productId: string
 ) {
-  return await db.transaction(async (transactionDb) => {
-
-    const existingCart = await transactionDb
-      .select()
+  try {
+    const existingCart = await db
+      .select({ id: cart.id })
       .from(cart)
       .where(eq(cart.userId, userId))
       .then(r => r[0]);
 
     if (!existingCart) return { success: false };
 
-    await transactionDb
+    await db
       .delete(cartItem)
       .where(and(
         eq(cartItem.cartId, existingCart.id),
         eq(cartItem.productId, productId)
       ));
+
     return { success: true };
-  });
+
+  } catch (error) {
+    console.error("removeCartItem failed:", error);
+    return { success: false };
+  }
 }

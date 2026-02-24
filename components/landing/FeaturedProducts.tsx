@@ -1,11 +1,7 @@
 
 import React from "react";
-import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { getFeaturedProducts } from "@/helper";
-import Link from "next/link";
-import { useAddToCart } from "@/helper/useAddToCart";
 import FeaturedProductCard from "./featuredProductCard";
 
 export async function FeaturedProducts() {
@@ -26,7 +22,7 @@ export async function FeaturedProducts() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1  items-stretch sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {products.map((product) => (
             <FeaturedProductCard key={product.productId} product={product} />
           ))}

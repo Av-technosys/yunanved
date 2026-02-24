@@ -10,7 +10,7 @@ import {
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { productCategoryTable } from "@/db/schema";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
@@ -41,7 +41,6 @@ export async function createCategory(formData: FormData) {
     revalidatePath("/admin/category");
   } catch (error) {
     console.error("Create category failed:", error);
-    throw new Error("Failed to create category");
   }
   redirect("/admin/category");
 }
@@ -70,20 +69,9 @@ export async function updateCategory(formData: FormData) {
     revalidatePath(`/admin/category/${id}`);
   } catch (error) {
     console.error("Update category failed:", error);
-    throw new Error("Failed to update category");
   }
   redirect("/admin/category");
 }
-
-// export const getCategories = async () => {
-//   try {
-//     const categories = await db.select().from(categoryTable);
-//     return categories;
-//   } catch (error) {
-//     console.error("fetch category failed:", error);
-//     throw new Error("Failed to fetch category");
-//   }
-// };
 
 export const attachProductCategory = async (
   productId: string,
@@ -116,7 +104,7 @@ export async function getProductCategory(productId: string) {
       )
       .where(eq(productCategory.productId, productId));
 
-    return result; // 🔥 return full array
+    return result; 
   } catch (error) {
     console.error("fetch product category failed:", error);
     throw new Error("fetch product category failed");
@@ -165,7 +153,7 @@ export async function getCategoriesPagination({
     page,
     pageSize,
     where: whereClause,
-    orderBy: asc(categoryTable.createdAt),
+    orderBy: desc(categoryTable.createdAt),
   });
 
   return {

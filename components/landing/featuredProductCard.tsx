@@ -1,13 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Card } from "../ui/card";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAddToCart } from "@/helper/useAddToCart";
+import { useRef, useState } from "react";
 
 const FeaturedProductCard = ({ product, key }: any) => {
   const { handleAddToCart, isPending } = useAddToCart();
-  const addToCartHandler = (product: any) => {
+
+  const [isAdding, setIsAdding] = useState(false);
+  const clickLock = useRef(false);
+
+
+  const addToCartHandler = async () => {
+    if (clickLock.current) return;
+
+    clickLock.current = true;
+    setIsAdding(true);
+
     const productDetailsForCart = {
       productId: product.productId,
       sku: product.sku,
@@ -19,13 +31,21 @@ const FeaturedProductCard = ({ product, key }: any) => {
       attributes: [],
     };
 
-    handleAddToCart(productDetailsForCart);
+    try {
+      await handleAddToCart(productDetailsForCart);
+    } catch (err) {
+      console.error("Add to cart failed", err);
+    } finally {
+      setIsAdding(false);
+      clickLock.current = false;
+    }
   };
+
   return (
     <div>
       <Card
         key={key}
-        className="overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow"
+        className=" flex flex-col py-1  overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow"
       >
         {/* Image */}
         <Link href={`/product/${product.slug}`}>
@@ -73,13 +93,13 @@ const FeaturedProductCard = ({ product, key }: any) => {
               ₹{product.basePrice}
             </span>
 
-            <Button
-              onClick={() => addToCartHandler(product)}
-              disabled={isPending}
-              className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
-            >
-              {isPending ? "Adding..." : "Add to Cart"}
-            </Button>
+         <Button
+            onClick={addToCartHandler}
+            disabled={isAdding}
+            className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
+          >
+            {isAdding ? "Adding..." : "Add to Cart"}
+          </Button>
           </div>
         </div>
       </Card>

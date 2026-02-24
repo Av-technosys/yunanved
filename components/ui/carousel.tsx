@@ -4,10 +4,9 @@ import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -51,6 +50,8 @@ function Carousel({
   children,
   ...props
 }: React.ComponentProps<"div"> & CarouselProps) {
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
+const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -88,21 +89,25 @@ function Carousel({
     [scrollPrev, scrollNext]
   )
 
-  React.useEffect(() => {
-    if (!api || !setApi) return
-    setApi(api)
-  }, [api, setApi])
+React.useEffect(() => {
+  if (!api) return
 
-  React.useEffect(() => {
-    if (!api) return
-    onSelect(api)
-    api.on("reInit", onSelect)
-    api.on("select", onSelect)
+  const update = () => {
+    setSelectedIndex(api.selectedScrollSnap())
+    setCanScrollPrev(api.canScrollPrev())
+    setCanScrollNext(api.canScrollNext())
+    setScrollSnaps(api.scrollSnapList())
+  }
 
-    return () => {
-      api?.off("select", onSelect)
-    }
-  }, [api, onSelect])
+  update()
+
+  api.on("select", update)
+  api.on("reInit", update)
+
+  return () => {
+    api.off("select", update)
+  }
+}, [api])
 
   return (
     <CarouselContext.Provider
@@ -127,6 +132,32 @@ function Carousel({
         {...props}
       >
         {children}
+        {scrollSnaps.length > 1 && (
+  <div className="flex justify-center gap-2 mt-3">
+{scrollSnaps.length > 0 && (
+  <div className="flex justify-center gap-2 mt-6">
+    {Array.from({ length: 3 }).map((_, index) => {
+      const groupSize = Math.ceil(scrollSnaps.length / 3)
+      const targetIndex = index * groupSize
+      const isActive =
+        selectedIndex >= targetIndex &&
+        selectedIndex < targetIndex + groupSize
+
+      return (
+        <button
+          key={index}
+          onClick={() => api?.scrollTo(targetIndex)}
+          className={cn(
+            "h-1.5 rounded-full transition-all duration-300",
+            isActive ? "bg-black w-6" : "bg-gray-300 w-2"
+          )}
+        />
+      )
+    })}
+  </div>
+)}
+  </div>
+)}
       </div>
     </CarouselContext.Provider>
   )
@@ -173,61 +204,60 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
 
 function CarouselPrevious({
   className,
-  variant = "outline",
-  size = "icon",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<"button">) {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
-    <Button
+    <button
       data-slot="carousel-previous"
-      variant={variant}
-      size={size}
       className={cn(
-        "absolute size-8 rounded-full",
+        "absolute z-10",
         orientation === "horizontal"
-          ? "top-1/2 -left-12 -translate-y-1/2"
-          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+          ? "top-1/2 -translate-y-1/2 left-4"
+          : "left-1/2 -translate-x-1/2 top-4 rotate-90",
+        "bg-transparent border-none shadow-none p-0",
         className
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft />
+      <ChevronLeft
+        size={34}
+        className="text-slate-600 hover:text-black transition-colors"
+      />
       <span className="sr-only">Previous slide</span>
-    </Button>
+    </button>
   )
 }
-
 function CarouselNext({
   className,
-  variant = "outline",
-  size = "icon",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<"button">) {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (
-    <Button
+    <button
       data-slot="carousel-next"
-      variant={variant}
-      size={size}
       className={cn(
-        "absolute size-8 rounded-full",
+        "absolute z-10",
         orientation === "horizontal"
-          ? "top-1/2 -right-12 -translate-y-1/2"
-          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+          ? "top-1/2 -translate-y-1/2 right-4"
+          : "left-1/2 -translate-x-1/2 bottom-4 rotate-90",
+        "bg-transparent border-none shadow-none p-0",
         className
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight />
+      <ChevronRight
+        size={34}
+        className="text-slate-600 hover:text-black transition-colors"
+      />
       <span className="sr-only">Next slide</span>
-    </Button>
+    </button>
   )
 }
 

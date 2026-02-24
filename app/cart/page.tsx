@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Trash2, Loader2, RotateCcw, Star } from "lucide-react"; // Added Loader2
 import { Card, CardDescription, CardFooter } from "@/components/ui/card";
-import { createOrder, getProductsForCart } from "@/helper/index";
+import { getProductsForCart } from "@/helper/index";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useCheckoutStore } from "@/store/checkoutStore";
 import {
   increaseCartItem,
   decreaseCartItem,
@@ -28,7 +29,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Footer from "@/components/landing/Footer";
 import { tempUserId } from "@/const/globalconst";
-import { number } from "zod";
 import { useRouter } from "next/navigation";
 
 const breadcrumb = [
@@ -48,8 +48,12 @@ export default function CartPage() {
   const increase = useCartStore((s) => s.increase);
   const decrease = useCartStore((s) => s.decrease);
   const removeItem = useCartStore((s) => s.removeItem);
-  const clearCart = useCartStore((s) => s.clearCart);
 
+
+
+  const initializeCheckout = useCheckoutStore(
+  (s) => s.initializeCheckout
+);
   const [freshProducts, setFreshProducts] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -146,19 +150,56 @@ export default function CartPage() {
   const discount = subtotal * 0.2;
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const total = subtotal - discount + deliveryFee;
+  // const orderHandler = async () => {
+  //   const fixedAmount = Number(total.toFixed(0));
+  //   const response = await createOrder(items, userId, fixedAmount);
+  //   if (response?.success == true) {
+  //     toast.success(response.message ?? "Order created");
+  //     clearCart();
+  //     router.push('/checkout')
 
-  const orderHandler = async () => {
-    const fixedAmount = Number(total.toFixed(0));
-    const response = await createOrder(items, userId, fixedAmount);
-    if (response?.success == true) {
-      toast.success(response.message ?? "Order created");
-      clearCart();
-      router.push('/checkout')
+  //   } else {
+  //     toast.error(response?.message ?? "Failed to create order");
+  //   }
+  // };
 
-    } else {
-      toast.error(response?.message ?? "Failed to create order");
-    }
-  };
+  //  const handlePayment = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     await initiateRazorpayPayment({
+  //       amount,
+  //       name: "YUNANVED",
+  //       description: "Best Online Web Site",
+  //     });
+
+  //     toast("Payment Successful 🎉");
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast("Payment Failed ❌");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const moveToCheckOut = () => {
+
+
+  initializeCheckout({
+    items: items.map((item) => ({
+      productId: item.productId,
+      slug: item.slug,
+      quantity: item.quantity,
+      price: total|| 0,
+    })),
+    total,
+    userId,
+  });
+
+  router.push("/checkout");
+
+  }
+
 
   if (!isClient) return null;
 
@@ -345,7 +386,7 @@ export default function CartPage() {
                 
                     <Button
                       disabled={isPending}
-                      onClick={orderHandler}
+                      onClick={moveToCheckOut}
                       className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3 rounded-full mt-4 hover:bg-teal-900"
                     >
                       {isPending ? "Processing" : "Proceed to Checkout"}

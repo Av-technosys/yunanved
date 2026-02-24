@@ -45,10 +45,10 @@ export async function Categories() {
             {/* '-ml-8' creates the horizontal gap between items */}
 
             {/* Arrow anchor layer — centers relative to image */}
-            <div className="hidden md:block pointer-events-none absolute inset-x-0 top-[56px] sm:top-[64px] lg:top-[72px]">
-              <CarouselPrevious className="pointer-events-auto -left-10 h-10 w-10 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm" />
-              <CarouselNext className="pointer-events-auto -right-10 h-10 w-10 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm" />
-            </div>
+      <div className="hidden md:block pointer-events-none absolute inset-x-0 top-[56px] sm:top-[64px] lg:top-[72px]">
+  <CarouselPrevious className="pointer-events-auto -left-10 h-10 w-10 " />
+  <CarouselNext className="pointer-events-auto -right-10 h-10 w-10 " />
+</div>
 
             <CarouselContent className="-ml-8 overflow-visible py-2">
               {categories?.map((cat, index) => (

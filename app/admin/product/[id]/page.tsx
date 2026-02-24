@@ -6,9 +6,15 @@ interface PageProps {
 }
 
 const Page = async ({ params }: PageProps) => {
-  const { id } =  await params;
+  const { id } = await params;
 
-  const { productInfo, media, attributes } = await getFullProduct(id);
+  const product = await getFullProduct(id);
+
+  if (!product) {
+    return;
+  }
+
+  const { media, attributes, reviews, ...productInfo } = product;
 
   return (
     <EditProduct

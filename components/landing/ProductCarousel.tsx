@@ -34,7 +34,7 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
           className="w-full overflow-visible"
         >
 
-        <CarouselContent className="py-10 px-4 md:px-6 lg:px-10">
+        <CarouselContent className="py-2 px-4 md:px-6 lg:px-10">
 
          
 
@@ -63,9 +63,9 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
           </CarouselContent>
 
           {/* NAV BUTTONS */}
-          <div className="hidden md:block">
-            <CarouselPrevious className="-left-12 h-10 w-10 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm" />
-            <CarouselNext className="-right-12 h-10 w-10 border-slate-200 hover:bg-slate-900 hover:text-white transition-all shadow-sm" />
+          <div className="hidden md:block ">
+            <CarouselPrevious className="-left-12 h-10 w-10" />
+            <CarouselNext className="-right-12 h-10 w-10 " />
           </div>
 
         </Carousel>
