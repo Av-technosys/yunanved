@@ -44,10 +44,23 @@ export default function CartPage() {
   const userId = tempUserId; // later from auth/session
 
   const items = useCartStore((s) => s.items);
+  console.log("Cart items from store:", items);
 
   const increase = useCartStore((s) => s.increase);
   const decrease = useCartStore((s) => s.decrease);
   const removeItem = useCartStore((s) => s.removeItem);
+
+useEffect(() => {
+  console.log("🟢 STORE ITEMS:");
+  items.forEach((i) => {
+    console.log({
+      productId: i.productId,
+      slug: i.slug,
+      quantity: i.quantity,
+      attributes: i.attributes,
+    });
+  });
+}, [items]);
 
 
 
@@ -57,15 +70,27 @@ export default function CartPage() {
   const [freshProducts, setFreshProducts] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
-  const productSlugs = useMemo(
-    () =>
-      items
-        .map((i) => i.slug)
-        .sort()
-        .join("|"),
-    [items],
-  );
 
+  useEffect(() => {
+  console.log("🟡 FRESH PRODUCTS:");
+  freshProducts.forEach((p) => {
+    console.log({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+    });
+  });
+}, [freshProducts]);
+
+
+const productKeys = useMemo(
+  () =>
+    items
+      .map((i) => i.productId)
+      .sort()
+      .join("|"),
+  [items],
+);
   useEffect(() => {
     let cancelled = false;
 
@@ -77,7 +102,10 @@ export default function CartPage() {
 
       setIsFetching(true);
 
-      const data = await getProductsForCart(items.map((i) => i.slug));
+            const data = await getProductsForCart(
+          items.map((i) => i.productId)
+        );
+        console.log("Fetched products for cart:", data);
       if (!cancelled) {
         setFreshProducts(data || []);
         setIsFetching(false);
@@ -89,12 +117,21 @@ export default function CartPage() {
     return () => {
       cancelled = true;
     };
-  }, [productSlugs]);
+  }, [productKeys]);
 
-  const productMap = useMemo(() => {
-    return new Map(freshProducts.map((p) => [p.slug, p]));
-  }, [freshProducts]);
+const productMap = useMemo(() => {
+  return new Map(freshProducts.map((p) => [p.id, p]));
+}, [freshProducts]);
 
+
+
+
+
+
+useEffect(() => {
+  console.log("🔵 PRODUCT MAP KEYS:");
+  console.log([...productMap.keys()]);
+}, [productMap]);
   const handleIncrease = (item: any) => {
     increase(item.productId, item.attributes);
 
@@ -140,7 +177,8 @@ export default function CartPage() {
   const subtotal = useMemo(() => {
     let total = 0;
     for (const item of items) {
-      const live = productMap.get(item.slug);
+const live = productMap.get(item.productId);
+
       if (!live) continue;
       total += live.basePrice * item.quantity;
     }
@@ -150,51 +188,24 @@ export default function CartPage() {
   const discount = subtotal * 0.2;
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const total = subtotal - discount + deliveryFee;
-  // const orderHandler = async () => {
-  //   const fixedAmount = Number(total.toFixed(0));
-  //   const response = await createOrder(items, userId, fixedAmount);
-  //   if (response?.success == true) {
-  //     toast.success(response.message ?? "Order created");
-  //     clearCart();
-  //     router.push('/checkout')
-
-  //   } else {
-  //     toast.error(response?.message ?? "Failed to create order");
-  //   }
-  // };
-
-  //  const handlePayment = async () => {
-  //   try {
-  //     setLoading(true);
-
-  //     await initiateRazorpayPayment({
-  //       amount,
-  //       name: "YUNANVED",
-  //       description: "Best Online Web Site",
-  //     });
-
-  //     toast("Payment Successful 🎉");
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast("Payment Failed ❌");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const moveToCheckOut = () => {
 
 
-  initializeCheckout({
-    items: items.map((item) => ({
+initializeCheckout({
+  items: items.map((item) => {
+    const live = productMap.get(item.productId);
+
+    return {
       productId: item.productId,
-      slug: item.slug,
+      slug: live?.slug,
       quantity: item.quantity,
-      price: total|| 0,
-    })),
-    total,
-    userId,
-  });
+      price: live?.basePrice || 0,
+    };
+  }),
+  total,
+  userId,
+});
 
   router.push("/checkout");
 
@@ -261,7 +272,7 @@ export default function CartPage() {
                     </div>
                   ) : (
                     items.map((item: any) => {
-                      const live = productMap.get(item.slug);
+                      const live = productMap.get(item.productId);
 
                       // Safety check in case productMap isn't populated yet
                       if (!live) return null;

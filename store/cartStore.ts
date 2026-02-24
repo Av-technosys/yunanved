@@ -4,22 +4,34 @@ import type { CartItem } from "./cartTypes";
 
 type CartState = {
   items: CartItem[];
-
+  setCart: (items: CartItem[]) => void;
   addItem: (item: Omit<CartItem, "quantity" | "addedAt">) => void;
   removeItem: (productId: string, attributes: CartItem["attributes"]) => void;
   increase: (productId: string, attributes: CartItem["attributes"]) => void;
   decrease: (productId: string, attributes: CartItem["attributes"]) => void;
   clearCart: () => void;
-  lineItems: () => number; 
+  lineItems: () => number;
 
   totalItems: () => number;
   subtotal: () => number;
 };
 
-function sameVariant(a: CartItem, b: { productId: string; attributes: CartItem["attributes"] }) {
+function normalizeAttributes(attrs?: CartItem["attributes"]) {
+  return (attrs ?? []).slice().sort((a, b) =>
+    JSON.stringify(a).localeCompare(JSON.stringify(b))
+  );
+}
+
+function sameVariant(
+  a: CartItem,
+  b: { productId: string; attributes?: CartItem["attributes"] }
+) {
   if (a.productId !== b.productId) return false;
 
-  return JSON.stringify(a.attributes.sort()) === JSON.stringify(b.attributes.sort());
+  const aAttrs = normalizeAttributes(a.attributes);
+  const bAttrs = normalizeAttributes(b.attributes);
+
+  return JSON.stringify(aAttrs) === JSON.stringify(bAttrs);
 }
 
 export const useCartStore = create<CartState>()(
@@ -75,16 +87,21 @@ export const useCartStore = create<CartState>()(
             )
             .filter((i) => i.quantity > 0),
         })),
-        lineItems: () => get().items.length,
+      lineItems: () => get().items.length,
 
       clearCart: () => set({ items: [] }),
 
+      setCart: (items) =>
+        set(() => ({
+          items, // 🔥 FULL REPLACE
+        })),
       totalItems: () =>
         get().items.reduce((t, i) => t + i.quantity, 0),
 
       subtotal: () =>
         get().items.reduce((t, i) => t + i.price * i.quantity, 0),
     }),
+
     {
       name: "yunanved-cart",
       storage: createJSONStorage(() => localStorage),

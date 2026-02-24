@@ -4,55 +4,70 @@ import { db } from "@/lib/db";
 import { cart, cartItem } from "@/db/userSchema";
 import { eq, and, sql } from "drizzle-orm";
 
+
 export async function addProductToUserCart(
   userId: string,
   productId: string,
   quantity: number
 ) {
-  return await db.transaction(async (transactionDb) => {
+  try {
+    return await db.transaction(async (tx) => {
+
+      let existingCart = await tx
+        .select()
+        .from(cart)
+        .where(eq(cart.userId, userId))
+        .then(r => r[0]);
+
+      if (!existingCart) {
+        const created = await tx
+          .insert(cart)
+          .values({ userId })
+          .returning();
+
+        existingCart = created[0];
+      }
+
+      //  Locking the cart row if A and B have the same cart, only A will proess and B will wait until A is done. 
+      await tx.execute(
+        sql`SELECT id FROM cart WHERE id = ${existingCart.id} FOR UPDATE`
+      );
 
 
-    let existingCart = await transactionDb
-      .select()
-      .from(cart)
-      .where(eq(cart.userId, userId))
-      .then(r => r[0]);
+      const existingCartItem = await tx
+        .select()
+        .from(cartItem)
+        .where(
+          and(
+            eq(cartItem.cartId, existingCart.id),
+            eq(cartItem.productId, productId)
+          )
+        )
+        .then(r => r[0]);
 
-    if (!existingCart) {
-      const createdCart = await transactionDb
-        .insert(cart)
-        .values({ userId })
-        .returning();
+      if (existingCartItem) {
+        await tx
+          .update(cartItem)
+          .set({
+            quantity: sql`${cartItem.quantity} + ${quantity}`,
+          })
+          .where(eq(cartItem.id, existingCartItem.id));
+      } else {
+        await tx.insert(cartItem).values({
+          cartId: existingCart.id,
+          productId,
+          quantity,
+        });
+      }
 
-      existingCart = createdCart[0];
-    }
 
-    const existingCartItem = await transactionDb
-      .select()
-      .from(cartItem)
-      .where(and(
-        eq(cartItem.cartId, existingCart.id),
-        eq(cartItem.productId, productId)
-      ))
-      .then(r => r[0]);
-
-    if (existingCartItem) {
-      await transactionDb
-        .update(cartItem)
-        .set({ quantity: existingCartItem.quantity + quantity })
-        .where(eq(cartItem.id, existingCartItem.id));
-    } else {
-      await transactionDb.insert(cartItem).values({
-        cartId: existingCart.id,
-        productId,
-        quantity,
-      });
-    }
-
-    return { success: true };
-  });
+      return { success: true };
+    });
+  } catch (err) {
+    console.error("❌ Add to cart failed:", err);
+    return { success: false };
+  }
 }
-
 export async function increaseCartItem(
   userId: string,
   productId: string
@@ -143,5 +158,29 @@ export async function removeCartItem(
   } catch (error) {
     console.error("removeCartItem failed:", error);
     return { success: false };
+  }
+}
+
+export async function getUserCart(userId: string) {
+  try {
+    const existingCart = await db
+      .select()
+      .from(cart)
+      .where(eq(cart.userId, userId))
+      .then(r => r[0]);
+
+    if (!existingCart) {
+      return [];
+    }
+
+    const items = await db
+      .select()
+      .from(cartItem)
+      .where(eq(cartItem.cartId, existingCart.id));
+
+    return items; 
+  } catch (err) {
+    console.error("❌ Fetch cart failed:", err);
+    throw err;
   }
 }

@@ -384,23 +384,25 @@ export async function getProductSimilarProducts(slug: string | any) {
   }
 }
 
-export async function getProductsForCart(slugs: string[]) {
+
+export async function getProductsForCart(productIds: string[]) {
   try {
-    if (!slugs || !slugs.length) return [];
+    if (!productIds || !productIds.length) return [];
+
+    const safeIds = productIds.filter(Boolean);
+    if (!safeIds.length) return [];
 
     const products = await db
       .select()
       .from(product)
-      .where(inArray(product.slug, slugs));
+      .where(inArray(product.id, safeIds));
 
     if (!products.length) return [];
-
-    const productIds = products.map((p) => p.id);
 
     const media = await db
       .select()
       .from(productMedia)
-      .where(inArray(productMedia.productId, productIds));
+      .where(inArray(productMedia.productId, safeIds));
 
     const mediaMap = new Map<string, typeof media>();
 
@@ -417,5 +419,6 @@ export async function getProductsForCart(slugs: string[]) {
     }));
   } catch (error) {
     console.error("getProductsForCart failed:", error);
+    return [];
   }
 }
