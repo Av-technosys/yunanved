@@ -6,7 +6,7 @@ import {
   integer,
   boolean,
 } from "drizzle-orm/pg-core";
-import { product } from "./productSchema";
+import { productVariant } from "./productSchema";
 
 export const user = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -79,7 +79,7 @@ export const cart = pgTable("cart", {
 export const cartItem = pgTable("cart_item", {
   id: uuid("id").primaryKey().defaultRandom(),
   cartId: uuid("cart_id").notNull().references(() => cart.id),
-  productId: uuid("product_id").notNull().references(() => product.id),
+  productVarientId: uuid("product_varient_id").notNull().references(() => productVariant.id),
   quantity: integer("quantity").notNull().default(1),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

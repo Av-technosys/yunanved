@@ -25,7 +25,7 @@ export const productVariant = pgTable("product_variant", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name"),
   sku: varchar("sku").notNull().unique(),
-
+  productId: uuid("product_id").references(() => product.id),
   description: varchar("description"),
   shortDescription: varchar("short_description"),
   basePrice: integer("base_price"),

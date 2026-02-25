@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { on } from "events";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
-const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any) => {
+const orderDetailsReview = ({ orderDetails, setorderDetailsReview, onBack }: any) => {
   const { upload, uploading } = useFileUpload();
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
   const [previews, setPreviews] = useState<{ [key: string]: string }>({});
@@ -28,7 +28,7 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
   const [comments, setComments] = useState<{ [key: string]: string }>({});
   const [loadingProduct, setLoadingProduct] = useState<string | null>(null);
 
-  const handleImageChange = async (e: any, productId: string) => {
+  const handleImageChange = async (e: any, productVarientId: string) => {
     const file = e.target.files[0];
     if (file) {
       const folder = "review";
@@ -36,37 +36,37 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
       console.log("Uploaded file key:", fileKey);
       setFileKey((prev) => ({
         ...prev,
-        [productId]: fileKey,
+        [productVarientId]: fileKey,
       }));
 
       setPreviews((prev) => ({
         ...prev,
-        [productId]: preview,
+        [productVarientId]: preview,
       }));
     }
   };
 
-  const handleSubmitReview = async (productId: string) => {
+  const handleSubmitReview = async (productVarientId: string) => {
     const reviewData = {
       userId: orderDetails.userId,
-      productId,
-      rating: ratings[productId] || 0,
-      message: comments[productId] || "",
-      image: fileKey[productId] || null,
+      productVarientId: productVarientId,
+      rating: ratings[productVarientId] || 0,
+      message: comments[productVarientId] || "",
+      image: fileKey[productVarientId] || null,
     };
 
     try {
-      setLoadingProduct(productId);
+      setLoadingProduct(productVarientId);
 
       const response = await createReview(reviewData);
 
       if (response.success) {
         toast.success("Review submitted successfully!");
 
-        setRatings((prev) => ({ ...prev, [productId]: 0 }));
-        setComments((prev) => ({ ...prev, [productId]: "" }));
-        setFileKey((prev) => ({ ...prev, [productId]: "" }));
-        setPreviews((prev) => ({ ...prev, [productId]: "" }));
+        setRatings((prev) => ({ ...prev, [productVarientId]: 0 }));
+        setComments((prev) => ({ ...prev, [productVarientId]: "" }));
+        setFileKey((prev) => ({ ...prev, [productVarientId]: "" }));
+        setPreviews((prev) => ({ ...prev, [productVarientId]: "" }));
       } else {
         toast.error("Failed to submit review");
       }
@@ -79,7 +79,7 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
       <div>
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
-          onClick={() =>onBack()}
+          onClick={() => onBack()}
         >
           <span>Home</span> <ChevronRight size={12} />
           <span>My orders</span> <ChevronRight size={12} />
@@ -169,6 +169,8 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
             <CardDescription className="my-4">
               <div className="grid grid-cols-2 gap-2">
                 {orderDetails.items.map((item: any, index: number) => {
+                  const variantId = item.productVarientId || item.productId || item.productVariant?.id;
+
                   return (
                     <Card
                       key={index}
@@ -204,15 +206,14 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
                             <Star
                               key={star}
                               size={28}
-                              className={`cursor-pointer transition-colors ${
-                                star <= (ratings[item.productId] || 0)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
+                              className={`cursor-pointer transition-colors ${star <= (ratings[variantId] || 0)
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
+                                }`}
                               onClick={() =>
                                 setRatings((prev) => ({
                                   ...prev,
-                                  [item.productId]: star,
+                                  [variantId]: star,
                                 }))
                               }
                             />
@@ -224,13 +225,13 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
                             type="file"
                             accept="image/*"
                             onChange={(e) =>
-                              handleImageChange(e, item.productId)
+                              handleImageChange(e, variantId)
                             }
                             className="absolute inset-0 opacity-0 cursor-pointer"
                           />
-                          {previews[item.productId] ? (
+                          {previews[variantId] ? (
                             <img
-                              src={previews[item.productId]}
+                              src={previews[variantId]}
                               alt="Preview"
                               className="mx-auto max-h-40 rounded-lg object-contain"
                             />
@@ -248,21 +249,21 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
                         <Textarea
                           placeholder="Your comment"
                           className="min-h-[120px]"
-                          value={comments[item.productId] || ""}
+                          value={comments[variantId] || ""}
                           onChange={(e) =>
                             setComments((prev) => ({
                               ...prev,
-                              [item.productId]: e.target.value,
+                              [variantId]: e.target.value,
                             }))
                           }
                         />
 
                         <Button
                           className="w-full"
-                          disabled={loadingProduct === item.productId}
-                          onClick={() => handleSubmitReview(item.productId)}
+                          disabled={loadingProduct === variantId && loadingProduct !== null}
+                          onClick={() => handleSubmitReview(variantId)}
                         >
-                          {loadingProduct === item.productId
+                          {loadingProduct === variantId && loadingProduct !== null
                             ? "Submitting..."
                             : "Submit Review"}
                         </Button>

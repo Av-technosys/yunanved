@@ -8,6 +8,20 @@
       "when": 1771925699202,
       "tag": "0000_chunky_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771929875543,
+      "tag": "0001_petite_the_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771931392631,
+      "tag": "0002_sharp_zombie",
+      "breakpoints": true
     }
   ]
 }

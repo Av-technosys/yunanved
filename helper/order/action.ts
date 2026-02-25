@@ -6,9 +6,8 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { order, orderItem, payment } from "@/db/orderSchema";
 import { user } from "@/db/userSchema";
-import { product } from "@/db/productSchema";
 import { revalidatePath } from "next/cache";
-import { userCart, userCartItems } from "@/db/schema";
+import { cart, cartItem, productVariant, product } from "@/db";
 
 export const fetchOrders = async ({
   page = 1,
@@ -56,15 +55,17 @@ export const fetchOrderDetails = async (orderId: string) => {
     const rawItems = await db
       .select({
         item: orderItem,
-        product: product,
+        productVariant: productVariant,
       })
       .from(orderItem)
-      .leftJoin(product, eq(orderItem.productId, product.id))
+      .leftJoin(productVariant, eq(orderItem.productVarientId, productVariant.id))
       .where(eq(orderItem.orderId, orderId));
+
+    console.log(rawItems)
 
     const items = rawItems.map((row) => ({
       ...row.item,
-      product: row.product,
+      productVariant: row.productVariant,
     }));
 
     return {
@@ -102,7 +103,7 @@ export async function createOrder({
   razorpayPaymentId,
   razorpayOrderId,
 }: {
-  items: { productId: string; quantity: number }[];
+  items: { productVarientId: string; quantity: number }[];
   userId: string;
   fixedAmount: number;
   address: any;
@@ -114,12 +115,12 @@ export async function createOrder({
       throw new Error("Order items are required");
     }
 
-    const productIds = items.map((i) => i.productId);
+    const productIds = items.map((i) => (i as any).productVarientId || (i as any).productId);
 
     const products = await db
       .select()
-      .from(product)
-      .where(inArray(product.id, productIds));
+      .from(productVariant)
+      .where(inArray(productVariant.id, productIds));
 
     if (products.length !== items.length) {
       throw new Error("Some products not found");
@@ -127,7 +128,7 @@ export async function createOrder({
 
     const productMap = new Map(products.map((p) => [p.id, p]));
 
- 
+
     const safeAmount = Math.round(fixedAmount);
 
 
@@ -152,7 +153,8 @@ export async function createOrder({
 
 
       const orderItemsToInsert = items.map((item) => {
-        const p = productMap.get(item.productId);
+        const variantId = (item as any).productVarientId || (item as any).productId;
+        const p = productMap.get(variantId);
 
         if (!p || !p.name || !p.slug || p.basePrice == null) {
           throw new Error("Invalid product data");
@@ -160,7 +162,7 @@ export async function createOrder({
 
         return {
           orderId,
-          productId: p.id,
+          productVarientId: p.id,
           quantity: item.quantity,
           productName: p.name,
           productSlug: p.slug,
@@ -186,16 +188,16 @@ export async function createOrder({
 
       return { orderId };
     });
-    const cart = await db.query.userCart.findFirst({
-      where: eq(userCart.userId, userId),
+    const cartRes = await db.query.cart.findFirst({
+      where: eq(cart.userId, userId),
     });
 
-    if (cart) {
-      await db.delete(userCartItems)
-        .where(eq(userCartItems.cartId, cart.id));
+    if (cartRes) {
+      await db.delete(cartItem)
+        .where(eq(cartItem.cartId, cartRes.id));
 
-      await db.delete(userCart)
-        .where(eq(userCart.id, cart.id));
+      await db.delete(cart)
+        .where(eq(cart.id, cartRes.id));
     }
     return {
       success: true,
@@ -229,16 +231,17 @@ export async function getOrderById(orderId: string) {
     .select({
       order: order,
       item: orderItem,
-      product: product,
+      productVariant: productVariant,
       payment: payment,
     })
     .from(order)
     .leftJoin(orderItem, eq(order.id, orderItem.orderId))
-    .leftJoin(product, eq(orderItem.productId, product.id))
+    .leftJoin(productVariant, eq(orderItem.productVarientId, productVariant.id))
     .leftJoin(payment, eq(order.id, payment.orderId))
     .where(eq(order.id, orderId));
 
   if (!rows.length) return null;
+  console.log(rows)
 
   const orderData = rows[0].order;
 
@@ -246,7 +249,7 @@ export async function getOrderById(orderId: string) {
     .filter((r) => r.item)
     .map((r) => ({
       ...r.item,
-      product: r.product ?? null,
+      productVariant: r.productVariant ?? null,
     }));
 
   const paymentData = rows[0].payment ?? null;
