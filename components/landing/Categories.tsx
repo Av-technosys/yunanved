@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Carousel,
   CarouselContent,
@@ -8,19 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import { getCategories } from "@/helper";
 import Link from "next/link";
-
-// const categories = [
-//   { name: "Electronics", image: "/category.jpg" },
-//   { name: "Beauty", image: "/category.jpg" },
-//   { name: "Grocery", image: "/category.jpg" },
-//   { name: "Perfume", image: "/category.jpg" },
-//   { name: "Household", image: "/category.jpg" },
-//   { name: "Daily Essential", image: "/category.jpg" },
-//   { name: "Fashion", image: "/category.jpg" },
-//   { name: "Eyewear", image: "/category.jpg" },
-//   { name: "Kitchen", image: "/category.jpg" },
-//   { name: "Health", image: "/category.jpg" },
-// ];
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 export async function Categories() {
   const categories = await getCategories();
@@ -45,10 +32,10 @@ export async function Categories() {
             {/* '-ml-8' creates the horizontal gap between items */}
 
             {/* Arrow anchor layer — centers relative to image */}
-      <div className="hidden md:block pointer-events-none absolute inset-x-0 top-[56px] sm:top-[64px] lg:top-[72px]">
-  <CarouselPrevious className="pointer-events-auto -left-10 h-10 w-10 " />
-  <CarouselNext className="pointer-events-auto -right-10 h-10 w-10 " />
-</div>
+            <div className="hidden md:block pointer-events-none absolute inset-x-0 top-[56px] sm:top-[64px] lg:top-[72px]">
+              <CarouselPrevious className="pointer-events-auto -left-10 h-10 w-10 " />
+              <CarouselNext className="pointer-events-auto -right-10 h-10 w-10 " />
+            </div>
 
             <CarouselContent className="-ml-8 overflow-visible py-2">
               {categories?.map((cat, index) => (
@@ -60,11 +47,11 @@ export async function Categories() {
                   <Link href={`category/${cat.slug}`}>
                     <div className="flex flex-col items-center group cursor-pointer">
                       {/* Gradient Ring */}
-                      <div className="relative p-[3px] rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 transition-transform duration-300 group-hover:scale-110">
+                      <div className="relative p-[3px] rounded-full bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600 transition-transform duration-300 group-hover:scale-110">
                         <div className="bg-white p-[2px] rounded-full">
                           <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 overflow-hidden rounded-full border border-slate-100 shadow-inner">
                             <img
-                              src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${cat.bannerImage}`}
+                              src={`${NEXT_PUBLIC_S3_BASE_URL}/${cat.bannerImage}`}
                               alt={cat.name}
                               className="w-full h-full object-cover"
                             />

@@ -3,7 +3,6 @@ import Footer from "@/components/landing/Footer";
 import Navbar from "@/components/landing/Navbar";
 
 import {
-  getProductAttributes,
   getFullProduct,
   getProductSimilarProducts,
 } from "@/helper";
@@ -11,18 +10,21 @@ import ProductClient from "./productClient";
 
 const Page = async (props: any) => {
   const params = await props.params;
-  const productInfo: any = await getFullProduct(params.productslug);
-  const similarProducts = await getProductSimilarProducts(params.productslug);
+  const product = await getFullProduct(params.productslug);
 
-  const productAttributes = await getProductAttributes(productInfo.id);
+  if (!product) {
+    return <div className="p-20 text-center">Product not found</div>;
+  }
+
+  const similarProducts = await getProductSimilarProducts(params.productslug) || [];
 
   return (
     <>
       <Navbar />
       <ProductClient
-        productInfo={productInfo}
+        productInfo={product.targetVariant}
+        variants={product.variants}
         similarProducts={similarProducts}
-        productAttributes={productAttributes}
       />
       <Footer />
     </>

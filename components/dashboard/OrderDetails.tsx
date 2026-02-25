@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { getOrderById } from "@/helper/index";
 import OrderReview from "./OrderReview";
 import { useRouter } from "next/navigation";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 export const OrderDetailsPage = ({
   orderId,
@@ -62,7 +63,7 @@ export const OrderDetailsPage = ({
   if (!orderData)
     return <div className="p-10 text-center">Order not found.</div>;
 
-  const S3_BASE = process.env.NEXT_PUBLIC_S3_BASE_URL;
+  const S3_BASE = NEXT_PUBLIC_S3_BASE_URL;
 
   return (
     <>

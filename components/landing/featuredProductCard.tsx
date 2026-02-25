@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAddToCart } from "@/helper/useAddToCart";
 import { useRef, useState } from "react";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const FeaturedProductCard = ({ product, key }: any) => {
   const { handleAddToCart, isPending } = useAddToCart();
@@ -51,7 +52,7 @@ const FeaturedProductCard = ({ product, key }: any) => {
         <Link href={`/product/${product.slug}`}>
           <div className="h-52 flex items-center justify-center p-4">
             <img
-              src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
+              src={`${NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
               alt={"Product Image"}
               className="object-contain h-full"
             />

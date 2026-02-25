@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Calendar, ChevronRight, Loader2, Star, Upload } from "lucide-react";
 import React, { useState } from "react";
@@ -17,6 +18,7 @@ import { useFileUpload } from "@/helper/useFileUpload";
 import { createReview } from "@/helper";
 import { toast } from "sonner";
 import { on } from "events";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const orderDetailsReview = ({
   orderDetails,
@@ -57,7 +59,7 @@ const orderDetailsReview = ({
     }
   };
 
-  const handleSubmitReview = async (productId: string) => {
+  const handleSubmitReview = async (productVarientId: string) => {
     const reviewData = {
       userId: orderDetails.userId,
       productId,
@@ -67,7 +69,7 @@ const orderDetailsReview = ({
     };
 
     try {
-      setLoadingProduct(productId);
+      setLoadingProduct(productVarientId);
 
       const response = await createReview(reviewData);
 
@@ -90,6 +92,7 @@ const orderDetailsReview = ({
       <div>
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
+          onClick={() => onBack()}
           onClick={() => onBack()}
         >
           <span>Home</span> <ChevronRight size={12} />
@@ -180,6 +183,8 @@ const orderDetailsReview = ({
             <CardDescription className="my-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {orderDetails.items.map((item: any, index: number) => {
+                  const variantId = item.productVarientId || item.productId || item.productVariant?.id;
+
                   return (
                     <Card
                       key={index}
@@ -190,7 +195,7 @@ const orderDetailsReview = ({
                           <div className="flex gap-3 items-center ">
                             <div className="w-12 h-12  overflow-hidden  relative rounded-md">
                               <Image
-                                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`}
+                                src={`${NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`}
                                 alt={item.productName}
                                 fill
                                 className="object-cover"
@@ -215,15 +220,14 @@ const orderDetailsReview = ({
                             <Star
                               key={star}
                               size={28}
-                              className={`cursor-pointer transition-colors ${
-                                star <= (ratings[item.productId] || 0)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
+                              className={`cursor-pointer transition-colors ${star <= (ratings[variantId] || 0)
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
+                                }`}
                               onClick={() =>
                                 setRatings((prev) => ({
                                   ...prev,
-                                  [item.productId]: star,
+                                  [variantId]: star,
                                 }))
                               }
                             />
@@ -274,21 +278,21 @@ const orderDetailsReview = ({
                         <Textarea
                           placeholder="Your comment"
                           className="min-h-[120px]"
-                          value={comments[item.productId] || ""}
+                          value={comments[variantId] || ""}
                           onChange={(e) =>
                             setComments((prev) => ({
                               ...prev,
-                              [item.productId]: e.target.value,
+                              [variantId]: e.target.value,
                             }))
                           }
                         />
 
                         <Button
                           className="w-full"
-                          disabled={loadingProduct === item.productId}
-                          onClick={() => handleSubmitReview(item.productId)}
+                          disabled={loadingProduct === variantId && loadingProduct !== null}
+                          onClick={() => handleSubmitReview(variantId)}
                         >
-                          {loadingProduct === item.productId
+                          {loadingProduct === variantId && loadingProduct !== null
                             ? "Submitting..."
                             : "Submit Review"}
                         </Button>

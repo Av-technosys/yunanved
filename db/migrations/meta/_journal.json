@@ -5,57 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1769752685202,
-      "tag": "0000_hot_hemingway",
+      "when": 1771925699202,
+      "tag": "0000_chunky_expediter",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1770112129988,
-      "tag": "0001_sloppy_butterfly",
+      "when": 1771929875543,
+      "tag": "0001_petite_the_order",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1770113140313,
-      "tag": "0002_nebulous_wildside",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1771475496522,
-      "tag": "0003_friendly_spectrum",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1771479597549,
-      "tag": "0004_material_exiles",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1771494883899,
-      "tag": "0005_shallow_quicksilver",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1771565973082,
-      "tag": "0006_sparkling_solo",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1771566009624,
-      "tag": "0007_eager_typhoid_mary",
+      "when": 1771931392631,
+      "tag": "0002_sharp_zombie",
       "breakpoints": true
     }
   ]

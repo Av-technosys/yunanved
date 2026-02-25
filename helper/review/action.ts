@@ -1,11 +1,10 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { review, reviewMedia } from "@/db/reviewSchema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
-import { reviewMediaTable, reviewsTable, userTable } from "@/db/schema";
+import { user, review, reviewMedia } from "@/db"
 
 export async function toggleApproveReview(id: string) {
   try {
@@ -60,37 +59,43 @@ export async function getReviewStats() {
 
 export async function createReview(reviewData: any) {
   try {
-    const { userId, productId, rating, message, media } = reviewData;
+    const { userId, productVarientId, rating, message, image } = reviewData;
+    console.log(productVarientId)
+
+    if (!productVarientId) {
+      throw new Error("Product Variant ID is required for review submission");
+    }
     await db.transaction(async (tx) => {
-      const userInfo = await tx.query.userTable.findFirst({
-        where: eq(userTable.id, userId),
+      const userInfo = await tx.query.user.findFirst({
+        where: eq(user.id, userId),
         columns: {
-          name: true,
+          first_name: true,
+          last_name: true,
           email: true,
         },
       });
 
+      const fullName = [userInfo?.first_name, userInfo?.last_name]
+        .filter(Boolean)
+        .join(" ");
+
       const reviewId = await tx
-        .insert(reviewsTable)
+        .insert(review)
         .values({
           userId,
-          productId,
-          name: userInfo?.name || "",
+          productVarientId: productVarientId,
+          name: fullName || "Guest User",
           email: userInfo?.email || "",
           rating: Number(rating),
           message,
         })
-        .returning({ id: reviewsTable.id });
+        .returning({ id: review.id });
 
-      if (media?.length > 0) {
-        await tx.insert(reviewMediaTable).values(
-          media.map((image: any) => ({
-            reviewId: reviewId[0].id,
-            mediaType: "image",
-            mediaURL: image.fileKey,
-          })),
-        );
-      }
+      await tx.insert(reviewMedia).values({
+        reviewId: reviewId[0].id,
+        mediaType: "image",
+        mediaURL: image,
+      });
     });
 
     return { success: true };

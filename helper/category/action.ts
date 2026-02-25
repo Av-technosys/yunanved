@@ -2,17 +2,13 @@
 "use server";
 
 import { db } from "@/lib/db";
-import {
-  category as categoryTable,
-  product,
-  productCategory,
-} from "@/db/productSchema";
+
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { productCategoryTable } from "@/db/schema";
+import { productCategory, category, product, productVariant } from "@/db";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
@@ -50,7 +46,7 @@ export async function updateCategory(categoryData: any) {
       categoryData;
 
     await db
-      .update(categoryTable)
+      .update(category)
       .set({
         name,
         slug: slugify(name, { lower: true }),
@@ -59,7 +55,7 @@ export async function updateCategory(categoryData: any) {
         bannerImage: bannerImage || null,
         
       })
-      .where(eq(categoryTable.id, id));
+      .where(eq(category.id, id));
 
     revalidatePath("/admin/category");
     revalidatePath(`/admin/category/${id}`);
@@ -93,7 +89,7 @@ export async function getProductCategory(productId: string) {
     const result = await db
       .select({
         categoryId: productCategory.categoryId,
-        name: categoryTable.name,
+        name: category.name,
       })
       .from(productCategory)
       .leftJoin(categoryTable, eq(categoryTable.id, productCategory.categoryId))
@@ -133,21 +129,21 @@ export async function getCategoriesPagination({
   const filters = [];
 
   if (search.trim() !== "") {
-    filters.push(ilike(categoryTable.name, `%${search}%`));
+    filters.push(ilike(category.name, `%${search}%`));
   }
 
   if (categorySlug) {
-    filters.push(eq(categoryTable.slug, categorySlug));
+    filters.push(eq(category.slug, categorySlug));
   }
 
   const whereClause = filters.length ? and(...filters) : undefined;
 
   const result = await paginate({
-    table: categoryTable,
+    table: category,
     page,
     pageSize,
     where: whereClause,
-    orderBy: desc(categoryTable.createdAt),
+    orderBy: desc(category.createdAt),
   });
 
   return {
@@ -170,7 +166,7 @@ export async function deleteCategory(id: string) {
       };
     }
 
-    await db.delete(categoryTable).where(eq(categoryTable.id, id));
+    await db.delete(category).where(eq(category.id, id));
 
     revalidatePath("/admin/category");
 
@@ -190,8 +186,8 @@ export async function getCategories() {
   try {
     return await db
       .select()
-      .from(categoryTable)
-      .orderBy(asc(categoryTable.createdAt));
+      .from(category)
+      .orderBy(asc(category.createdAt));
   } catch (error) {
     console.log(error);
     return [];
@@ -202,28 +198,49 @@ export async function getAllProductsByCategorySlug(slug: string) {
   try {
     const products = await db
       .select({
-        id: product.id,
-        name: product.name,
-        basePrice: product.basePrice,
-        slug: product.slug,
-        bannerImage: product.bannerImage,
-        rating: product.rating,
+        id: productVariant.id,
+        name: productVariant.name,
+        basePrice: productVariant.basePrice,
+        strikethroughPrice: productVariant.strikethroughPrice,
+        slug: productVariant.slug,
+        bannerImage: productVariant.bannerImage,
+        rating: productVariant.rating,
+        sku: productVariant.sku,
       })
-      .from(product)
+      .from(productVariant)
       .innerJoin(
-        productCategoryTable,
-        eq(product.id, productCategoryTable.productId),
+        product,
+        eq(product.id, productVariant.productId),
       )
       .innerJoin(
-        categoryTable,
-        eq(categoryTable.id, productCategoryTable.categoryId),
+        productCategory,
+        eq(product.id, productCategory.productId),
       )
-      .where(eq(categoryTable.slug, slug));
+      .innerJoin(
+        category,
+        eq(category.id, productCategory.categoryId),
+      )
+      .where(eq(category.slug, slug));
 
     return products;
   } catch (error) {
-    console.log(error);
+    console.error("fetch products by category failed:", error);
     return [];
+  }
+}
+
+export async function getCategoryBySlug(slug: string) {
+  try {
+    const result = await db
+      .select()
+      .from(category)
+      .where(eq(category.slug, slug))
+      .limit(1);
+
+    return result[0] || null;
+  } catch (error) {
+    console.error("fetch category by slug failed:", error);
+    return null;
   }
 }
 

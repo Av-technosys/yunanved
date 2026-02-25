@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { cart, cartItem } from "@/db/userSchema";
+import { cart, cartItem, user, productVariant } from "@/db";
 import { eq, and, sql } from "drizzle-orm";
-
+import { tempUserId } from "@/const/globalconst";
 
 export async function addProductToUserCart(
   userId: string,
@@ -12,6 +12,18 @@ export async function addProductToUserCart(
 ) {
   try {
     return await db.transaction(async (tx) => {
+      // 0. Ensure user exists (especially for tempUserId in dev)
+      if (userId === tempUserId) {
+        const userExists = await tx.select().from(user).where(eq(user.id, userId)).then(r => r[0]);
+        if (!userExists) {
+          await tx.insert(user).values({
+            id: userId,
+            first_name: "Guest",
+            last_name: "User",
+            email: "guest@example.com",
+          });
+        }
+      }
 
       let existingCart = await tx
         .select()
@@ -40,7 +52,7 @@ export async function addProductToUserCart(
         .where(
           and(
             eq(cartItem.cartId, existingCart.id),
-            eq(cartItem.productId, productId)
+            eq(cartItem.productVarientId, productId)
           )
         )
         .then(r => r[0]);
@@ -55,7 +67,7 @@ export async function addProductToUserCart(
       } else {
         await tx.insert(cartItem).values({
           cartId: existingCart.id,
-          productId,
+          productVarientId: productId,
           quantity,
         });
       }
@@ -87,7 +99,7 @@ export async function increaseCartItem(
     })
     .where(and(
       eq(cartItem.cartId, existingCart.id),
-      eq(cartItem.productId, productId)
+      eq(cartItem.productVarientId, productId)
     ));
 
   return { success: true };
@@ -113,7 +125,7 @@ export async function decreaseCartItem(
       })
       .where(and(
         eq(cartItem.cartId, existingCart.id),
-        eq(cartItem.productId, productId),
+        eq(cartItem.productVarientId, productId),
         sql`${cartItem.quantity} > 1`
       ));
 
@@ -121,7 +133,7 @@ export async function decreaseCartItem(
       .delete(cartItem)
       .where(and(
         eq(cartItem.cartId, existingCart.id),
-        eq(cartItem.productId, productId),
+        eq(cartItem.productVarientId, productId),
         sql`${cartItem.quantity} <= 1`
       ));
 
@@ -150,7 +162,7 @@ export async function removeCartItem(
       .delete(cartItem)
       .where(and(
         eq(cartItem.cartId, existingCart.id),
-        eq(cartItem.productId, productId)
+        eq(cartItem.productVarientId, productId)
       ));
 
     return { success: true };
@@ -174,11 +186,25 @@ export async function getUserCart(userId: string) {
     }
 
     const items = await db
-      .select()
+      .select({
+        productId: cartItem.productVarientId,
+        sku: productVariant.sku,
+        slug: productVariant.slug,
+        title: productVariant.name,
+        image: productVariant.bannerImage,
+        price: productVariant.basePrice,
+        originalPrice: productVariant.strikethroughPrice,
+        quantity: cartItem.quantity,
+      })
       .from(cartItem)
+      .innerJoin(productVariant, eq(cartItem.productVarientId, productVariant.id))
       .where(eq(cartItem.cartId, existingCart.id));
 
-    return items; 
+    return items.map(item => ({
+      ...item,
+      attributes: [], // We'll add attribute support if needed later
+      addedAt: Date.now(),
+    }));
   } catch (err) {
     console.error("❌ Fetch cart failed:", err);
     throw err;

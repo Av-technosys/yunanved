@@ -7,12 +7,12 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 import { user } from "./userSchema";
-import { product } from "./productSchema";
+import { productVariant } from "./productSchema";
 
 export const review = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => user.id),
-  productId: uuid("product_id").notNull().references(() => product.id),
+  productVarientId: uuid("product_varient_id").notNull().references(() => productVariant.id),
   name: varchar("name"),
   email: varchar("email"),
   rating: integer("rating").notNull(),

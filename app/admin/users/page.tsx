@@ -14,7 +14,7 @@ interface PageProps {
   };
 }
 
-  const PAGE_SIZE = pageSize
+const PAGE_SIZE = pageSize
 
 
 const Page = async ({ searchParams }: PageProps) => {
@@ -27,7 +27,7 @@ const Page = async ({ searchParams }: PageProps) => {
   const filters = [];
 
   if (text && text.trim() !== "") {
-    filters.push(ilike(user.name, `%${text}%`));
+    filters.push(ilike(user.first_name, `%${text}%`));
   }
   const whereClause = filters.length > 0 ? and(...filters) : undefined;
   const offset = (page - 1) * pageSize;
