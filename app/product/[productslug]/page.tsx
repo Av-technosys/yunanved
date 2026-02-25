@@ -20,13 +20,11 @@ const Page = async (props: any) => {
 
   return (
     <>
-      <Navbar />
       <ProductClient
         productInfo={product.targetVariant}
         variants={product.variants}
         similarProducts={similarProducts}
       />
-      <Footer />
     </>
   );
 };

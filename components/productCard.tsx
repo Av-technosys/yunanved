@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useState } from "react";
-import { Card, CardContent, CardDescription } from "./ui/card";
+import { Card, CardContent, CardDescription, CardFooter } from "./ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -13,7 +13,6 @@ import { useAddToCart } from "@/helper/useAddToCart";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
-
 
   const { handleAddToCart, isPending } = useAddToCart();
   const [isAdding, setIsAdding] = useState(false);
@@ -49,7 +48,7 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
       <Card key={index} className="p-0">
         <CardContent className="p-2">
           <Link href={`/product/${product.slug}`}>
-            <div className={cn(`relative min-h-52 w-full`, className)}>
+            <div className={cn(`relative h-52 w-full`, className)}>
               <Image
                 src={product.bannerImage && product.bannerImage !== "null" && product.bannerImage !== "[object Object]"
                   ? `${NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`
@@ -60,10 +59,12 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
               />
             </div>
           </Link>
-          <CardDescription className="mb-5">
-            <div className="my-1 text-black text-[14px] font-semibold">
-              {product.name}
-            </div>
+          <div className="p-2">
+            <Link href={`/product/${product.slug}`}>
+              <div className="text-black mt-2 font-semibold">
+                {product.name}
+              </div>
+            </Link>
             <div className="flex items-center justify-between">
               <div>
                 <StarRatings
@@ -75,17 +76,15 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
                   name="rating"
                 />
               </div>
-              {/* <p
-                className={`${product.stock === "In Stock" ? "text-green-600" : "text-red-600"}`}
-              >
-                {product.stock}
-              </p> */}
+
             </div>
-          </CardDescription>
+          </div>
 
-          <div className="flex w-full mt-3 items-center justify-between">
-            <div>₹{product.basePrice}</div>
 
+        </CardContent>
+        <CardFooter>
+          <div className="flex w-full items-center justify-between">
+            <div className=" font-semibold text-lg">₹{product.basePrice}</div>
             <Button
               disabled={isAdding}
               className={cn(
@@ -98,7 +97,7 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
               <ShoppingCart />
             </Button>
           </div>
-        </CardContent>
+        </CardFooter>
       </Card>
     </>
   );

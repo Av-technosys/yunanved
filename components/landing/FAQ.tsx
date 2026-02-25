@@ -34,7 +34,7 @@ const faqData = [
 
 export function FAQ() {
   return (
-    <section className=" mx-auto min-w-4xl py-10 px-4">
+    <section className=" mx-auto max-w-5xl w-full py-10 px-4">
       {/* Header Section */}
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
@@ -47,21 +47,21 @@ export function FAQ() {
 
       {/* Accordion Section */}
       <Accordion type="single" collapsible className="w-full space-y-4">
-      {faqData.map((faq) => (
-  <AccordionItem 
-    key={faq.id} 
-    value={faq.id}
-    className="border rounded-xl px-6 py-1 border-slate-200 shadow-sm"
-  >
-    <AccordionTrigger className="text-base font-bold text-slate-900 hover:no-underline text-left">
-      {faq.question}
-    </AccordionTrigger>
+        {faqData.map((faq) => (
+          <AccordionItem
+            key={faq.id}
+            value={faq.id}
+            className="border rounded-xl px-6 py-1 border-slate-200 shadow-sm"
+          >
+            <AccordionTrigger className="text-base font-bold text-slate-900 hover:no-underline text-left">
+              {faq.question}
+            </AccordionTrigger>
 
-    <AccordionContent className="text-slate-600 leading-relaxed">
-      {faq.answer}
-    </AccordionContent>
-  </AccordionItem>
-))}
+            <AccordionContent className="text-slate-600 leading-relaxed">
+              {faq.answer}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
 
       </Accordion>
     </section>
