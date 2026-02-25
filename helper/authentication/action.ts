@@ -1,34 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import { userTable } from "@/db/schema";
-import { user } from "@/db/userSchema";
+import { user } from "@/db";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 
-export async function signUp(userData:any){
+export async function signUp(userData: any) {
     try {
-        const user = await db.select().from(userTable).where(eq(userTable.email, userData.email));
-        if(user.length > 0){
-            return { success: false, message: "User already exists"};
+        const userRes = await db.select().from(user).where(eq(user.email, userData.email));
+        if (userRes.length > 0) {
+            return { success: false, message: "User already exists" };
         }
-        await db.insert(userTable).values(userData);
-        return { success: true};
+        await db.insert(user).values(userData);
+        return { success: true };
     } catch (error) {
         throw error;
     }
 }
 
-export async function signIn(userData:any){
+export async function signIn(userData: any) {
     try {
-        const user = await db.select().from(userTable).where(eq(userTable.email, userData.email));
-        if(user.length === 0){
-            return { success: false, message: "User does not exist"};
+        const userRes = await db.select().from(user).where(eq(user.email, userData.email));
+        if (userRes.length === 0) {
+            return { success: false, message: "User does not exist" };
         }
-        if(user[0].password !== userData.password){
-            return { success: false, message: "Incorrect password"};
+        if (userRes[0].password !== userData.password) {
+            return { success: false, message: "Incorrect password" };
         }
 
-        return { success: true};
+        return { success: true };
     } catch (error) {
         throw error;
     }

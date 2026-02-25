@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { user , userAddress } from "@/db/userSchema";
+import { user, userAddress } from "@/db/userSchema";
 import { eq } from "drizzle-orm";
 
 
@@ -14,17 +14,17 @@ export async function getProfile(userId: string) {
 
   if (!data) return null;
 
-  const parts = (data.name ?? "").trim().split(" ");
+  const firstName = data.first_name ?? "";
+  const lastName = data.last_name ?? "";
 
   return {
     id: data.id,
-    firstName: parts[0] ?? "",
-    lastName: parts.slice(1).join(" ") ?? "",
+    firstName: firstName,
+    lastName: lastName,
     email: data.email,
     phone: data.number ?? "",
     memberSince: data.createdAt,
     profileImage: data.profileImage ?? null,
-
   };
 }
 
@@ -33,17 +33,15 @@ export async function updateProfile(userId: string, payload: {
   lastName: string;
   phone: string;
   profileImage?: string;
-
 }) {
-
-  const name = `${payload.firstName} ${payload.lastName}`.trim();
 
   await db
     .update(user)
     .set({
-      name,
+      first_name: payload.firstName,
+      last_name: payload.lastName,
       number: payload.phone,
-      profileImage: payload.profileImage, 
+      profileImage: payload.profileImage,
       updatedAt: new Date(),
     })
     .where(eq(user.id, userId));
@@ -57,7 +55,7 @@ export async function getAddresses(userId: string) {
     .from(userAddress)
     .where(eq(userAddress.userId, userId));
 
-  return rows; 
+  return rows;
 }
 
 
@@ -78,7 +76,7 @@ export async function saveAddress(
     if (payload.isDefault) {
       await tx
         .update(userAddress)
-        .set({ isDefault: false })
+        .set({ isPrimary: false })
         .where(eq(userAddress.userId, userId));
     }
 
@@ -92,7 +90,7 @@ export async function saveAddress(
           city: payload.city,
           state: payload.state,
           pincode: payload.pincode,
-          isDefault: payload.isDefault,
+          isPrimary: payload.isDefault,
           updatedAt: new Date(),
         })
         .where(eq(userAddress.id, payload.id));
@@ -105,7 +103,7 @@ export async function saveAddress(
         city: payload.city,
         state: payload.state,
         pincode: payload.pincode,
-        isDefault: payload.isDefault,
+        isPrimary: payload.isDefault,
       });
     }
 
@@ -125,7 +123,7 @@ export async function deleteAddress(id: string) {
     throw new Error("Address not found");
   }
 
-  if (address.isDefault) {
+  if (address.isPrimary) {
     throw new Error(
       "You cannot delete the default address. Please set another address as default first."
     );

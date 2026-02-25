@@ -45,7 +45,7 @@ import Link from "next/link";
 import ProductCard from "@/components/productCard";
 import { FilterSidebar } from "../filterSidebar";
 
-import { getAllProductsByCategorySlug } from "@/helper/category/action";
+import { getAllProductsByCategorySlug, getCategoryBySlug } from "@/helper/category/action";
 
 // const products = [
 //   {
@@ -166,7 +166,20 @@ interface PageProps {
 const Page = async (props: PageProps) => {
   const { slug } = await props.params;
 
-  const products = await getAllProductsByCategorySlug(slug);
+  const [products, categoryInfo] = await Promise.all([
+    getAllProductsByCategorySlug(slug),
+    getCategoryBySlug(slug),
+  ]);
+
+  if (!categoryInfo) {
+    return (
+      <>
+        <Navbar />
+        <div className="p-20 text-center">Category not found</div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -275,14 +288,14 @@ const Page = async (props: PageProps) => {
               <FilterSidebar />
             </Button>
             <div className="text-black hidden  md:block font-bold text-lg">
-              Fashion
+              {categoryInfo.name}
             </div>
             <div className="text-gray-600">Sort by : Latest Product</div>
           </div>
-      <CategoryView
-        products={products}
-        slug={slug}
-      />
+          <CategoryView
+            products={products}
+            slug={slug}
+          />
         </div>
       </div>
       <Footer />
