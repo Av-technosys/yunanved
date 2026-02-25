@@ -1,3 +1,4 @@
+
 // category
 export {
   createCategory,
@@ -59,4 +60,9 @@ export { getFeaturedProducts, deleteFeaturedProduct, addFeaturedProduct } from "
 export { getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory } from "./featuredCategory/action"
 //user
 
-export { getProfile, updateProfile, getAddresses, saveAddress, deleteAddress } from "./user/action"
+export {getProfile , updateProfile, getAddresses, saveAddress, deleteAddress} from "./user/action"
+
+//payment
+
+export {getPayments} from "./payment/action"
+

@@ -45,23 +45,12 @@ export default function CartPage() {
   const userId = tempUserId; // later from auth/session
 
   const items = useCartStore((s) => s.items);
-  console.log("Cart items from store:", items);
 
   const increase = useCartStore((s) => s.increase);
   const decrease = useCartStore((s) => s.decrease);
   const removeItem = useCartStore((s) => s.removeItem);
 
-useEffect(() => {
-  console.log("🟢 STORE ITEMS:");
-  items.forEach((i) => {
-    console.log({
-      productId: i.productId,
-      slug: i.slug,
-      quantity: i.quantity,
-      attributes: i.attributes,
-    });
-  });
-}, [items]);
+
 
 
 
@@ -73,7 +62,6 @@ useEffect(() => {
 
 
   useEffect(() => {
-  console.log("🟡 FRESH PRODUCTS:");
   freshProducts.forEach((p) => {
     console.log({
       id: p.id,
@@ -106,7 +94,6 @@ const productKeys = useMemo(
             const data = await getProductsForCart(
           items.map((i) => i.productId)
         );
-        console.log("Fetched products for cart:", data);
       if (!cancelled) {
         setFreshProducts(data || []);
         setIsFetching(false);
@@ -130,8 +117,7 @@ const productMap = useMemo(() => {
 
 
 useEffect(() => {
-  console.log("🔵 PRODUCT MAP KEYS:");
-  console.log([...productMap.keys()]);
+
 }, [productMap]);
   const handleIncrease = (item: any) => {
     increase(item.productId, item.attributes);
