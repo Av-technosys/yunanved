@@ -13,16 +13,14 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col font-sans overflow-x-hidden">
       <NavBar />
-      <main className="flex-1 w-full">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col gap-2">
-          <Hero />
-          <Categories />
-          <BentoGallery />
-          <ProductCarousel />
-          <FeaturedProducts />
-          <Newsletter />
-          <FAQ />
-        </div>
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 flex flex-col gap-2">
+        <Hero />
+        <Categories />
+        <BentoGallery />
+        <ProductCarousel />
+        <FeaturedProducts />
+        <Newsletter />
+        <FAQ />
       </main>
       <Footer />
     </div>

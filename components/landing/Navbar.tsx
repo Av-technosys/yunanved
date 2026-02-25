@@ -19,11 +19,11 @@ const Navbar = () => {
         }
       >
         {/* Logo */}
-        <div className="flex-shrink-0">
+        <Link href={"/"} className="shrink-0">
           <h1 className="text-2xl font-black tracking-tighter text-[#1A2E35]">
             YUNANVED
           </h1>
-        </div>
+        </Link>
 
         {/* Location Picker */}
         <div className="hidden lg:flex items-center gap-2 text-[#1A2E35] cursor-pointer group">
@@ -51,7 +51,7 @@ const Navbar = () => {
         </div>
 
         {/* Search Bar Container */}
-        <div className="flex-grow max-w-2xl flex items-center gap-2">
+        <div className="grow max-w-2xl flex items-center gap-2">
           <Input
             type="text"
             placeholder="Search for Products, Brands & More"

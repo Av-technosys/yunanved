@@ -1,15 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import prod1 from "@/public/prod1.png";
-import prod2 from "@/public/prod2.png";
-import prod3 from "@/public/prod3.png";
-import prod4 from "@/public/prod4.png";
-import prod5 from "@/public/prod5.png";
-import prod6 from "@/public/prod6.png";
-import prod7 from "@/public/prod7.png";
-import prod8 from "@/public/prod8.png";
-import prod9 from "@/public/prod9.png";
-import prod10 from "@/public/prod10.png";
+
 import CategoryView from "@/components/category/CategoryView";
 
 import {
@@ -17,20 +8,11 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CarTaxiFront, Filter, FilterIcon, ShoppingCart } from "lucide-react";
+import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+
 import { Separator } from "@/components/ui/separator";
 import {
   Accordion,
@@ -41,121 +23,10 @@ import {
 import { Slider } from "@/components/ui/slider";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import Link from "next/link";
-import ProductCard from "@/components/productCard";
 import { FilterSidebar } from "../filterSidebar";
 
 import { getAllProductsByCategorySlug, getCategoryBySlug } from "@/helper/category/action";
 
-// const products = [
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 1,
-//     rating: 4.5,
-//     stock: "In Stock",
-//     price: "$145.00",
-//     image: prod1,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 2,
-//     rating: 3.5,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod6,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 3,
-//     rating: 2.5,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod10,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 4,
-//     rating: 4.5,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod2,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 5,
-//     rating: 4.9,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod3,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 6,
-//     rating: 4.8,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod4,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 7,
-//     rating: 3.5,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod5,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 8,
-//     rating: 2.5,
-//     stock: "In Stock",
-//     price: "$145.00",
-//     image: prod6,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 9,
-//     rating: 1.5,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod7,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 10,
-//     rating: 5.0,
-//     stock: "In Stock",
-//     price: "$145.00",
-//     image: prod8,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 11,
-//     rating: 4.5,
-//     stock: "Out of Stock",
-//     price: "$145.00",
-//     image: prod9,
-//   },
-//   {
-//     name: "Gradient Graphic T-shirt",
-//     id: 12,
-//     rating: 4.5,
-//     stock: "In Stock",
-//     price: "$145.00",
-//     image: prod10,
-//   },
-// ];
-
-const breadcrumb = [
-  {
-    name: "Home",
-    href: "/",
-  },
-  {
-    name: "Category",
-    href: "/category",
-  },
-];
 
 interface PageProps {
   params: {
@@ -174,16 +45,14 @@ const Page = async (props: PageProps) => {
   if (!categoryInfo) {
     return (
       <>
-        <Navbar />
         <div className="p-20 text-center">Category not found</div>
-        <Footer />
       </>
     );
   }
 
   return (
     <>
-      <Navbar />
+
       <div className="max-w-6xl  mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0 ">
         <div className="col-span-1 hidden md:flex flex-col  gap-3">
           <div className="sticky top-4">
@@ -298,7 +167,6 @@ const Page = async (props: PageProps) => {
           />
         </div>
       </div>
-      <Footer />
     </>
   );
 };
