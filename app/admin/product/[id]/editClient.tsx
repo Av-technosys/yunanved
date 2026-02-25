@@ -101,7 +101,6 @@ if (current?.length) {
     load();
   }, [productInfo.id]);
 
-  /* ---------------- HANDLERS ---------------- */
 
   function handleValueChange(attribute: string, value: string, id?: string) {
     setProductAttributes(prev => ({

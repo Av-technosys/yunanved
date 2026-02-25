@@ -3,8 +3,6 @@ import { OrderStatusChart } from "@/components/admin/orderStatusChart"
 import { RecentOrdersTable } from "@/components/admin/recentOrdersTable"
 import { QuickActions } from "@/components/admin/quickActions"
 import { DashboardCards } from "@/components/admin/dashboardCard"
-import { db } from "@/lib/tb"
-import { productTable } from "@/db/schema"
 
 export default async function DashboardPage() {
   // const data = await db.select().from(productTable)

@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createProduct, saveProductAttributes, getCategories, attachProductCategory } from "@/helper/index";;
+import { createProduct, saveProductAttributes } from "@/helper/index";;
 import { useFileUpload } from "@/helper/useFileUpload";
 import { validateImage } from "@/helper/image/validateImage";
 import { toast } from "sonner";
@@ -85,12 +85,12 @@ const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
     try {
       // validate BEFORE upload
-      await validateImage(file, {
-        maxSizeMB: 2,
-        maxWidth: 400,
-        maxHeight: 600,
-        ratio: 400 / 600,
-      });
+      // await validateImage(file, {
+      //   maxSizeMB: 2,
+      //   maxWidth: 400,
+      //   maxHeight: 600,
+      //   ratio: 400 / 600,
+      // });
 
       const folder = "product";
       const { preview, fileKey } = await upload(file, folder);
@@ -114,12 +114,12 @@ const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     for (const file of Array.from(files)) {
       try {
         // 🔍 Validate before upload
-        await validateImage(file, {
-          maxSizeMB: 2,
-          maxWidth: 400,
-          maxHeight: 600,
-          ratio: 400 / 600,
-        });
+        // await validateImage(file, {
+        //   maxSizeMB: 2,
+        //   maxWidth: 400,
+        //   maxHeight: 600,
+        //   ratio: 400 / 600,
+        // });
 
         const { preview, fileKey } = await upload(file, folder);
 

@@ -317,11 +317,14 @@ export async function getProducts({
   const offset = (page - 1) * pageSize;
   const [rawItems, total] = await Promise.all([
     db
-      .select()
+    .select({
+    product: product
+  })
       .from(product)
       .leftJoin(productCategory, eq(productCategory.productId, product.id))
       .leftJoin(category, eq(category.id, productCategory.categoryId))
       .where(whereClause)
+      .groupBy(product.id)
       .orderBy(desc(product.createdAt))
       .limit(pageSize)
       .offset(offset),
@@ -334,7 +337,7 @@ export async function getProducts({
       .where(whereClause),
   ]);
 
-  const items = rawItems.map((row) => row.products);
+  const items = rawItems.map((row) => row.product);
 
   const totalPages = Math.ceil(total[0].count / pageSize);
 
