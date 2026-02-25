@@ -22,8 +22,8 @@ interface GetCategoriesOptions {
 export async function createCategory(categoryData: any) {
   try {
     const { name, description, parentId , bannerImage } = categoryData;
-    const slug = await generateUniqueSlug(db, name, categoryTable.slug);
-    await db.insert(categoryTable).values({
+    const slug = await generateUniqueSlug(db, name, category.slug);
+    await db.insert(category).values({
       name,
       slug,
       description,
@@ -92,7 +92,7 @@ export async function getProductCategory(productId: string) {
         name: category.name,
       })
       .from(productCategory)
-      .leftJoin(categoryTable, eq(categoryTable.id, productCategory.categoryId))
+      .leftJoin(category, eq(category.id, productCategory.categoryId))
       .where(eq(productCategory.productId, productId));
 
     return result;
@@ -248,10 +248,10 @@ export async function getAllCategoriesMeta() {
   try {
     return await db
       .select({
-        id: categoryTable.id,
-        name: categoryTable.name,
+        id: category.id,
+        name: category.name,
       })
-      .from(categoryTable);
+      .from(category);
   } catch (error) {
     console.log(error);
     return [];

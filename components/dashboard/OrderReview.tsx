@@ -62,9 +62,9 @@ const orderDetailsReview = ({
   const handleSubmitReview = async (productVarientId: string) => {
     const reviewData = {
       userId: orderDetails.userId,
-      productId,
-      rating: ratings[productId] || 0,
-      message: comments[productId] || "",
+      productVarientId,
+      rating: ratings[productVarientId] || 0,
+      message: comments[productVarientId] || "",
       media: fileKey || [],
     };
 
@@ -76,8 +76,8 @@ const orderDetailsReview = ({
       if (response.success) {
         toast.success("Review submitted successfully!");
 
-        setRatings((prev) => ({ ...prev, [productId]: 0 }));
-        setComments((prev) => ({ ...prev, [productId]: "" }));
+        setRatings((prev) => ({ ...prev, [productVarientId]: 0 }));
+        setComments((prev) => ({ ...prev, [productVarientId]: "" }));
         setFileKey([]);
         setPreviews([]);
       } else {
@@ -93,7 +93,7 @@ const orderDetailsReview = ({
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
           onClick={() => onBack()}
-          onClick={() => onBack()}
+        
         >
           <span>Home</span> <ChevronRight size={12} />
           <span>My orders</span> <ChevronRight size={12} />

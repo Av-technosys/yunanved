@@ -3,7 +3,11 @@
 
 import React, { useRef, useState } from "react";
 import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +17,7 @@ import { Label } from "@/components/ui/label";
 import { ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import {
-  updateProduct,
-} from "@/helper/index";
+import { updateProduct } from "@/helper/index";
 
 import { useFileUpload } from "@/helper/useFileUpload";
 import { validateImage } from "@/helper/image/validateImage";
@@ -47,17 +49,24 @@ interface EditProductProps {
   productId: string;
   initialVariants: any[];
   initialCategoryIds: string[];
+  targetVariantId?: string;
 }
 
-export default function EditProduct({ productId, initialVariants, initialCategoryIds }: EditProductProps) {
+export default function EditProduct({
+  productId,
+  initialVariants,
+  initialCategoryIds,
+  targetVariantId,
+}: EditProductProps) {
   const router = useRouter();
   const { upload, uploading } = useFileUpload();
   const BASE = NEXT_PUBLIC_S3_BASE_URL!;
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategoryIds);
+  const [selectedCategories, setSelectedCategories] =
+    useState<string[]>(initialCategoryIds);
 
   const [variants, setVariants] = useState<Variant[]>(
-    initialVariants.map(v => ({
+    initialVariants.map((v) => ({
       id: v.id,
       isExisting: true,
       name: v.name || "",
@@ -65,19 +74,30 @@ export default function EditProduct({ productId, initialVariants, initialCategor
       price: v.basePrice || 0,
       strikethroughPrice: v.strikethroughPrice || 0,
       description: v.description || "",
-      banner: v.bannerImage ? { key: v.bannerImage, preview: `${BASE}/${v.bannerImage}` } : null,
+      banner: v.bannerImage
+        ? { key: v.bannerImage, preview: `${BASE}/${v.bannerImage}` }
+        : null,
       gallery: (v.media || []).map((m: any) => ({
         key: m.mediaURL,
-        preview: `${BASE}/${m.mediaURL}`
+        preview: `${BASE}/${m.mediaURL}`,
       })),
       attributes: Object.fromEntries(
-        (v.attributes || []).map((a: any) => [a.attribute, { id: a.id, value: a.value }])
+        (v.attributes || []).map((a: any) => [
+          a.attribute,
+          { id: a.id, value: a.value },
+        ]),
       ),
       isInStock: v.isInStock ?? true,
-    }))
+    })),
   );
 
-  const [activeIndex, setActiveIndex] = useState(0);
+  const initialActiveIndex = initialVariants.findIndex(
+    (v) => v.id === targetVariantId,
+  );
+
+  const [activeIndex, setActiveIndex] = useState(
+    initialActiveIndex !== -1 ? initialActiveIndex : 0,
+  );
 
   const bannerRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -94,7 +114,7 @@ export default function EditProduct({ productId, initialVariants, initialCategor
       banner: null,
       gallery: [],
       attributes: { ...variants[0]?.attributes },
-      isInStock: true
+      isInStock: true,
     };
     setVariants([...variants, newVariant]);
     setActiveIndex(variants.length);
@@ -123,8 +143,8 @@ export default function EditProduct({ productId, initialVariants, initialCategor
     updateVariant(activeIndex, {
       attributes: {
         ...currentAttributes,
-        [attribute]: { value }
-      }
+        [attribute]: { value },
+      },
     });
   };
 
@@ -132,10 +152,15 @@ export default function EditProduct({ productId, initialVariants, initialCategor
     if (!file) return;
 
     try {
-      await validateImage(file, { maxSizeMB: 2, maxWidth: 400, maxHeight: 600, ratio: 400 / 600 });
+      await validateImage(file, {
+        maxSizeMB: 2,
+        maxWidth: 400,
+        maxHeight: 600,
+        ratio: 400 / 600,
+      });
       const { preview, fileKey } = await upload(file, "product");
       updateVariant(activeIndex, {
-        banner: { key: fileKey, preview }
+        banner: { key: fileKey, preview },
       });
       toast.success("Image uploaded");
     } catch (err: any) {
@@ -148,11 +173,16 @@ export default function EditProduct({ productId, initialVariants, initialCategor
 
     for (const file of Array.from(files)) {
       try {
-        await validateImage(file, { maxSizeMB: 2, maxWidth: 400, maxHeight: 600, ratio: 400 / 600 });
+        await validateImage(file, {
+          maxSizeMB: 2,
+          maxWidth: 400,
+          maxHeight: 600,
+          ratio: 400 / 600,
+        });
         const { preview, fileKey } = await upload(file, "product");
         const currentGallery = variants[activeIndex].gallery;
         updateVariant(activeIndex, {
-          gallery: [...currentGallery, { key: fileKey, preview }]
+          gallery: [...currentGallery, { key: fileKey, preview }],
         });
         toast.success("Image uploaded");
       } catch (err: any) {
@@ -163,9 +193,10 @@ export default function EditProduct({ productId, initialVariants, initialCategor
 
   const setGalleryForActive = (action: React.SetStateAction<ImageItem[]>) => {
     const currentGallery = variants[activeIndex].gallery;
-    const nextGallery = typeof action === "function" ? (action as any)(currentGallery) : action;
+    const nextGallery =
+      typeof action === "function" ? (action as any)(currentGallery) : action;
     updateVariant(activeIndex, {
-      gallery: nextGallery
+      gallery: nextGallery,
     });
   };
 
@@ -181,7 +212,7 @@ export default function EditProduct({ productId, initialVariants, initialCategor
     formData.append("id", productId);
     selectedCategories.forEach((catId) => formData.append("category[]", catId));
 
-    const payload = variants.map(v => ({
+    const payload = variants.map((v) => ({
       id: v.isExisting ? v.id : undefined,
       name: v.name,
       sku: v.sku,
@@ -189,11 +220,11 @@ export default function EditProduct({ productId, initialVariants, initialCategor
       price: v.price,
       strikethroughPrice: v.strikethroughPrice,
       bannerImage: v.banner?.key,
-      media: v.gallery.map(g => g.key),
+      media: v.gallery.map((g) => g.key),
       isInStock: v.isInStock,
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
-        .filter(a => a.value.trim().length > 0)
+        .filter((a) => a.value.trim().length > 0),
     }));
 
     formData.append("variants", JSON.stringify(payload));
@@ -215,15 +246,19 @@ export default function EditProduct({ productId, initialVariants, initialCategor
         <div className="flex justify-between items-center bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-10 py-4 border-b">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Edit Product</h1>
-            <p className="text-muted-foreground">Modify product details and manage variants.</p>
+            <p className="text-muted-foreground">
+              Modify product details and manage variants.
+            </p>
           </div>
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={() => router.push("/admin/product")}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/admin/product")}
+            >
               Cancel
             </Button>
-            <Button type="submit">
-              Save Changes
-            </Button>
+            <Button type="submit">Save Changes</Button>
           </div>
         </div>
 
@@ -245,7 +280,12 @@ export default function EditProduct({ productId, initialVariants, initialCategor
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-sm">Variants</CardTitle>
-                <Button type="button" size="sm" variant="ghost" onClick={addVariant}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={addVariant}
+                >
                   <Plus size={16} />
                 </Button>
               </CardHeader>
@@ -255,12 +295,19 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                     <div
                       key={v.id}
                       onClick={() => setActiveIndex(i)}
-                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${activeIndex === i ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                        }`}
+                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
+                        activeIndex === i
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted"
+                      }`}
                     >
                       <div className="flex flex-col overflow-hidden">
-                        <span className="text-sm font-medium truncate">{v.name || "Unnamed Variant"}</span>
-                        <span className="text-xs opacity-70">{v.sku || "No SKU"}</span>
+                        <span className="text-sm font-medium truncate">
+                          {v.name || "Unnamed Variant"}
+                        </span>
+                        <span className="text-xs opacity-70">
+                          {v.sku || "No SKU"}
+                        </span>
                       </div>
                       {variants.length > 1 && (
                         <Button
@@ -287,8 +334,12 @@ export default function EditProduct({ productId, initialVariants, initialCategor
           <div className="lg:col-span-3 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Variant Details: {activeVariant.name || "New Variant"}</CardTitle>
-                <CardDescription>Edit details for this variant.</CardDescription>
+                <CardTitle>
+                  Variant Details: {activeVariant.name || "New Variant"}
+                </CardTitle>
+                <CardDescription>
+                  Edit details for this variant.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -297,7 +348,9 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                     <Input
                       required
                       value={activeVariant.name}
-                      onChange={(e) => updateVariant(activeIndex, { name: e.target.value })}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, { name: e.target.value })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -305,7 +358,9 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                     <Input
                       required
                       value={activeVariant.sku}
-                      onChange={(e) => updateVariant(activeIndex, { sku: e.target.value })}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, { sku: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -318,7 +373,11 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                       required
                       min={0}
                       value={activeVariant.price}
-                      onChange={(e) => updateVariant(activeIndex, { price: Number(e.target.value) })}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          price: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -327,13 +386,19 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                       type="number"
                       min={0}
                       value={activeVariant.strikethroughPrice}
-                      onChange={(e) => updateVariant(activeIndex, { strikethroughPrice: Number(e.target.value) })}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          strikethroughPrice: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
                   <div className="flex items-center space-x-2 pt-8">
                     <Switch
                       checked={activeVariant.isInStock}
-                      onCheckedChange={(checked) => updateVariant(activeIndex, { isInStock: checked })}
+                      onCheckedChange={(checked) =>
+                        updateVariant(activeIndex, { isInStock: checked })
+                      }
                     />
                     <Label>In Stock</Label>
                   </div>
@@ -343,7 +408,11 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                   <Label>Description</Label>
                   <Textarea
                     value={activeVariant.description}
-                    onChange={(e) => updateVariant(activeIndex, { description: e.target.value })}
+                    onChange={(e) =>
+                      updateVariant(activeIndex, {
+                        description: e.target.value,
+                      })
+                    }
                     className="min-h-32"
                   />
                 </div>
@@ -356,11 +425,19 @@ export default function EditProduct({ productId, initialVariants, initialCategor
                   >
                     {!activeVariant.banner ? (
                       <div className="flex flex-col items-center">
-                        <ImagePlus size={32} className="text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground mt-2">Upload Image</span>
+                        <ImagePlus
+                          size={32}
+                          className="text-muted-foreground"
+                        />
+                        <span className="text-sm text-muted-foreground mt-2">
+                          Upload Image
+                        </span>
                       </div>
                     ) : (
-                      <img src={activeVariant.banner.preview} className="w-full h-full object-contain" />
+                      <img
+                        src={activeVariant.banner.preview}
+                        className="w-full h-full object-contain"
+                      />
                     )}
                     {uploading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
