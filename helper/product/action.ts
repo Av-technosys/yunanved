@@ -15,6 +15,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
+
 import { isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
@@ -352,6 +353,7 @@ export async function getProducts({
         name: productVariant.name,
         slug: productVariant.slug,
         basePrice: productVariant.basePrice,
+        strikethroughPrice: productVariant.strikethroughPrice,
         bannerImage: productVariant.bannerImage,
         createdAt: productVariant.createdAt,
         productId: productVariant.productId,

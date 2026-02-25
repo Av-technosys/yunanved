@@ -37,7 +37,6 @@ export const OrderDetailsPage = ({
       try {
         setLoading(true);
         const data = await getOrderById(orderId);
-        console.log("data", data);
         setOrderData(data);
       } catch (error) {
         console.error("Error fetching order:", error);

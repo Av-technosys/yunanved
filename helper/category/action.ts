@@ -19,37 +19,32 @@ interface GetCategoriesOptions {
   search?: string;
   category: any;
 }
-export async function createCategory(formData: FormData) {
+export async function createCategory(categoryData: any) {
   try {
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const parentId = formData.get("parentId") as string | null;
-    const imagePath: string | null = null;
+    const { name, description, parentId , bannerImage } = categoryData;
     const slug = await generateUniqueSlug(db, name, category.slug);
     await db.insert(category).values({
       name,
       slug,
       description,
-      parentId: parentId || null,
-      bannerImage: imagePath,
+      parrentId: parentId || null,
+      bannerImage: bannerImage || null,
     });
 
     revalidatePath("/admin/category");
+    return { success: true, message: "Category created successfully" };
   } catch (error) {
     console.error("Create category failed:", error);
+    return { success: false, message: "Failed to create category" };
   }
   redirect("/admin/category");
 }
 
-export async function updateCategory(formData: FormData) {
+export async function updateCategory(categoryData: any) {
   try {
-    const id = formData.get("id") as string;
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const parentId = formData.get("parentId") as string | null;
-    const isActive = formData.get("isActive") === "true";
+    const { id, name, description, parentId, bannerImage } =
+      categoryData;
 
-    console.log("parentId ", parentId)
     await db
       .update(category)
       .set({
@@ -57,14 +52,17 @@ export async function updateCategory(formData: FormData) {
         slug: slugify(name, { lower: true }),
         description,
         parrentId: parentId || null,
-        isActive,
+        bannerImage: bannerImage || null,
+        
       })
       .where(eq(category.id, id));
 
     revalidatePath("/admin/category");
     revalidatePath(`/admin/category/${id}`);
+    return { success: true, message: "Category updated successfully" };
   } catch (error) {
     console.error("Update category failed:", error);
+    return { success: false, message: "Failed to update category" };
   }
   redirect("/admin/category");
 }
@@ -94,10 +92,7 @@ export async function getProductCategory(productId: string) {
         name: category.name,
       })
       .from(productCategory)
-      .leftJoin(
-        category,
-        eq(category.id, productCategory.categoryId)
-      )
+      .leftJoin(category, eq(category.id, productCategory.categoryId))
       .where(eq(productCategory.productId, productId));
 
     return result;
@@ -124,7 +119,6 @@ export async function updateProductCategory(
     throw new Error("Failed to update category");
   }
 }
-
 
 export async function getCategoriesPagination({
   page = 1,
@@ -252,10 +246,12 @@ export async function getCategoryBySlug(slug: string) {
 
 export async function getAllCategoriesMeta() {
   try {
-    return await db.select({
-      id: category.id,
-      name: category.name
-    }).from(category);
+    return await db
+      .select({
+        id: category.id,
+        name: category.name,
+      })
+      .from(category);
   } catch (error) {
     console.log(error);
     return [];

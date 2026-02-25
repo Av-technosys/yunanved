@@ -23,21 +23,27 @@ import {
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createCategory } from "@/helper/index"; import { getAllCategoriesMeta } from "@/helper/category/action";
+import { useFileUpload } from "@/helper/useFileUpload";
+import { toast } from "sonner";
 ;
 
 export default function AddCategoryForm() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+   const { upload, uploading } = useFileUpload();
 
-  const [isActive, setIsActive] = useState(true);
   const [parentId, setParentId] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
-  const handleFileChange = (file?: File) => {
+  const handleFileChange = async(file?: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    const url = URL.createObjectURL(file);
-    setPreview(url);
+    if (file) {
+      const folder = "category";
+      const { preview, fileKey } = await upload(file, folder);
+
+      setPreview(fileKey);
+    }
   };
 
   useEffect(() => {
@@ -45,6 +51,25 @@ export default function AddCategoryForm() {
       setCategories(data);
     });
   }, []);
+
+
+    const submitHandler = async (e: any) => {
+      e.preventDefault();
+      const categoryData = {
+        name: e.target.name.value,
+        parentId: parentId,
+        description: e.target.description.value,
+        bannerImage: preview,
+      };
+  
+      const response = await createCategory(categoryData);
+      if (response?.success == true) {
+        toast.success(response.message ?? "Category updated successfully");
+        router.push("/admin/category");
+      } else {
+        toast.error(response?.message ?? "Failed to update category");
+      }
+    };
 
 
   return (
@@ -60,11 +85,10 @@ export default function AddCategoryForm() {
         </CardHeader>
 
         <CardContent>
-          <form action={createCategory}>
+          <form id="createCategory" onSubmit={(e)=> submitHandler(e)}>
 
             {/* IMPORTANT: bridge React state → FormData */}
             <input type="hidden" name="parentId" value={parentId} />
-            <input type="hidden" name="isActive" value={isActive ? "true" : "false"} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
 
@@ -132,7 +156,7 @@ export default function AddCategoryForm() {
                   >
                     {preview ? (
                       <img
-                        src={preview}
+                        src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${preview}`}
                         alt="Preview"
                         className="max-h-40 object-contain"
                       />
@@ -158,26 +182,7 @@ export default function AddCategoryForm() {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">
-                    Visibility Status
-                  </Label>
-                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-slate-700">
-                        Active
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        Category is visible to customers
-                      </p>
-                    </div>
-                    <Switch
-                      checked={isActive}
-                      onCheckedChange={setIsActive}
-                      className="data-[state=checked]:bg-emerald-500"
-                    />
-                  </div>
-                </div>
+             
 
               </div>
             </div>
@@ -194,6 +199,7 @@ export default function AddCategoryForm() {
 
               <Button
                 type="submit"
+                form="createCategory"
                 className="px-12 h-11 rounded-full bg-[#2D5A5D] hover:bg-[#234749] text-white"
               >
                 Add
