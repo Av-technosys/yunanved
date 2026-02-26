@@ -16,6 +16,8 @@ const Page = async (props: any) => {
     return <div className="p-20 text-center">Product not found</div>;
   }
 
+ 
+
   const similarProducts = await getProductSimilarProducts(params.productslug) || [];
 
   return (

@@ -38,8 +38,8 @@ const ProductClient = ({
   };
 
   const attributes = activeVariant.attributes ?? [];
-  const leftAttributes = attributes.slice(0, 5);
-  const rightAttributes = attributes.slice(5);
+  const leftAttributes = attributes.slice(0, attributes.length/2);
+  const rightAttributes = attributes.slice(attributes.length/2);
 
   const handleClick = async () => {
     if (clickLock.current) return;
@@ -65,7 +65,7 @@ const ProductClient = ({
   return (
     <>
       <div className="max-w-6xl mx-auto grid grid-cols-5 my-5 px-2 md:px-4  lg:px-0 gap-10">
-        <div className="col-span-5 h-[90vh] gap-4 md:gap-2 md:col-span-3 flex flex-col md:flex-row ">
+        <div className="col-span-5  h-[28rem] md:h-[35rem]  gap-4 md:gap-2 md:col-span-3 flex flex-col md:flex-row ">
           <div className="w-full order-2 md:order-1 md:w-1/4">
             <div className="flex overflow-x-auto md:flex-col w-full h-full  items-start  gap-2">
               {activeVariant?.media?.map((image: any, index: number) => (
@@ -93,7 +93,7 @@ const ProductClient = ({
             </div>
           </div>
           <div className="w-full h-full md:w-3/4 order-1 md:order-2  flex  items-center justify-center bg-[#F5F5F5] rounded-lg">
-            <div className="h-full w-full relative flex items-center justify-center">
+            <div className="h-[80%] w-full relative flex items-center justify-center">
               <Image
                 src={bannerImage && bannerImage !== "null" && bannerImage !== "[object Object]"
                   ? `${NEXT_PUBLIC_S3_BASE_URL}/${bannerImage}`
@@ -105,8 +105,9 @@ const ProductClient = ({
             </div>
           </div>
         </div>
-        <div className="col-span-5 md:col-span-2 flex flex-col gap-4 md:gap-2 ">
-          <h1 className="text-2xl md:text-[14px] lg:text-2xl font-semibold text-gray-900">
+        <div className="col-span-5 h-[28rem] md:h-[35rem]  md:col-span-2 flex flex-col">
+         <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 md:gap-2 p-2">
+           <h1 className="text-2xl md:text-[14px] lg:text-2xl font-semibold text-gray-900">
             {activeVariant.name}
           </h1>
 
@@ -136,7 +137,7 @@ const ProductClient = ({
             )}
           </div>
 
-          <p className="text-gray-600 h-24 overflow-y-auto text-sm md:text-[10px] lg:text-sm leading-relaxed">
+          <p className="text-gray-600 text-sm md:text-[10px] lg:text-sm leading-relaxed">
             {activeVariant.description == ""
               ? "No description"
               : activeVariant.description}
@@ -148,8 +149,17 @@ const ProductClient = ({
             <div className="flex flex-col gap-2">
               <p className="font-medium text-gray-800">Variants</p>
               <div className="flex gap-2 flex-wrap">
-                {variants.map((v: any) => (
-                  <button
+                {variants.map((v: any , index:number) => (
+                  <div key={index} className="flex  flex-col gap-2">
+                    <div className="w-28 h-28 relative rounded-md overflow-hidden">
+                      <Image
+                        src={`${NEXT_PUBLIC_S3_BASE_URL}/${v.bannerImage}`}
+                        alt="product thumbnail"
+                        fill
+                        className="object-contain rounded-md"
+                      />
+                    </div>
+                    <button
                     key={v.id}
                     onClick={() => handleVariantChange(v)}
                     className={`px-4 py-1.5 rounded-md border text-sm transition-colors
@@ -158,8 +168,9 @@ const ProductClient = ({
                         : "hover:border-teal-600 hover:text-teal-700"
                       }`}
                   >
-                    {v.name.replace(initialProduct.name, "").trim() || "Default"}
+                    {v.name.replace(initialProduct.name, "").trim() || v.name}
                   </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -209,6 +220,7 @@ const ProductClient = ({
               </div>
             </div>
           </div>
+         </div>
         </div>
       </div>
       <div className="max-w-6xl px-2 md:px-0 my-10 mx-auto">
@@ -263,22 +275,15 @@ const ProductClient = ({
         <div className="text-lg mb-5 font-bold">Customer Reviews</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
          
-          {(activeVariant.reviews || []).length > 0 ? (
-            activeVariant.reviews.map((review: any, index: number) => (
+          {(activeVariant.reviewsWithMedia || []).length > 0 ? (
+            activeVariant.reviewsWithMedia.map((review: any, index: number) => (
               <ReviewCard key={index} review={review} />
             ))
           ) : (
             <p className="text-sm text-gray-800">No Reviews Found.</p>
           )} 
 
-             {/* {productInfo.reviewWithMedia.length > 0 ? (
-            productInfo.reviewWithMedia.map((review: any, index: number) => (
-              <ReviewCard key={review.id} review={review} />
-            ))
-          ) : (
-            <p className="text-sm text-gray-800">No Reviews Found.</p>
-          )
-          } */}
+            
 
         </div>
       </div>

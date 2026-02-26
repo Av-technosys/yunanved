@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter } from "./ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "./ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -55,13 +55,13 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
                   : "/fortune1.png"}
                 alt={product.name}
                 fill
-                className="object-cover rounded-md"
+                className="object-contain rounded-md"
               />
             </div>
           </Link>
           <div className="p-2">
             <Link href={`/product/${product.slug}`}>
-              <div className="text-black mt-2 font-semibold">
+              <div className="text-black mt-2 font-semibold line-clamp-1">
                 {product.name}
               </div>
             </Link>
@@ -82,8 +82,8 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
 
 
         </CardContent>
-        <CardFooter>
-          <div className="flex w-full items-center justify-between">
+        <CardFooter >
+          <div className="flex mb-4 w-full items-center justify-between">
             <div className=" font-semibold text-lg">₹{product.basePrice}</div>
             <Button
               disabled={isAdding}
@@ -99,6 +99,8 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
           </div>
         </CardFooter>
       </Card>
+
+     
     </>
   );
 };
