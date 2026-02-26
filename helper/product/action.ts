@@ -9,9 +9,6 @@ import {
   category,
   productCategory,
   productVariant,
-  review,
-  reviewMedia,
-  user,
 } from "@/db";
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
@@ -65,13 +62,13 @@ export async function createProduct(formData: FormData) {
     const variants: VariantInput[] = JSON.parse(variantsData);
 
     const productId = await db.transaction(async (tx) => {
-      console.log("Starting transaction to create product with variants");
 
       // 1. Create the parent product
       const [createdProduct] = await tx
         .insert(product)
         .values({})
         .returning({ id: product.id });
+
       const pId = createdProduct.id;
 
       // 2. Attach categories to the parent product
@@ -84,52 +81,80 @@ export async function createProduct(formData: FormData) {
         );
       }
 
-      // 3. Create each variant
-      for (const v of variants) {
-        const slug = await generateUniqueSlug(tx, v.name, productVariant.slug);
-        const [createdVariant] = await tx
-          .insert(productVariant)
-          .values({
-            productId: pId,
-            name: v.name,
-            slug,
-            sku: v.sku,
-            description: v.description,
-            shortDescription: v.shortDescription,
-            basePrice: v.price,
-            strikethroughPrice: v.strikethroughPrice,
-            bannerImage: v.bannerImage || null,
-            isInStock: v.isInStock,
-            rating: 0,
-            reviewCount: 0,
-          })
-          .returning({ id: productVariant.id });
+      const slugs = await Promise.all(
+        variants.map((v) =>
+          generateUniqueSlug(tx, v.name, productVariant.slug)
+        )
+      );
 
-        const variantId = createdVariant.id;
 
-        // 4. Handle variant media
-        if (v.media && v.media.length) {
-          await tx.insert(productVarientMedia).values(
-            v.media.map((url) => ({
+      const variantInsertData = variants.map((v, index) => ({
+        productId: pId,
+        name: v.name,
+        slug: slugs[index],
+        sku: v.sku,
+        description: v.description,
+        shortDescription: v.shortDescription,
+        basePrice: v.price,
+        strikethroughPrice: v.strikethroughPrice,
+        bannerImage: v.bannerImage || null,
+        isInStock: v.isInStock,
+        rating: 0,
+        reviewCount: 0,
+      }));
+
+      const insertedVariants = await tx
+        .insert(productVariant)
+        .values(variantInsertData)
+        .returning({ id: productVariant.id });
+
+
+      const allMediaRows: {
+        productVarientId: string;
+        mediaType: string;
+        mediaURL: string;
+      }[] = [];
+
+      const allAttributeRows: {
+        productVarientId: string;
+        attribute: string;
+        value: string;
+      }[] = [];
+
+      for (let i = 0; i < variants.length; i++) {
+        const variantId = insertedVariants[i].id;
+        const v = variants[i];
+
+        // Media
+        if (v.media?.length) {
+          for (const url of v.media) {
+            allMediaRows.push({
               productVarientId: variantId,
               mediaType: "image",
               mediaURL: url,
-            })),
-          );
+            });
+          }
         }
 
-        // 5. Handle variant attributes
-        if (v.attributes && v.attributes.length) {
-          await tx.insert(productVarientAttribute).values(
-            v.attributes.map((attr) => ({
+        // Attributes
+        if (v.attributes?.length) {
+          for (const attr of v.attributes) {
+            allAttributeRows.push({
               productVarientId: variantId,
               attribute: attr.attribute,
               value: attr.value,
-            })),
-          );
+            });
+          }
         }
       }
 
+      if (allMediaRows.length) {
+        await tx.insert(productVarientMedia).values(allMediaRows);
+      }
+
+      if (allAttributeRows.length) {
+        await tx.insert(productVarientAttribute).values(allAttributeRows);
+      }
       return pId;
     });
 
@@ -192,7 +217,6 @@ export async function updateProduct(formData: FormData): Promise<void> {
           .where(eq(productVarientAttribute.productVarientId, v.id));
         await tx.delete(productVariant).where(eq(productVariant.id, v.id));
       }
-
       // Update or Insert variants
       for (const v of variants) {
         let vId = v.id;
@@ -323,47 +347,45 @@ export async function getFullProduct(identifier: string) {
         .where(eq(productCategory.productId, productGroupId)),
     ]);
 
-    const variantsWithDetails = await Promise.all(
-      variants.map(async (v) => {
-        const [media, attributes, reviews] = await Promise.all([
-          db
-            .select()
-            .from(productVarientMedia)
-            .where(eq(productVarientMedia.productVarientId, v.id)),
-          db
-            .select()
-            .from(productVarientAttribute)
-            .where(eq(productVarientAttribute.productVarientId, v.id)),
-          db
-            .select({
-              id: review.id,
-              rating: review.rating,
-              userId: review.userId,
-              name: review.name,
-              email: review.email,
-              message: review.message,
-              productVarientId: review.productVarientId,
-              image: user.profileImage,
-              createdAt: review.createdAt,
-            })
-            .from(review)
-            .innerJoin(user, eq(review.userId, user.id))
-            .where(and(eq(review.productVarientId, v.id), eq(review.isAdminApproved, true))),
-        ]);
+    const variantIds = variants.map(v => v.id);
 
-        const reviewsWithMedia = await Promise.all(
-          reviews.map(async (r) => ({
-            ...r,
-            media: await db
-              .select()
-              .from(reviewMedia)
-              .where(eq(reviewMedia.reviewId, r.id)),
-          })),
-        );
-        return { ...v, media, attributes, reviewsWithMedia };
-      }),
-    );
+    let allMedia: any[] = [];
+    let allAttributes: any[] = [];
 
+    if (variantIds.length > 0) {
+      [allMedia, allAttributes] = await Promise.all([
+        db.select()
+          .from(productVarientMedia)
+          .where(inArray(productVarientMedia.productVarientId, variantIds)),
+
+        db.select()
+          .from(productVarientAttribute)
+          .where(inArray(productVarientAttribute.productVarientId, variantIds)),
+      ]);
+    }
+
+    const attributeMap = new Map<string, any[]>();
+    const mediaMap = new Map<string, any[]>();
+
+    for (const a of allAttributes) {
+      if (!attributeMap.has(a.productVarientId)) {
+        attributeMap.set(a.productVarientId, []);
+      }
+      attributeMap.get(a.productVarientId)!.push(a);
+    }
+
+    for (const m of allMedia) {
+      if (!mediaMap.has(m.productVarientId)) {
+        mediaMap.set(m.productVarientId, []);
+      }
+      mediaMap.get(m.productVarientId)!.push(m);
+    }
+
+    const variantsWithDetails = variants.map(v => ({
+      ...v,
+      media: mediaMap.get(v.id) || [],
+      attributes: attributeMap.get(v.id) || []
+    }));
     return {
       id: productGroupId,
       categoryIds: categoryLinks.map((c) => c.categoryId),
