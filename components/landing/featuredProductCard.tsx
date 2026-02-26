@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Card } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { Button } from "../ui/button";
@@ -60,7 +60,7 @@ const FeaturedProductCard = ({ product, key }: any) => {
         </Link>
 
         {/* Content */}
-        <div className="p-4 bg-white border-t border-gray-100">
+        <CardContent className="p-4 bg-white border-t border-gray-100">
           {/* Name + Category */}
           <div className="flex justify-between items-start mb-1">
             <h3 className="font-bold text-sm text-black line-clamp-1">
@@ -102,7 +102,7 @@ const FeaturedProductCard = ({ product, key }: any) => {
             {isAdding ? "Adding..." : "Add to Cart"}
           </Button>
           </div>
-        </div>
+        </CardContent>
       </Card>
     </div>
   );

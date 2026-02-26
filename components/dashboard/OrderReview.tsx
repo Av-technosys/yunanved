@@ -68,6 +68,8 @@ const orderDetailsReview = ({
       media: fileKey || [],
     };
 
+    console.log("reviewData",reviewData)
+
     try {
       setLoadingProduct(productVarientId);
 

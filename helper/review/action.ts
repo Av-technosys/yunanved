@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
-import { user, review, reviewMedia } from "@/db"
+import { user, review, reviewMedia } from "@/db";
 
 export async function toggleApproveReview(id: string) {
   try {
@@ -59,8 +59,8 @@ export async function getReviewStats() {
 
 export async function createReview(reviewData: any) {
   try {
-    const { userId, productVarientId, rating, message, image } = reviewData;
-    console.log(productVarientId)
+    const { userId, productVarientId, rating, message, media } = reviewData;
+    console.log(productVarientId);
 
     if (!productVarientId) {
       throw new Error("Product Variant ID is required for review submission");
@@ -91,11 +91,13 @@ export async function createReview(reviewData: any) {
         })
         .returning({ id: review.id });
 
-      await tx.insert(reviewMedia).values({
-        reviewId: reviewId[0].id,
-        mediaType: "image",
-        mediaURL: image,
-      });
+      await tx.insert(reviewMedia).values(
+        media.map((img: any) => ({
+          reviewId: reviewId[0].id,
+          mediaType: "image",
+          mediaURL: img.fileKey,
+        })),
+      );
     });
 
     return { success: true };

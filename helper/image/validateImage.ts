@@ -11,9 +11,9 @@ export async function validateImage(
 ) {
   const {
     maxSizeMB = 2,
-    maxWidth = 400,
-    maxHeight = 600,
-    ratio = 400 / 600,
+    maxWidth = 1000,
+    maxHeight = 1000,
+    ratio = 1000 / 1000,
   } = options;
 
   // 1️⃣ size check
@@ -24,6 +24,8 @@ export async function validateImage(
 
   // 2️⃣ dimension check
   const dimensions = await getImageDimensions(file);
+  console.log("height", dimensions.height);
+  console.log("width", dimensions.width);
 
   if (dimensions.width > maxWidth || dimensions.height > maxHeight) {
     throw new Error(
@@ -35,9 +37,9 @@ export async function validateImage(
   const actualRatio = dimensions.width / dimensions.height;
   const tolerance = 0.01;
 
-  if (Math.abs(actualRatio - ratio) > tolerance) {
-    throw new Error(`Image must have ${maxWidth}:${maxHeight} aspect ratio`);
-  }
+  // if (Math.abs(actualRatio - ratio) > tolerance) {
+  //   throw new Error(`Image must have ${maxWidth}:${maxHeight} aspect ratio`);
+  // }
 
   return dimensions;
 }

@@ -48,6 +48,8 @@ export const OrderDetailsPage = ({
     fetchOrder();
   }, [orderId]);
 
+
+
   if (loading)
     return (
       <div className="p-10 text-center">
@@ -262,7 +264,7 @@ export const OrderDetailsPage = ({
                     <div className="w-1/2 flex items-center gap-4">
                       <div className="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center overflow-hidden border border-gray-100">
                         <img
-                          src={`${S3_BASE}/${item.product?.bannerImage}`}
+                          src={`${S3_BASE}/${item.productImage}`}
                           className="object-cover h-full w-full"
                           alt={item.product?.name || "Product"}
                           onError={(e: any) => {
