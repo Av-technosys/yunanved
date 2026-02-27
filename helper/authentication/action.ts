@@ -17,18 +17,3 @@ export async function signUp(userData: any) {
     }
 }
 
-export async function signIn(userData: any) {
-    try {
-        const userRes = await db.select().from(user).where(eq(user.email, userData.email));
-        if (userRes.length === 0) {
-            return { success: false, message: "User does not exist" };
-        }
-        if (userRes[0].password !== userData.password) {
-            return { success: false, message: "Incorrect password" };
-        }
-
-        return { success: true };
-    } catch (error) {
-        throw error;
-    }
-}

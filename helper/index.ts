@@ -68,4 +68,4 @@ export {getPayments} from "./payment/action"
 
 //auth
 
-export { signup, login, confirmSignup ,resendOtp} from "./auth/action";
+export { signup, login, confirmSignup ,resendOtp , resetPasswordUsingEmail,resetPasswordUsingOTP} from "./auth/action";
