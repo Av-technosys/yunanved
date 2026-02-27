@@ -10,6 +10,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.971.0",
     "@aws-sdk/client-s3": "^3.987.0",
     "@aws-sdk/s3-request-presigner": "^3.987.0",
     "@heroicons/react": "^2.2.0",

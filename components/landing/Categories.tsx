@@ -8,6 +8,9 @@ import {
 import { getCategories } from "@/helper";
 import Link from "next/link";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import { Skeleton } from "../ui";
+import { Suspense } from "react";
+import HomeCategorySkleton from "../skletons/homeCategorySkleton";
 
 export async function Categories() {
   const categories = await getCategories();
@@ -21,6 +24,7 @@ export async function Categories() {
         </h2>
 
         {/* This container adds internal padding so arrows don't overlap the circles */}
+
         <div className="relative w-full">
           <Carousel
             opts={{

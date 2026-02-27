@@ -38,8 +38,8 @@ const ProductClient = ({
   };
 
   const attributes = activeVariant.attributes ?? [];
-  const leftAttributes = attributes.slice(0, attributes.length/2);
-  const rightAttributes = attributes.slice(attributes.length/2);
+  const leftAttributes = attributes.slice(0, attributes.length / 2);
+  const rightAttributes = attributes.slice(attributes.length / 2);
 
   const handleClick = async () => {
     if (clickLock.current) return;
@@ -106,121 +106,109 @@ const ProductClient = ({
           </div>
         </div>
         <div className="col-span-5 h-[28rem] md:h-[35rem]  md:col-span-2 flex flex-col">
-         <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 md:gap-2 p-2">
-           <h1 className="text-2xl md:text-[14px] lg:text-2xl font-semibold text-gray-900">
-            {activeVariant.name}
-          </h1>
+          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 md:gap-2 p-2">
+            <h1 className="text-2xl md:text-[14px] lg:text-2xl font-semibold text-gray-900">
+              {activeVariant.name}
+            </h1>
 
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.floor(activeVariant.rating || 0) }).map(
-                (_, index) => (
-                  <span key={index} className="text-yellow-400">
-                    ★
-                  </span>
-                ),
-              )}
-              <span className="text-gray-400 ml-1">
-                ({activeVariant.reviewCount || 0} Reviews)
-              </span>
-            </div>
-          </div>
+            <ProductReview activeVariant={activeVariant} />
 
-          <div className="flex items-baseline gap-2">
-            <p className="text-2xl font-bold text-gray-900">
-              ₹{activeVariant.basePrice}
-            </p>
-            {activeVariant.strikethroughPrice > 0 && (
-              <p className="text-lg text-gray-400 line-through">
-                ₹{activeVariant.strikethroughPrice}
+            <div className="flex items-baseline gap-2">
+              <p className="text-2xl font-bold text-gray-900">
+                ₹{activeVariant.basePrice}
               </p>
-            )}
-          </div>
-
-          <p className="text-gray-600 text-sm md:text-[10px] lg:text-sm leading-relaxed">
-            {activeVariant.description == ""
-              ? "No description"
-              : activeVariant.description}
-          </p>
-
-          <hr />
-
-          {variants.length > 1 && (
-            <div className="flex flex-col gap-2">
-              <p className="font-medium text-gray-800">Variants</p>
-              <div className="flex gap-2 flex-wrap">
-                {variants.map((v: any , index:number) => (
-                  <div key={index} className="flex  flex-col gap-2">
-                    <div className="w-28 h-28 relative rounded-md overflow-hidden">
-                      <Image
-                        src={`${NEXT_PUBLIC_S3_BASE_URL}/${v.bannerImage}`}
-                        alt="product thumbnail"
-                        fill
-                        className="object-contain rounded-md"
-                      />
-                    </div>
-                    <button
-                    key={v.id}
-                    onClick={() => handleVariantChange(v)}
-                    className={`px-4 py-1.5 rounded-md border text-sm transition-colors
-                            ${activeVariant.id === v.id
-                        ? "bg-teal-700 text-white border-teal-700"
-                        : "hover:border-teal-600 hover:text-teal-700"
-                      }`}
-                  >
-                    {v.name.replace(initialProduct.name, "").trim() || v.name}
-                  </button>
-                  </div>
-                ))}
-              </div>
+              {activeVariant.strikethroughPrice > 0 && (
+                <p className="text-lg text-gray-400 line-through">
+                  ₹{activeVariant.strikethroughPrice}
+                </p>
+              )}
             </div>
-          )}
 
-          <div className="flex gap-4 mt-2">
-            <button
-              onClick={handleClick}
-              disabled={isAdding || !activeVariant.isInStock}
-              className={`flex-1 bg-teal-700 text-white py-2 rounded-full font-medium 
+            <p className="text-gray-600 text-sm md:text-[10px] lg:text-sm leading-relaxed">
+              {activeVariant.description == ""
+                ? "No description"
+                : activeVariant.description}
+            </p>
+
+            <ProductDescription description={activeVariant.description} />
+            <hr />
+
+            {variants.length > 1 && (
+              <div className="flex flex-col gap-2">
+                <p className="font-medium text-gray-800">Variants</p>
+                <div className="flex gap-2 flex-wrap">
+                  {variants.map((v: any, index: number) => (
+                    <div key={index} className="flex  flex-col gap-2">
+                      <div className="w-28 h-28 relative rounded-md overflow-hidden">
+                        <Image
+                          src={`${NEXT_PUBLIC_S3_BASE_URL}/${v.bannerImage}`}
+                          alt="product thumbnail"
+                          fill
+                          className="object-contain rounded-md"
+                        />
+                      </div>
+                      <button
+                        key={v.id}
+                        onClick={() => handleVariantChange(v)}
+                        className={`px-4 py-1.5 rounded-md border text-sm transition-colors
+                            ${activeVariant.id === v.id
+                            ? "bg-teal-700 text-white border-teal-700"
+                            : "hover:border-teal-600 hover:text-teal-700"
+                          }`}
+                      >
+                        {v.name.replace(initialProduct.name, "").trim() || v.name}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-4 mt-2">
+              <button
+                onClick={handleClick}
+                disabled={isAdding || !activeVariant.isInStock}
+                className={`flex-1 bg-teal-700 text-white py-2 rounded-full font-medium 
               hover:bg-teal-800 transition
               ${(isAdding || !activeVariant.isInStock) ? "opacity-70 pointer-events-none" : ""}`}
-            >
-              {activeVariant.isInStock ? (isAdding ? "Adding..." : "Add to Cart") : "Out of Stock"}
-            </button>
-            <button
-              disabled={!activeVariant.isInStock}
-              className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600 disabled:opacity-50"
-            >
-              Buy Now
-            </button>
-          </div>
-
-          <div className="border rounded-lg mt-4 divide-y">
-            <div className="flex gap-3 p-4">
-              <span className="text-xl">
-                <Truck />
-              </span>
-              <div>
-                <p className="font-medium text-gray-800">Free Delivery</p>
-                <p className="text-sm text-gray-500">
-                  Enter your postal code for Delivery Availability
-                </p>
-              </div>
+              >
+                {activeVariant.isInStock ? (isAdding ? "Adding..." : "Add to Cart") : "Out of Stock"}
+              </button>
+              <button
+                disabled={!activeVariant.isInStock}
+                className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600 disabled:opacity-50"
+              >
+                Buy Now
+              </button>
             </div>
 
-            <div className="flex gap-3 p-4">
-              <span className="text-xl">
-                <RefreshCw />
-              </span>
-              <div>
-                <p className="font-medium text-gray-800">Return Delivery</p>
-                <p className="text-sm text-gray-500">
-                  Free 30 Days Delivery Returns.{" "}
-                  <span className="underline cursor-pointer">Details</span>
-                </p>
+            <div className="border rounded-lg mt-4 divide-y">
+              <div className="flex gap-3 p-4">
+                <span className="text-xl">
+                  <Truck />
+                </span>
+                <div>
+                  <p className="font-medium text-gray-800">Free Delivery</p>
+                  <p className="text-sm text-gray-500">
+                    Enter your postal code for Delivery Availability
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 p-4">
+                <span className="text-xl">
+                  <RefreshCw />
+                </span>
+                <div>
+                  <p className="font-medium text-gray-800">Return Delivery</p>
+                  <p className="text-sm text-gray-500">
+                    Free 30 Days Delivery Returns.{" "}
+                    <span className="underline cursor-pointer">Details</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-         </div>
         </div>
       </div>
       <div className="max-w-6xl px-2 md:px-0 my-10 mx-auto">
@@ -274,16 +262,16 @@ const ProductClient = ({
       <div className="max-w-6xl px-2 md:px-4 mb-10 lg:px-0 mt-5 mx-auto">
         <div className="text-lg mb-5 font-bold">Customer Reviews</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-         
+
           {(activeVariant.reviewsWithMedia || []).length > 0 ? (
             activeVariant.reviewsWithMedia.map((review: any, index: number) => (
               <ReviewCard key={index} review={review} />
             ))
           ) : (
             <p className="text-sm text-gray-800">No Reviews Found.</p>
-          )} 
+          )}
 
-            
+
 
         </div>
       </div>
@@ -306,3 +294,65 @@ const ProductClient = ({
 };
 
 export default ProductClient;
+
+function ProductReview({ activeVariant }: { activeVariant: any }) {
+  return (
+    <div className="flex items-center gap-4 text-sm">
+      <div className="flex items-center gap-1">
+        {Array.from({ length: Math.floor(activeVariant.rating || 0) }).map(
+          (_, index) => (
+            <span key={index} className="text-yellow-400">
+              ★
+            </span>
+          ),
+        )}
+        <span className="text-gray-400 ml-1">
+          ({activeVariant.reviewCount || 0} Reviews)
+        </span>
+      </div>
+    </div>
+  )
+}
+
+
+function ProductDescription({ description }: { description: string }) {
+  const [showMore, setShowMore] = useState(false);
+
+  const LIMIT = 180;
+
+  const isLong = description && description.length > LIMIT;
+
+  const displayedText =
+    !description || description === ""
+      ? "No description"
+      : showMore
+        ? description
+        : description.slice(0, LIMIT);
+
+  return (
+    <p className="text-gray-600 leading-relaxed">
+      {displayedText}
+
+      {!showMore && isLong && (
+        <>
+          ...{" "}
+          <span
+            onClick={() => setShowMore(true)}
+            className="text-blue-500 cursor-pointer text-sm font-medium"
+          >
+            See more
+          </span>
+        </>
+      )}
+
+      {showMore && isLong && (
+        <span
+          onClick={() => setShowMore(false)}
+          className="text-blue-500 cursor-pointer text-sm font-medium ml-1"
+        >
+          See less
+        </span>
+      )}
+    </p>
+  );
+}
