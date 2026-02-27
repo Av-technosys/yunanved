@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { COGNITO_CLIENT_ID } from "@/env";
 import { cognito, generateSecretHash } from "@/helper/cognito";
 import { ResendConfirmationCodeCommand } from "@aws-sdk/client-cognito-identity-provider";
