@@ -1,5 +1,6 @@
-import { db } from "@/db/drizzle";
-import { users } from "@/db/schema";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { db } from "../../../../lib/db";
+import { user } from "../../../../db/userSchema";
 import { authSingIn, cognitoConfirmSignUp } from "@/helper/cognito";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -15,14 +16,13 @@ export async function POST(req: Request) {
 
     try {
         const result = await cognitoConfirmSignUp({ email, code });
-        const [user] = await db.select().from(users).where(eq(users.email, email));
-        if (!user) {
+        const [dbUser] = await db.select().from(user).where(eq(user.email, email));
+        if (!dbUser) {
             return NextResponse.json({ message: 'User not found.', result }, { status: 404 });
         }
-        const data = await authSingIn({ email, password: user.password });
-        return NextResponse.json({ message: 'Login successful.', data }, { status: 200 });
+       // const data = await authSingIn({ email, password: dbUser.password });
+        return NextResponse.json({ message: 'Verification successful.' }, { status: 200 });
     } catch (err: any) {
-        console.error(err);
         return NextResponse.json({ message: err.message }, { status: 500 })
     }
 }

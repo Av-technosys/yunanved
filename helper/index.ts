@@ -45,8 +45,6 @@ export {
 //reviews
 export { toggleApproveReview, deleteReview, getReviewStats, createReview } from "./review/action"
 
-//auth
-export { signUp, signIn } from "./authentication/action";
 
 //cart
 
@@ -66,3 +64,8 @@ export {getProfile , updateProfile, getAddresses, saveAddress, deleteAddress} fr
 
 export {getPayments} from "./payment/action"
 
+
+
+//auth
+
+export { signup, login, confirmSignup ,resendOtp} from "./auth/action";

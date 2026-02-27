@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signIn, signUp } from "@/helper";
+import { login } from "@/helper/index";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -39,8 +39,8 @@ const Page = () => {
     return;
   }
 
-    const response = await signIn(formData);
-    if (response.success == true) {
+    const response = await login(formData);
+    if (response.success) {
       router.push("/");
       toast.success("User login successfully");
     } else {

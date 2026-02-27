@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import signup from "../../public/authpic.png";
+import signupImg from "../../public/authpic.png";
 import yunanved from "../../public/yunanvedLogo.png";
-import googleIcon from "../../public/Icon-Google.png"
+import googleIcon from "../../public/Icon-Google.png";
 import {
   Card,
   CardDescription,
@@ -12,58 +12,63 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signUp } from "@/helper";
+import { signup } from "@/helper/index";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signupSchema } from "@/validation/signUpSchema";
 
-
-
-
 const Page = () => {
-  const router=useRouter();
+  const router = useRouter();
 
-const submitHandler = async (e: any) => {
-  e.preventDefault();
+  const submitHandler = async (e: any) => {
+    e.preventDefault();
 
-  const formData = {
-    name: e.target.name.value,
-    email: e.target.email.value,
-    number: e.target.phone.value,
-    password: e.target.password.value,
-    confirmPassword: e.target.confirmPassword.value,
-  };
+    const form = e.currentTarget;
 
-  
-  const result = signupSchema.safeParse(formData);
+    const formData = {
+      first_name: form.first_name.value,
+      last_name: form.last_name.value,
+      email: form.email.value,
+      number: form.phone.value,
+      password: form.password.value,
+      confirmPassword: form.confirmPassword.value,
+    };
 
-  if (!result.success) {
-   const firstError = result.error.issues[0].message;
-    toast.error(firstError, {
+    const result = signupSchema.safeParse(formData);
+
+    if (!result.success) {
+      const firstError = result.error.issues[0].message;
+      toast.error(firstError, {
         className: "!border !border-red-500 !text-red-500",
       });
-    return;
-  }
+      return;
+    }
 
-  
-  const { confirmPassword, ...userData } = result.data; // we do this because we dont want to send confirm password to the server
+    const { confirmPassword, ...userData } = result.data;
 
-  const response = await signUp(userData);
+    try {
+      const response = await signup({
+        ...userData,
+        user_type: "user",
+      });
+      router.push(`/email-verification?email=${userData.email}`);
 
-  if (response.success == true) {
-    router.push("/");
-    toast.success("User signed up successfully");
-  } else {
-    toast.error(response.message || "Failed to sign up user");
-  }
-};
+      if (response.success) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+    } catch {
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <>
       <div className="w-full h-screen flex ">
         <div className="w-1/2 hidden md:block relative border border-black">
-          <Image src={signup} alt="signup" fill className="object-cover" />
+          <Image src={signupImg} alt="signup" fill className="object-cover" />
         </div>
         <div className="w-full md:w-1/2 bg-[#FFF6E3] flex items-center justify-center">
           <Card className="w-full max-w-lg mx-auto">
@@ -78,13 +83,24 @@ const submitHandler = async (e: any) => {
                 </div>
               </CardHeader>
               <CardDescription>
-                <form id="signUp" onSubmit={submitHandler} className="w-full flex flex-col gap-3">
-                  <div>
+                <form
+                  id="signUp"
+                  onSubmit={submitHandler}
+                  className="w-full flex flex-col gap-3"
+                >
+                  <div className="grid grid-cols-2 gap-3">
                     <Input
-                      name="name"
+                      name="first_name"
                       type="text"
-                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 "
-                      placeholder="Full Name"
+                      placeholder="First Name"
+                      className="text-black border-t-0 border-l-0 border-r-0 border-b border-gray-400 bg-white shadow-none focus-visible:ring-0 rounded-none p-0"
+                    />
+
+                    <Input
+                      name="last_name"
+                      type="text"
+                      placeholder="Last Name"
+                      className="text-black border-t-0 border-l-0 border-r-0 border-b border-gray-400 bg-white shadow-none focus-visible:ring-0 rounded-none p-0"
                     />
                   </div>
                   <div>
@@ -126,7 +142,6 @@ const submitHandler = async (e: any) => {
                 <Button
                   type="submit"
                   form="signUp"
-                 
                   className="w-full rounded-full bg-black text-white"
                 >
                   Create Account
@@ -135,8 +150,8 @@ const submitHandler = async (e: any) => {
                   variant={"outline"}
                   className="w-full rounded-full border-black "
                 >
-                   <Image src={googleIcon} alt="google" width={18} height={18} />
-                    <span>Sign up with Google</span>
+                  <Image src={googleIcon} alt="google" width={18} height={18} />
+                  <span>Sign up with Google</span>
                 </Button>
               </div>
 
@@ -145,7 +160,7 @@ const submitHandler = async (e: any) => {
                   <span>Already have an account ?</span>
                   <Button variant={"link"} className="p-0">
                     <Link href="/sign-in">Log in</Link>
-                   </Button>
+                  </Button>
                 </div>
               </CardFooter>
             </div>
