@@ -48,10 +48,10 @@ export async function login(payload: LoginPayload) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.message || "Login failed");
+    return { error: data.message};
   }
 
-  return data;
+  return { message: data.message};
 }
 
 
@@ -88,4 +88,42 @@ export async function resendOtp(email: string) {
   }
 
   return data;
+}
+
+
+export async function resetPasswordUsingEmail(payload: any) {
+  const response = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return { error: data.message};
+  }
+
+  return { message: data.message};
+}
+
+
+export async function resetPasswordUsingOTP(payload: any) {
+  const response = await fetch("/api/auth/confirm-forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return { error: data.message};
+  }
+
+  return { message: data.message};
 }
