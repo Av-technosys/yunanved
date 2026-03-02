@@ -40,11 +40,11 @@ const Page = () => {
   }
 
     const response = await login(formData);
-    if (response.success) {
+    if (response.message) {
       router.push("/");
       toast.success("User login successfully");
     } else {
-      toast.error(response.message || "Failed to login user");
+      toast.error(response.error || "Failed to login user");
     }
   };
   return (

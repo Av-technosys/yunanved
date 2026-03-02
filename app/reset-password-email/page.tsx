@@ -14,8 +14,29 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { resetPasswordUsingEmail } from "@/helper";
 
 const Page = () => {
+  const router = useRouter();
+
+  const submitHandler = async (e: any) => {
+    e.preventDefault();
+
+    const formData = {
+      email: e.target.email.value,
+    };
+
+    const response = await resetPasswordUsingEmail(formData);
+
+    if (response.error) {
+      toast.error(response.error);
+      return;
+    }
+    toast.success(response.message);
+    router.push(`/reset-password-otp?email=${formData.email}`);
+  };
   return (
     <>
       <div className="w-full h-screen flex ">
@@ -34,6 +55,7 @@ const Page = () => {
               </CardHeader>
               <CardDescription>
                 <form
+                  onSubmit={(e) => submitHandler(e)}
                   id="reset-password-email"
                   className="w-full flex flex-col gap-3"
                 >

@@ -13,7 +13,7 @@ export async function POST(req: Request) {
         }, { status: 200 });
     } catch (err: any) {
         console.error('ForgotPassword error:', err);
-        return NextResponse.json({ message: err.message }, { status: 500 });
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
 
