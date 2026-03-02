@@ -43,6 +43,11 @@ type Variant = {
   gallery: ImageItem[];
   attributes: Record<string, AttributeValue>;
   isInStock: boolean;
+  isReturnable: boolean;
+  isCancelable: boolean;
+  isReplacement: boolean;
+  returnDays: number;
+  replacementDays: number;
 };
 
 interface EditProductProps {
@@ -88,6 +93,11 @@ export default function EditProduct({
         ]),
       ),
       isInStock: v.isInStock ?? true,
+      isReturnable: v.isReturnable ?? false,
+      isCancelable: v.isCancelable ?? false,
+      isReplacement: v.isReplacement ?? false,
+      returnDays: v.returnDays ?? 0,
+      replacementDays: v.replacementDays ?? 0,
     })),
   );
 
@@ -115,6 +125,11 @@ export default function EditProduct({
       gallery: [],
       attributes: { ...variants[0]?.attributes },
       isInStock: true,
+      isReturnable: variants[0]?.isReturnable || false,
+      isCancelable: variants[0]?.isCancelable || false,
+      isReplacement: variants[0]?.isReplacement || false,
+      returnDays: variants[0]?.returnDays || 0,
+      replacementDays: variants[0]?.replacementDays || 0,
     };
     setVariants([...variants, newVariant]);
     setActiveIndex(variants.length);
@@ -222,6 +237,11 @@ export default function EditProduct({
       bannerImage: v.banner?.key,
       media: v.gallery.map((g) => g.key),
       isInStock: v.isInStock,
+      isReturnable: v.isReturnable,
+      isCancelable: v.isCancelable,
+      isReplacement: v.isReplacement,
+      returnDays: v.returnDays,
+      replacementDays: v.replacementDays,
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
         .filter((a) => a.value.trim().length > 0),
@@ -295,11 +315,10 @@ export default function EditProduct({
                     <div
                       key={v.id}
                       onClick={() => setActiveIndex(i)}
-                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
-                        activeIndex === i
-                          ? "bg-primary text-primary-foreground"
-                          : "hover:bg-muted"
-                      }`}
+                      className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${activeIndex === i
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                        }`}
                     >
                       <div className="flex flex-col overflow-hidden">
                         <span className="text-sm font-medium truncate">
@@ -401,6 +420,76 @@ export default function EditProduct({
                       }
                     />
                     <Label>In Stock</Label>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 border-t pt-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={activeVariant.isReturnable}
+                        onCheckedChange={(checked) =>
+                          updateVariant(activeIndex, { isReturnable: checked })
+                        }
+                      />
+                      <Label>Is Returnable</Label>
+                    </div>
+                    {activeVariant.isReturnable && (
+                      <div className="space-y-2">
+                        <Label>Return Days</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={activeVariant.returnDays}
+                          onChange={(e) =>
+                            updateVariant(activeIndex, {
+                              returnDays: Number(e.target.value),
+                            })
+                          }
+                          placeholder="e.g. 7"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={activeVariant.isCancelable}
+                        onCheckedChange={(checked) =>
+                          updateVariant(activeIndex, { isCancelable: checked })
+                        }
+                      />
+                      <Label>Is Free Delivery</Label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={activeVariant.isReplacement}
+                        onCheckedChange={(checked) =>
+                          updateVariant(activeIndex, { isReplacement: checked })
+                        }
+                      />
+                      <Label>Is Replacement</Label>
+                    </div>
+                    {activeVariant.isReplacement && (
+                      <div className="space-y-2">
+                        <Label>Replacement Days</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={activeVariant.replacementDays}
+                          onChange={(e) =>
+                            updateVariant(activeIndex, {
+                              replacementDays: Number(e.target.value),
+                            })
+                          }
+                          placeholder="e.g. 7"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

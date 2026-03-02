@@ -24,13 +24,13 @@ import emptyCart from "../../public/emptycart.png";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
-import { useIsClient } from "../hooks/useIsClient";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Footer from "@/components/landing/Footer";
 import { tempUserId } from "@/const/globalconst";
 import { useRouter } from "next/navigation";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import { useIsClient } from "@/hooks/useIsClient";
 
 const breadcrumb = [
   { name: "Home", href: "/" },
@@ -40,7 +40,7 @@ const breadcrumb = [
 export default function CartPage() {
   const isClient = useIsClient();
   const [isPending, startTransition] = useTransition();
-  const router=useRouter();
+  const router = useRouter();
 
   const userId = tempUserId; // later from auth/session
 
@@ -55,31 +55,19 @@ export default function CartPage() {
 
 
   const initializeCheckout = useCheckoutStore(
-  (s) => s.initializeCheckout
-);
+    (s) => s.initializeCheckout
+  );
   const [freshProducts, setFreshProducts] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
-
-  useEffect(() => {
-  freshProducts.forEach((p) => {
-    console.log({
-      id: p.id,
-      slug: p.slug,
-      name: p.name,
-    });
-  });
-}, [freshProducts]);
-
-
-const productKeys = useMemo(
-  () =>
-    items
-      .map((i) => i.productId)
-      .sort()
-      .join("|"),
-  [items],
-);
+  const productKeys = useMemo(
+    () =>
+      items
+        .map((i) => i.productId)
+        .sort()
+        .join("|"),
+    [items],
+  );
   useEffect(() => {
     let cancelled = false;
 
@@ -91,9 +79,9 @@ const productKeys = useMemo(
 
       setIsFetching(true);
 
-            const data = await getProductsForCart(
-          items.map((i) => i.productId)
-        );
+      const data = await getProductsForCart(
+        items.map((i) => i.productId)
+      );
       if (!cancelled) {
         setFreshProducts(data || []);
         setIsFetching(false);
@@ -107,18 +95,18 @@ const productKeys = useMemo(
     };
   }, [productKeys]);
 
-const productMap = useMemo(() => {
-  return new Map(freshProducts.map((p) => [p.id, p]));
-}, [freshProducts]);
+  const productMap = useMemo(() => {
+    return new Map(freshProducts.map((p) => [p.id, p]));
+  }, [freshProducts]);
 
 
 
 
 
 
-useEffect(() => {
+  useEffect(() => {
 
-}, [productMap]);
+  }, [productMap]);
   const handleIncrease = (item: any) => {
     increase(item.productId, item.attributes);
 
@@ -126,7 +114,7 @@ useEffect(() => {
       try {
         await increaseCartItem(userId, item.productId);
       } catch (e) {
-        console.log("error", e);
+        console.error("error", e);
         decrease(item.productId, item.attributes);
         toast.error("Failed to update quantity");
       }
@@ -140,7 +128,7 @@ useEffect(() => {
       try {
         await decreaseCartItem(userId, item.productId);
       } catch (e) {
-        console.log(e);
+        console.error(e);
         increase(item.productId, item.attributes);
         toast.error("Failed to update quantity");
       }
@@ -154,7 +142,7 @@ useEffect(() => {
       try {
         await removeCartItem(userId, item.productId);
       } catch (e) {
-        console.log(e);
+        console.error(e);
         useCartStore.getState().addItem(item);
         toast.error("Failed to remove item");
       }
@@ -164,7 +152,7 @@ useEffect(() => {
   const subtotal = useMemo(() => {
     let total = 0;
     for (const item of items) {
-const live = productMap.get(item.productId);
+      const live = productMap.get(item.productId);
 
       if (!live) continue;
       total += live.basePrice * item.quantity;
@@ -179,22 +167,22 @@ const live = productMap.get(item.productId);
   const moveToCheckOut = () => {
 
 
-initializeCheckout({
-  items: items.map((item) => {
-    const live = productMap.get(item.productId);
+    initializeCheckout({
+      items: items.map((item) => {
+        const live = productMap.get(item.productId);
 
-    return {
-      productId: item.productId,
-      slug: live?.slug,
-      quantity: item.quantity,
-      price: live?.basePrice || 0,
-    };
-  }),
-  total,
-  userId,
-});
+        return {
+          productId: item.productId,
+          slug: live?.slug,
+          quantity: item.quantity,
+          price: live?.basePrice || 0,
+        };
+      }),
+      total,
+      userId,
+    });
 
-  router.push("/checkout");
+    router.push("/checkout");
 
   }
 
@@ -381,15 +369,15 @@ initializeCheckout({
                   </div>
                 </CardDescription>
                 <CardFooter className="w-full">
-                
-                    <Button
-                      disabled={isPending}
-                      onClick={moveToCheckOut}
-                      className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3 rounded-full mt-4 hover:bg-teal-900"
-                    >
-                      {isPending ? "Processing" : "Proceed to Checkout"}
-                    </Button>
-                  
+
+                  <Button
+                    disabled={isPending}
+                    onClick={moveToCheckOut}
+                    className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3 rounded-full mt-4 hover:bg-teal-900"
+                  >
+                    {isPending ? "Processing" : "Proceed to Checkout"}
+                  </Button>
+
                 </CardFooter>
               </Card>
             </div>

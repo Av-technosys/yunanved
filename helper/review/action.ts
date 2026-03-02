@@ -60,7 +60,6 @@ export async function getReviewStats() {
 export async function createReview(reviewData: any) {
   try {
     const { userId, productVarientId, rating, message, media } = reviewData;
-    console.log(productVarientId);
 
     if (!productVarientId) {
       throw new Error("Product Variant ID is required for review submission");

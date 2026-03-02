@@ -47,6 +47,11 @@ interface VariantInput {
   bannerImage?: string;
   media?: string[];
   isInStock: boolean;
+  isReturnable: boolean;
+  isCancelable: boolean;
+  isReplacement: boolean;
+  returnDays: number;
+  replacementDays: number;
   attributes: { attribute: string; value: string }[];
 }
 
@@ -99,6 +104,11 @@ export async function createProduct(formData: FormData) {
         strikethroughPrice: v.strikethroughPrice,
         bannerImage: v.bannerImage || null,
         isInStock: v.isInStock,
+        isReturnable: v.isReturnable,
+        isCancelable: v.isCancelable,
+        isReplacement: v.isReplacement,
+        returnDays: v.returnDays,
+        replacementDays: v.replacementDays,
         rating: 0,
         reviewCount: 0,
       }));
@@ -234,6 +244,11 @@ export async function updateProduct(formData: FormData): Promise<void> {
               strikethroughPrice: v.strikethroughPrice,
               bannerImage: v.bannerImage || null,
               isInStock: v.isInStock,
+              isReturnable: v.isReturnable,
+              isCancelable: v.isCancelable,
+              isReplacement: v.isReplacement,
+              returnDays: v.returnDays,
+              replacementDays: v.replacementDays,
               updatedAt: new Date(),
             })
             .where(eq(productVariant.id, vId));
@@ -257,6 +272,11 @@ export async function updateProduct(formData: FormData): Promise<void> {
               strikethroughPrice: v.strikethroughPrice,
               bannerImage: v.bannerImage || null,
               isInStock: v.isInStock,
+              isReturnable: v.isReturnable,
+              isCancelable: v.isCancelable,
+              isReplacement: v.isReplacement,
+              returnDays: v.returnDays,
+              replacementDays: v.replacementDays,
               rating: 0,
               reviewCount: 0,
             })

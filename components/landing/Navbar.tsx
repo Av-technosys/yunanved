@@ -3,7 +3,7 @@ import { Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/cartStore";
-import { useIsClient } from "@/app/hooks/useIsClient";
+import { useIsClient } from "@/hooks/useIsClient";
 
 import Link from "next/link";
 

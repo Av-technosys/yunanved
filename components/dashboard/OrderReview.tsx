@@ -46,7 +46,7 @@ const orderDetailsReview = ({
     if (file) {
       const folder = "review";
       const { preview, fileKey } = await upload(file, folder);
-      
+
       setPreviews((prev) => {
         const filtered = prev.filter(
           (p) => !(p.productId === productId && p.index === index),
@@ -68,7 +68,6 @@ const orderDetailsReview = ({
       media: fileKey || [],
     };
 
-    console.log("reviewData",reviewData)
 
     try {
       setLoadingProduct(productVarientId);
@@ -95,7 +94,7 @@ const orderDetailsReview = ({
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
           onClick={() => onBack()}
-        
+
         >
           <span>Home</span> <ChevronRight size={12} />
           <span>My orders</span> <ChevronRight size={12} />

@@ -7,10 +7,9 @@ export async function POST(req: Request) {
   const { email, password } = body;
   try {
     const data = await authSingIn({ email, password });
-    console.log(data, "data");
     return NextResponse.json(data, { status: 200 });
   } catch (err: any) {
-    console.log(err, "err");
+    console.error(err, "err");
     return NextResponse.json({ error: err.message }, { status: 401 });
   }
 }

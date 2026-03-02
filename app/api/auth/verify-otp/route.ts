@@ -7,7 +7,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     const body = await req.json();
-    console.log('body', body)
     const { email, code } = body;
 
     if (!email || !code) {
@@ -20,7 +19,7 @@ export async function POST(req: Request) {
         if (!dbUser) {
             return NextResponse.json({ message: 'User not found.', result }, { status: 404 });
         }
-       // const data = await authSingIn({ email, password: dbUser.password });
+        // const data = await authSingIn({ email, password: dbUser.password });
         return NextResponse.json({ message: 'Verification successful.' }, { status: 200 });
     } catch (err: any) {
         return NextResponse.json({ message: err.message }, { status: 500 })

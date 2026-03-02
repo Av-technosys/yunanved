@@ -24,8 +24,6 @@ export async function validateImage(
 
   // 2️⃣ dimension check
   const dimensions = await getImageDimensions(file);
-  console.log("height", dimensions.height);
-  console.log("width", dimensions.width);
 
   if (dimensions.width > maxWidth || dimensions.height > maxHeight) {
     throw new Error(

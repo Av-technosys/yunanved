@@ -35,6 +35,9 @@ export const productVariant = pgTable("product_variant", {
   isInStock: boolean("is_in_stock").notNull().default(true),
   isReturnable: boolean("is_returnable").notNull().default(false),
   isCancelable: boolean("is_cancelable").notNull().default(false),
+  isReplacement: boolean("is_replacement").notNull().default(false),
+  returnDays: integer("return_days").notNull().default(0),
+  replacementDays: integer("replacement_days").notNull().default(0),
   rating: integer("rating").notNull().default(0),
   reviewCount: integer("review_count").notNull().default(0),
 

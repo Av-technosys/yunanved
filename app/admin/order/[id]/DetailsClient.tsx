@@ -33,7 +33,7 @@ export default function Details({ id }: { id: string }) {
   useEffect(() => {
     startTransition(async () => {
       const data = await fetchOrderDetails(id);
-      console.log(data)
+      console.error(data)
       setOrderInfo(data);
     });
   }, [id]);
@@ -66,9 +66,9 @@ export default function Details({ id }: { id: string }) {
             <CardTitle className="text-md font-bold text-slate-900 tracking-tight">
               OrderId : #{orderInfo?.order?.id}
             </CardTitle>
-            <p className="text-sm text-slate-500">          
-                  Placed on {formatDate(orderInfo?.order?.createdAt)}
-</p>
+            <p className="text-sm text-slate-500">
+              Placed on {formatDate(orderInfo?.order?.createdAt)}
+            </p>
           </CardHeader>
           <CardContent className="space-y-12">
             <div className="relative space-y-10 ml-1">
@@ -111,9 +111,9 @@ export default function Details({ id }: { id: string }) {
             </CardHeader>
             <CardContent className="flex items-center gap-5">
               <Avatar className="h-24 w-24">
-                <AvatarImage/>
-                <AvatarFallback>    
-                   {orderInfo?.user.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarImage />
+                <AvatarFallback>
+                  {orderInfo?.user.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <h3 className="font-bold text-lg">{orderInfo?.user?.name}</h3>
@@ -157,7 +157,7 @@ export default function Details({ id }: { id: string }) {
       </div>
 
       {/* Bottom Table Card */}
-       <Card>
+      <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -171,9 +171,9 @@ export default function Details({ id }: { id: string }) {
               </thead>
 
               <tbody className="text-sm">
-               {orderInfo?.items.map((item: any) => {
-                    const total = item.productPrice * item.quantity;
-                    const product = item.product;
+                {orderInfo?.items.map((item: any) => {
+                  const total = item.productPrice * item.quantity;
+                  const product = item.product;
 
                   return (
                     <tr key={item.id} className="border-b last:border-0">

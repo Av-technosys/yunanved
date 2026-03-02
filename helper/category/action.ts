@@ -21,7 +21,7 @@ interface GetCategoriesOptions {
 }
 export async function createCategory(categoryData: any) {
   try {
-    const { name, description, parentId , bannerImage } = categoryData;
+    const { name, description, parentId, bannerImage } = categoryData;
     const slug = await generateUniqueSlug(db, name, category.slug);
     await db.insert(category).values({
       name,
@@ -53,7 +53,7 @@ export async function updateCategory(categoryData: any) {
         description,
         parrentId: parentId || null,
         bannerImage: bannerImage || null,
-        
+
       })
       .where(eq(category.id, id));
 
@@ -189,7 +189,7 @@ export async function getCategories() {
       .from(category)
       .orderBy(asc(category.createdAt));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return [];
   }
 }
@@ -253,7 +253,7 @@ export async function getAllCategoriesMeta() {
       })
       .from(category);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return [];
   }
 }

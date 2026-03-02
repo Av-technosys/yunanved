@@ -1,27 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import productBannerImage from "../../../public/fortune1.png";
 import Image from "next/image";
-import { RefreshCw, Truck } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { RefreshCw, Star, Truck, Undo2 } from "lucide-react";
 import ProductCard from "@/components/productCard";
 import { Button } from "@/components/ui/button";
-import ReviewCard from "@/app/product/reviewCard";
 import { useRef, useState } from "react";
 import { useAddToCart } from "@/helper/useAddToCart";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
-import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import ReviewCard from "../reviewCard";
 
 const ProductClient = ({
   productInfo: initialProduct,
   variants = [],
   similarProducts = [],
 }: any) => {
-  const router = useRouter();
   const [activeVariant, setActiveVariant] = useState(initialProduct);
   const [bannerImage, setBannerImage] = useState<any>(activeVariant.bannerImage);
-
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
   const { handleAddToCart } = useAddToCart();
@@ -34,12 +30,14 @@ const ProductClient = ({
     image: activeVariant.bannerImage,
     price: activeVariant.basePrice,
     originalPrice: activeVariant.strikethroughPrice ?? undefined,
+    isReturnable: activeVariant.isReturnable,
+    isReplacement: activeVariant.isReplacement,
+    returnDays: activeVariant.returnDays,
+    replacementDays: activeVariant.replacementDays,
+    isFreeDelivery: activeVariant.isCancelable,
     attributes: [],
   };
 
-  const attributes = activeVariant.attributes ?? [];
-  const leftAttributes = attributes.slice(0, attributes.length / 2);
-  const rightAttributes = attributes.slice(attributes.length / 2);
 
   const handleClick = async () => {
     if (clickLock.current) return;
@@ -65,7 +63,7 @@ const ProductClient = ({
   return (
     <>
       <div className="max-w-6xl mx-auto grid grid-cols-5 my-5 px-2 md:px-4  lg:px-0 gap-10">
-        <div className="col-span-5  h-[28rem] md:h-[35rem]  gap-4 md:gap-2 md:col-span-3 flex flex-col md:flex-row ">
+        <div className="col-span-5  h-112 md:h-140  gap-4 md:gap-2 md:col-span-3 flex flex-col md:flex-row ">
           <div className="w-full order-2 md:order-1 md:w-1/4">
             <div className="flex overflow-x-auto md:flex-col w-full h-full  items-start  gap-2">
               {activeVariant?.media?.map((image: any, index: number) => (
@@ -105,7 +103,7 @@ const ProductClient = ({
             </div>
           </div>
         </div>
-        <div className="col-span-5 h-[28rem] md:h-[35rem]  md:col-span-2 flex flex-col">
+        <div className="col-span-5   md:col-span-2 flex flex-col">
           <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 md:gap-2 p-2">
             <h1 className="text-2xl md:text-[14px] lg:text-2xl font-semibold text-gray-900">
               {activeVariant.name}
@@ -124,45 +122,13 @@ const ProductClient = ({
               )}
             </div>
 
-            <p className="text-gray-600 text-sm md:text-[10px] lg:text-sm leading-relaxed">
-              {activeVariant.description == ""
-                ? "No description"
-                : activeVariant.description}
-            </p>
 
             <ProductDescription description={activeVariant.description} />
             <hr />
 
-            {variants.length > 1 && (
-              <div className="flex flex-col gap-2">
-                <p className="font-medium text-gray-800">Variants</p>
-                <div className="flex gap-2 flex-wrap">
-                  {variants.map((v: any, index: number) => (
-                    <div key={index} className="flex  flex-col gap-2">
-                      <div className="w-28 h-28 relative rounded-md overflow-hidden">
-                        <Image
-                          src={`${NEXT_PUBLIC_S3_BASE_URL}/${v.bannerImage}`}
-                          alt="product thumbnail"
-                          fill
-                          className="object-contain rounded-md"
-                        />
-                      </div>
-                      <button
-                        key={v.id}
-                        onClick={() => handleVariantChange(v)}
-                        className={`px-4 py-1.5 rounded-md border text-sm transition-colors
-                            ${activeVariant.id === v.id
-                            ? "bg-teal-700 text-white border-teal-700"
-                            : "hover:border-teal-600 hover:text-teal-700"
-                          }`}
-                      >
-                        {v.name.replace(initialProduct.name, "").trim() || v.name}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <ProductVarient variants={variants} handleVariantChange={handleVariantChange} activeVariant={activeVariant} />
+
+
 
             <div className="flex gap-4 mt-2">
               <button
@@ -183,81 +149,16 @@ const ProductClient = ({
             </div>
 
             <div className="border rounded-lg mt-4 divide-y">
-              <div className="flex gap-3 p-4">
-                <span className="text-xl">
-                  <Truck />
-                </span>
-                <div>
-                  <p className="font-medium text-gray-800">Free Delivery</p>
-                  <p className="text-sm text-gray-500">
-                    Enter your postal code for Delivery Availability
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 p-4">
-                <span className="text-xl">
-                  <RefreshCw />
-                </span>
-                <div>
-                  <p className="font-medium text-gray-800">Return Delivery</p>
-                  <p className="text-sm text-gray-500">
-                    Free 30 Days Delivery Returns.{" "}
-                    <span className="underline cursor-pointer">Details</span>
-                  </p>
-                </div>
-              </div>
+              {/* managing free delivery by isCancelable */}
+              {activeVariant.isCancelable && <FreeDelivery />}
+              {activeVariant.isReturnable && <ReturnDelivery days={activeVariant.returnDays} />}
+              {activeVariant.isReplacement && <ReplacementDelivery days={activeVariant.replacementDays} />}
             </div>
           </div>
         </div>
       </div>
-      <div className="max-w-6xl px-2 md:px-0 my-10 mx-auto">
-        <h1 className="text-lg mt-5 font-bold">Product Specifications</h1>
 
-        <div className="flex flex-col md:flex-row w-full my-5 gap-10">
-          {attributes.length > 0 ? (
-            <>
-              <div className="w-full md:w-1/2 flex flex-col gap-2 text-sm text-gray-800">
-                <h3 className="font-semibold text-base mb-2">Item Details</h3>
-
-                {leftAttributes.map((item: any, index: number) => (
-                  <div key={item.id}>
-                    <div className="flex justify-between py-2">
-                      <span className="text-gray-600">{item.attribute}</span>
-                      <span className="font-medium text-right max-w-[60%]">
-                        {item.value}
-                      </span>
-                    </div>
-                    <Separator
-                      className={`${index === leftAttributes.length - 1 ? "hidden" : ""}`}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="w-full md:w-1/2 flex flex-col gap-2 text-sm text-gray-800">
-                <h3 className="font-semibold text-base mb-2">More Details</h3>
-
-                {rightAttributes.map((item: any, index: number) => (
-                  <div key={item.id}>
-                    <div className="flex justify-between py-2">
-                      <span className="text-gray-600">{item.attribute}</span>
-                      <span className="font-medium text-right max-w-[60%]">
-                        {item.value}
-                      </span>
-                    </div>
-                    <Separator
-                      className={`${index === rightAttributes.length - 1 ? "hidden" : ""}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-gray-800">No Attributes Found.</p>
-          )}
-        </div>
-      </div>
+      <ProductSpecification attributes={activeVariant.attributes ?? []} />
 
       <div className="max-w-6xl px-2 md:px-4 mb-10 lg:px-0 mt-5 mx-auto">
         <div className="text-lg mb-5 font-bold">Customer Reviews</div>
@@ -272,23 +173,10 @@ const ProductClient = ({
           )}
 
 
+        </div>
+        <SimilarProducts similarProducts={similarProducts} />
+      </div>
 
-        </div>
-      </div>
-      <div className="max-w-6xl mt-5 px-2  md:px-4 lg:px-0  mx-auto">
-        <div className="text-lg mb-5 font-bold">Similar Products</div>
-        <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-2">
-          {similarProducts.length > 0 ? (
-            similarProducts.map((product: any, index: number) => {
-              return (
-                <ProductCard product={product} key={index} className="h-60" />
-              );
-            })
-          ) : (
-            <p className="text-sm text-gray-800">No Similar Products Found.</p>
-          )}
-        </div>
-      </div>
     </>
   );
 };
@@ -301,9 +189,7 @@ function ProductReview({ activeVariant }: { activeVariant: any }) {
       <div className="flex items-center gap-1">
         {Array.from({ length: Math.floor(activeVariant.rating || 0) }).map(
           (_, index) => (
-            <span key={index} className="text-yellow-400">
-              ★
-            </span>
+            <Star key={index} className=" stroke-yellow-300 fill-yellow-300" />
           ),
         )}
         <span className="text-gray-400 ml-1">
@@ -318,7 +204,7 @@ function ProductReview({ activeVariant }: { activeVariant: any }) {
 function ProductDescription({ description }: { description: string }) {
   const [showMore, setShowMore] = useState(false);
 
-  const LIMIT = 180;
+  const LIMIT = 120;
 
   const isLong = description && description.length > LIMIT;
 
@@ -355,4 +241,134 @@ function ProductDescription({ description }: { description: string }) {
       )}
     </p>
   );
+}
+
+function ProductSpecification({ attributes }: { attributes: any }) {
+  return (
+    <>
+      <div className="max-w-6xl px-2 md:px-0 my-10 mx-auto">
+        <h1 className="text-lg mt-4 font-bold">Product Specifications</h1>
+
+        <div className=" text-sm grid divide-y grid-cols-1 md:grid-cols-2 gap-4 gap-x-12 mt-6">
+          {attributes.map((item: any, index: number) => (
+            <div key={item.id}>
+              <div className="grid-cols-2 grid  py-2">
+                <span className="text-gray-600">{item.attribute}</span>
+                <span className="font-medium">
+                  {item.value}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
+function ProductVarient({ variants, handleVariantChange, activeVariant }: { variants: any, handleVariantChange: any, activeVariant: any }) {
+  return (
+    <>
+      {variants.length > 1 && (
+        <div className=" space-y-2">
+          <p className="font-medium text-gray-800">Variants</p>
+          <div className=" flex flex-wrap gap-2">
+            {variants.map((v: any, index: number) => (
+              <div key={index} className="">
+
+                <Button
+                  variant={"outline"}
+                  key={v.id}
+                  onClick={() => handleVariantChange(v)}
+                  className={cn(`h-auto cursor-pointer  flex flex-col gap-2`, v.id === activeVariant.id && "bg-gray-100")}
+                >
+                  <div className="w-28 h-28 relative rounded-md overflow-hidden">
+                    <Image
+                      src={`${NEXT_PUBLIC_S3_BASE_URL}/${v.bannerImage}`}
+                      alt="product thumbnail"
+                      fill
+                      className="object-contain rounded-md"
+                    />
+                  </div>
+                  <span className=" max-w-32 whitespace-break-spaces">
+                    {v.name.replace(activeVariant.name, "").trim() || v.name}
+                  </span>
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+function SimilarProducts({ similarProducts }: { similarProducts: any }) {
+  return (
+    <>
+      <div className="max-w-6xl mt-5 px-2  md:px-4 lg:px-0  mx-auto">
+        <div className="text-lg mb-5 font-bold">Similar Products</div>
+        <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {similarProducts.length > 0 ? (
+            similarProducts.map((product: any, index: number) => {
+              return (
+                <ProductCard product={product} key={index} />
+              );
+            })
+          ) : (
+            <p className="text-sm text-gray-800">No Similar Products Found.</p>
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
+function ReturnDelivery({ days }: { days: number }) {
+  return (
+    <div className="flex gap-3 p-4">
+      <span className="text-xl">
+        <Undo2 />
+      </span>
+      <div>
+        <p className="font-medium text-gray-800">Return Product</p>
+        <p className="text-sm text-gray-500">
+          Free {days} Days Return.{" "}
+          <span className="underline cursor-pointer">Details</span>
+        </p>
+      </div>
+    </div>
+  )
+}
+function FreeDelivery() {
+  return (
+    <div className="flex gap-3 p-4">
+      <span className="text-xl">
+        <Truck />
+      </span>
+      <div>
+        <p className="font-medium text-gray-800">Free Delivery</p>
+        <p className="text-sm text-gray-500">
+          Enter your postal code for Delivery Availability
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function ReplacementDelivery({ days }: { days: number }) {
+  return (
+    <div className="flex gap-3 p-4">
+      <span className="text-xl">
+        <RefreshCw />
+      </span>
+      <div>
+        <p className="font-medium text-gray-800">Replacement Product</p>
+        <p className="text-sm text-gray-500">
+          Free {days} Days Replacement.{" "}
+          <span className="underline cursor-pointer">Details</span>
+        </p>
+      </div>
+    </div>
+  )
 }

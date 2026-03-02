@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { email, password, first_name, last_name, user_type , number } = body;
+  const { email, password, first_name, last_name, user_type, number } = body;
 
   if (!email || !password) {
     return NextResponse.json(
@@ -47,7 +47,6 @@ export async function POST(req: Request) {
           ]
         });
 
-        console.log("Cognito signup success:", createUserResult);
 
         // Store user in DB
         const [userRes] = await db.insert(user).values({

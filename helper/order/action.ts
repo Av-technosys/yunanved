@@ -61,7 +61,6 @@ export const fetchOrderDetails = async (orderId: string) => {
       .leftJoin(productVariant, eq(orderItem.productVarientId, productVariant.id))
       .where(eq(orderItem.orderId, orderId));
 
-    console.log(rawItems)
 
     const items = rawItems.map((row) => ({
       ...row.item,
@@ -241,7 +240,6 @@ export async function getOrderById(orderId: string) {
     .where(eq(order.id, orderId));
 
   if (!rows.length) return null;
-  console.log(rows)
 
   const orderData = rows[0].order;
 

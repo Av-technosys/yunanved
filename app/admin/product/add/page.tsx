@@ -42,6 +42,11 @@ type Variant = {
   gallery: ImageItem[];
   attributes: Record<string, AttributeValue>;
   isInStock: boolean;
+  isReturnable: boolean;
+  isCancelable: boolean;
+  isReplacement: boolean;
+  returnDays: number;
+  replacementDays: number;
 };
 
 export default function AddProductForm() {
@@ -59,7 +64,12 @@ export default function AddProductForm() {
     banner: null,
     gallery: [],
     attributes: {},
-    isInStock: true
+    isInStock: true,
+    isReturnable: false,
+    isCancelable: false,
+    isReplacement: false,
+    returnDays: 0,
+    replacementDays: 0
   }]);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -78,7 +88,12 @@ export default function AddProductForm() {
       banner: null,
       gallery: [],
       attributes: { ...variants[0]?.attributes },
-      isInStock: true
+      isInStock: true,
+      isReturnable: variants[0]?.isReturnable || false,
+      isCancelable: variants[0]?.isCancelable || false,
+      isReplacement: variants[0]?.isReplacement || false,
+      returnDays: variants[0]?.returnDays || 0,
+      replacementDays: variants[0]?.replacementDays || 0
     };
     setVariants([...variants, newVariant]);
     setActiveIndex(variants.length);
@@ -191,6 +206,11 @@ export default function AddProductForm() {
       bannerImage: v.banner?.key,
       media: v.gallery.map(g => g.key),
       isInStock: v.isInStock,
+      isReturnable: v.isReturnable,
+      isCancelable: v.isCancelable,
+      isReplacement: v.isReplacement,
+      returnDays: v.returnDays,
+      replacementDays: v.replacementDays,
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
         .filter(a => a.value.trim().length > 0)
@@ -338,6 +358,62 @@ export default function AddProductForm() {
                       onCheckedChange={(checked) => updateVariant(activeIndex, { isInStock: checked })}
                     />
                     <Label>In Stock</Label>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 border-t pt-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={activeVariant.isReturnable}
+                        onCheckedChange={(checked) => updateVariant(activeIndex, { isReturnable: checked })}
+                      />
+                      <Label>Is Returnable</Label>
+                    </div>
+                    {activeVariant.isReturnable && (
+                      <div className="space-y-2">
+                        <Label>Return Days</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={activeVariant.returnDays}
+                          onChange={(e) => updateVariant(activeIndex, { returnDays: Number(e.target.value) })}
+                          placeholder="e.g. 7"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={activeVariant.isCancelable}
+                        onCheckedChange={(checked) => updateVariant(activeIndex, { isCancelable: checked })}
+                      />
+                      <Label>Is Cancelable</Label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={activeVariant.isReplacement}
+                        onCheckedChange={(checked) => updateVariant(activeIndex, { isReplacement: checked })}
+                      />
+                      <Label>Is Replacement</Label>
+                    </div>
+                    {activeVariant.isReplacement && (
+                      <div className="space-y-2">
+                        <Label>Replacement Days</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={activeVariant.replacementDays}
+                          onChange={(e) => updateVariant(activeIndex, { replacementDays: Number(e.target.value) })}
+                          placeholder="e.g. 7"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

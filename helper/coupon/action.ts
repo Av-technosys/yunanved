@@ -23,7 +23,7 @@ export async function getCoupons(
       .where(whereClause)
       .orderBy(asc(coupon.createdAt));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return [];
   }
 }
@@ -34,7 +34,7 @@ export async function deleteCoupon(id: string) {
     revalidatePath("/admin/coupon");
     return { success: true };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false };
   }
 }
@@ -50,7 +50,7 @@ export async function createCoupon(couponData: any) {
     revalidatePath("/admin/coupon");
     return { success: true };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false };
   }
 }
@@ -69,7 +69,7 @@ export async function updateCoupon(couponData: any, couponId: string) {
     revalidatePath("/admin/coupon");
     return { success: true };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false };
   }
 }
