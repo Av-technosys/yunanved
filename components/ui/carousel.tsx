@@ -51,7 +51,7 @@ function Carousel({
   ...props
 }: React.ComponentProps<"div"> & CarouselProps) {
   const [selectedIndex, setSelectedIndex] = React.useState(0)
-const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -89,25 +89,25 @@ const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
     [scrollPrev, scrollNext]
   )
 
-React.useEffect(() => {
-  if (!api) return
+  React.useEffect(() => {
+    if (!api) return
 
-  const update = () => {
-    setSelectedIndex(api.selectedScrollSnap())
-    setCanScrollPrev(api.canScrollPrev())
-    setCanScrollNext(api.canScrollNext())
-    setScrollSnaps(api.scrollSnapList())
-  }
+    const update = () => {
+      setSelectedIndex(api.selectedScrollSnap())
+      setCanScrollPrev(api.canScrollPrev())
+      setCanScrollNext(api.canScrollNext())
+      setScrollSnaps(api.scrollSnapList())
+    }
 
-  update()
+    update()
 
-  api.on("select", update)
-  api.on("reInit", update)
+    api.on("select", update)
+    api.on("reInit", update)
 
-  return () => {
-    api.off("select", update)
-  }
-}, [api])
+    return () => {
+      api.off("select", update)
+    }
+  }, [api])
 
   return (
     <CarouselContext.Provider
@@ -133,31 +133,31 @@ React.useEffect(() => {
       >
         {children}
         {scrollSnaps.length > 1 && (
-  <div className="flex justify-center gap-2 mt-3">
-{scrollSnaps.length > 0 && (
-  <div className="flex justify-center gap-2 mt-6">
-    {Array.from({ length: 3 }).map((_, index) => {
-      const groupSize = Math.ceil(scrollSnaps.length / 3)
-      const targetIndex = index * groupSize
-      const isActive =
-        selectedIndex >= targetIndex &&
-        selectedIndex < targetIndex + groupSize
+          <div className="flex justify-center gap-2 mt-3">
+            {scrollSnaps.length > 0 && (
+              <div className="flex justify-center gap-2 mt-2">
+                {Array.from({ length: 3 }).map((_, index) => {
+                  const groupSize = Math.ceil(scrollSnaps.length / 3)
+                  const targetIndex = index * groupSize
+                  const isActive =
+                    selectedIndex >= targetIndex &&
+                    selectedIndex < targetIndex + groupSize
 
-      return (
-        <button
-          key={index}
-          onClick={() => api?.scrollTo(targetIndex)}
-          className={cn(
-            "h-1.5 rounded-full transition-all duration-300",
-            isActive ? "bg-black w-6" : "bg-gray-300 w-2"
-          )}
-        />
-      )
-    })}
-  </div>
-)}
-  </div>
-)}
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => api?.scrollTo(targetIndex)}
+                      className={cn(
+                        " h-1 md:h-1.5 rounded-full transition-all duration-300",
+                        isActive ? "bg-black w-4 md:w-6" : "bg-gray-300 w-1.5 md:w-2"
+                      )}
+                    />
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </CarouselContext.Provider>
   )

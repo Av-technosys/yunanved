@@ -21,8 +21,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
-import Navbar from "@/components/landing/Navbar";
-import Footer from "@/components/landing/Footer";
 import { FilterSidebar } from "../filterSidebar";
 
 import { getAllProductsByCategorySlug, getCategoryBySlug } from "@/helper/category/action";

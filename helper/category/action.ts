@@ -209,12 +209,8 @@ export async function getAllProductsByCategorySlug(slug: string) {
       })
       .from(productVariant)
       .innerJoin(
-        product,
-        eq(product.id, productVariant.productId),
-      )
-      .innerJoin(
         productCategory,
-        eq(product.id, productCategory.productId),
+        eq(productVariant.productId, productCategory.productId),
       )
       .innerJoin(
         category,

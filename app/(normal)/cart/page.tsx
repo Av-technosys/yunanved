@@ -1,7 +1,5 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import Navbar from "@/components/landing/Navbar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,13 +18,12 @@ import {
 } from "@/helper/index";
 
 import { toast } from "sonner";
-import emptyCart from "../../public/emptycart.png";
+import emptyCart from "../../../public/emptycart.png";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Footer from "@/components/landing/Footer";
 import { tempUserId } from "@/const/globalconst";
 import { useRouter } from "next/navigation";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
@@ -190,10 +187,9 @@ export default function CartPage() {
   if (!isClient) return null;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-96 flex flex-col">
       <div className="flex-1">
-        <Navbar />
-        <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto ">
+        {/* <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto ">
           <Breadcrumb>
             <BreadcrumbList>
               {breadcrumb.map((item, index) => (
@@ -209,7 +205,7 @@ export default function CartPage() {
               ))}
             </BreadcrumbList>
           </Breadcrumb>
-        </div>
+        </div> */}
 
         {items.length === 0 ? (
           <div className="flex justify-center items-center h-96">
@@ -385,7 +381,6 @@ export default function CartPage() {
           </>
         )}
       </div>
-      <Footer />
     </div>
   );
 }

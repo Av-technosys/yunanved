@@ -34,13 +34,13 @@ const faqData = [
 
 export function FAQ() {
   return (
-    <section className=" mx-auto max-w-5xl w-full py-10 px-4">
+    <section className=" mx-auto max-w-5xl w-full py-10 md:px-4">
       {/* Header Section */}
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <h2 className=" text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
           Frequently Asked Questions
         </h2>
-        <p className="mt-2 text-lg text-slate-600">
+        <p className="mt-1 md:mt-2 text-base md:text-lg text-slate-600">
           Everything you need to know
         </p>
       </div>

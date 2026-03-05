@@ -13,7 +13,6 @@ import { Newsletter } from "@/components/landing/Newsletter";
 const Page = () => {
   return (
     <>
-      <Navbar />
       <div
         className="w-full h-[28rem] flex items-center justify-center"
         style={{ backgroundImage: `url(${AboutUsBanner.src})` }}
@@ -47,7 +46,6 @@ const Page = () => {
       <div className="max-w-6xl my-5 mx-auto">
         <Newsletter />
       </div>
-      <Footer />
     </>
   );
 };
