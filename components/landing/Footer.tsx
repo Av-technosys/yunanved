@@ -15,9 +15,9 @@ import {
 export const Footer = () => {
   return (
     <footer className="w-full bg-white">
-      <div className="max-w-6xl mx-auto px-2  lg:px-0 pt-12 sm:pt-16 pb-8">
+      <div className="max-w-6xl mx-auto px-4  lg:px-0 pt-12 sm:pt-16 pb-8">
         {/* Top Grid */}
-        <div className="grid grid-cols-1 mx-8 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 md:mx-8 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-16">
           {/* Brand Section */}
           <div className="space-y-5">
             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
@@ -95,39 +95,39 @@ export const Footer = () => {
           </div>
 
           {/* Contact */}
-    <div>
-  <h3 className="text-lg sm:text-xl font-semibold mb-5 text-slate-900">
-    Contact
-  </h3>
+          <div>
+            <h3 className="text-lg sm:text-xl font-semibold mb-5 text-slate-900">
+              Contact
+            </h3>
 
-  <ul className="space-y-4 text-sm text-slate-900">
+            <ul className="space-y-4 text-sm text-slate-900">
 
-    <li className="flex items-start gap-3">
-      <MapPinIcon className="w-5 h-5 text-slate-700 shrink-0 mt-1" />
-      <span>
-        456 Fashion Avenue, Fashion District,
-        <br />
-        New York, NY 10013
-      </span>
-    </li>
+              <li className="flex items-start gap-3">
+                <MapPinIcon className="w-5 h-5 text-slate-700 shrink-0 mt-1" />
+                <span>
+                  456 Fashion Avenue, Fashion District,
+                  <br />
+                  New York, NY 10013
+                </span>
+              </li>
 
-    <li className="flex items-center gap-3">
-      <PhoneIcon className="w-5 h-5 text-slate-700 shrink-0" />
-      <span>+1 (555) 987-6543</span>
-    </li>
+              <li className="flex items-center gap-3">
+                <PhoneIcon className="w-5 h-5 text-slate-700 shrink-0" />
+                <span>+1 (555) 987-6543</span>
+              </li>
 
-    <li className="flex items-center gap-3">
-      <EnvelopeIcon className="w-5 h-5 text-slate-700 shrink-0" />
-      <span>hello@yunanved.com</span>
-    </li>
+              <li className="flex items-center gap-3">
+                <EnvelopeIcon className="w-5 h-5 text-slate-700 shrink-0" />
+                <span>hello@yunanved.com</span>
+              </li>
 
-    <li className="flex items-center gap-3">
-      <ClockIcon className="w-5 h-5 text-slate-700 shrink-0" />
-      <span>Mon - Sun: 10:00 AM - 8:00 PM</span>
-    </li>
+              <li className="flex items-center gap-3">
+                <ClockIcon className="w-5 h-5 text-slate-700 shrink-0" />
+                <span>Mon - Sun: 10:00 AM - 8:00 PM</span>
+              </li>
 
-  </ul>
-</div>
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Bar */}

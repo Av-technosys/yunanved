@@ -9,11 +9,10 @@ export default function DashboardLayout({
 }) {
   return (
     <>
-      <Navbar />
 
       {/* FULL VIEWPORT APP SHELL */}
       <div className="h-[calc(100vh-64px)] flex bg-[#F4F7F6] overflow-hidden">
-        
+
         {/* DESKTOP SIDEBAR */}
         <div className="hidden lg:flex w-72 shrink-0 ">
           <div className="w-full  overflow-hidden">

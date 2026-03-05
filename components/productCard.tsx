@@ -83,7 +83,7 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
 
         </CardContent>
         <CardFooter >
-          <div className="flex mb-4 w-full items-center justify-between">
+          <div className="flex flex-col md:flex-row mb-4 w-full md:items-center justify-between">
             <div className=" font-semibold text-lg">₹{product.basePrice}</div>
             <Button
               disabled={isAdding}
@@ -100,7 +100,7 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
         </CardFooter>
       </Card>
 
-     
+
     </>
   );
 };

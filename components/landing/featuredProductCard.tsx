@@ -89,18 +89,18 @@ const FeaturedProductCard = ({ product, key }: any) => {
           </p>
 
           {/* Price + Button */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between md:items-center">
             <span className="font-bold text-lg text-black">
               ₹{product.basePrice}
             </span>
 
-         <Button
-            onClick={addToCartHandler}
-            disabled={isAdding}
-            className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
-          >
-            {isAdding ? "Adding..." : "Add to Cart"}
-          </Button>
+            <Button
+              onClick={addToCartHandler}
+              disabled={isAdding}
+              className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
+            >
+              {isAdding ? "Adding..." : "Add to Cart"}
+            </Button>
           </div>
         </CardContent>
       </Card>
