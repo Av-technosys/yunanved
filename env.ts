@@ -12,3 +12,4 @@ export const AWS_SECRET_ACCESS_KEY: string = process.env.AWS_SECRET_KEY!;
 export const COGNITO_CLIENT_ID: string = process.env.COGNITO_CLIENT_ID!;
 export const COGNITO_CLIENT_SECRET: string = process.env.COGNITO_CLIENT_SECRET!;
 export const USER_POOL_ID: string = process.env.USER_POOL_ID!;
+export const AUTH_SECRET: string = process.env.AUTH_SECRET!;
