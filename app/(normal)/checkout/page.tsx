@@ -17,12 +17,13 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { getAddresses } from "@/helper";
-import { tempUserId } from "@/const";
+// import { tempUserId } from "@/const";
 import { useCheckoutStore } from "@/store/checkoutStore";
 import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
+import { getClientSideUser } from "@/hooks/getClientSideUser";
 
 
 type ApiAddress = {
@@ -70,6 +71,8 @@ export default function Checkout() {
   const discount = subtotal * 0.2;
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const finalTotal = subtotal - discount + deliveryFee;
+
+      const tempUserId:any =  getClientSideUser();
 
 
   useEffect(() => {

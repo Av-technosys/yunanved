@@ -90,7 +90,9 @@ const Page = () => {
                       placeholder="Password"
                     />
                   </div>
-                  <p className="text-right">Forgot Password</p>
+                  <div className="w-full flex items-center justify-end">
+                    <Button type="button" variant={"link"} onClick={()=> router.push("/reset-password-email")} className="text-gray-600 p-0 cursor-pointer">Forgot Password</Button>
+                  </div>
                 </form>
               </CardDescription>
 

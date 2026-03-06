@@ -7,9 +7,13 @@ import { useIsClient } from "@/hooks/useIsClient";
 
 import Link from "next/link";
 
+import { getClientSideUser } from "@/hooks/getClientSideUser";
+
 const Navbar = () => {
   const isClient = useIsClient();
   const totalItems = useCartStore((s) => s.lineItems());
+
+  const tempUserId:any =  getClientSideUser();
 
   return (
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
@@ -68,7 +72,10 @@ const Navbar = () => {
 
         {/* Actions (Sign Up, Login, Cart) */}
         <div className="flex items-center gap-3 md:gap-6">
-          <Link
+         {
+          !tempUserId && (
+            <>
+             <Link
             href={"/sign-up"}
             className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-black"
           >
@@ -80,6 +87,9 @@ const Navbar = () => {
               Login
             </Button>
           </Link>
+            </>
+          )
+         }
 
           {/* Cart Icon with Badge */}
 

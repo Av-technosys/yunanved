@@ -4,18 +4,21 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { getAddresses, saveAddress, deleteAddress } from "@/helper";
-import { tempUserId } from "@/const/globalconst";
+// import { tempUserId } from "@/const/globalconst";
 
 import Breadcrumb from "@/components/dashboard/address/Breadcrumb";
 import AddressList from "@/components/dashboard/address/AddressList";
 import AddressForm from "@/components/dashboard/address/AddressForm";
 import { Loader2 } from "lucide-react";
+import { getClientSideUser } from "@/hooks/getClientSideUser";
 
 export default function AddressPage() {
   const [view, setView] = useState<"list" | "add" | "edit">("list");
   const [addresses, setAddresses] = useState<any[]>([]);
   const [form, setForm] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
+
+  const tempUserId:any =  getClientSideUser();
 
   useEffect(() => {
     loadAddresses();

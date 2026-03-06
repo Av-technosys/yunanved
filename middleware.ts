@@ -11,9 +11,11 @@ export function middleware(req: NextRequest) {
     const isAuthPage =
         pathname.startsWith("/sign-in") ||
         pathname.startsWith("/sign-up") ||
-        pathname.startsWith("/reset-password");
+        pathname.startsWith("/email-verification") ||
+        pathname.startsWith("/reset-password-email") ||
+        pathname.startsWith("/reset-password-otp");
 
-    const isProtectedRoute = pathname === "/" || pathname.startsWith("/admin");
+    const isProtectedRoute = pathname === "/checkout" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
 
     if (isAuthPage) {
         if (isAuth) {

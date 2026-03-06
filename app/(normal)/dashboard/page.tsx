@@ -6,17 +6,20 @@ import { useEffect, useState, useTransition } from "react";
 import { getProfile, updateProfile } from "@/helper/index";
 import { User, Phone, Mail, Camera, ChevronRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { tempUserId } from "@/const";
+// import { tempUserId } from "@/const";
 import { useFileUpload } from "@/helper/useFileUpload";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
-
+import { getClientSideUser } from "@/hooks/getClientSideUser";
 
 export default function ProfilePage() {
+  const tempUserId: any = getClientSideUser();
+  console.log("tempUserId", tempUserId);
   const { upload } = useFileUpload();
 
   const [form, setForm] = useState<any>(null);
   const [initial, setInitial] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
+
 
   /* LOAD PROFILE */
   useEffect(() => {
@@ -25,15 +28,20 @@ export default function ProfilePage() {
       setForm(data);
       setInitial(data);
     });
-  }, []);
+  }, [tempUserId]);
 
-  if (!form) return <div className="p-10 text-center"> <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center">
-    <Loader2
-      className="h-12 w-12 text-[#1D4E4E] animate-spin"
-      strokeWidth={2.5}
-    />
-  </div>
-  </div>;
+  if (!form)
+    return (
+      <div className="p-10 text-center">
+        {" "}
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center">
+          <Loader2
+            className="h-12 w-12 text-[#1D4E4E] animate-spin"
+            strokeWidth={2.5}
+          />
+        </div>
+      </div>
+    );
 
   /* SAVE */
   function handleSave() {
@@ -80,7 +88,6 @@ export default function ProfilePage() {
   const fullName = `${form.firstName} ${form.lastName}`.trim();
   return (
     <div className="w-full relative">
-
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-[13px] text-gray-500 p-2">
         <span>Home</span> <ChevronRight size={12} />
@@ -89,7 +96,6 @@ export default function ProfilePage() {
       </nav>
 
       <main className="bg-white rounded-[24px] p-8 md:p-6 shadow-sm border border-gray-100">
-
         {/* Header */}
         <header className="mb-10">
           <h1 className="text-2xl font-bold text-[#1D4E4E]">
@@ -102,9 +108,7 @@ export default function ProfilePage() {
 
         {/* Avatar Section */}
         <div className="flex items-center gap-8 mb-12">
-
           <div className="relative">
-
             <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 shadow-md border border-gray-200">
               {form.profileImage ? (
                 <img
@@ -126,9 +130,7 @@ export default function ProfilePage() {
             {/* Upload Trigger */}
             <button
               type="button"
-              onClick={() =>
-                document.getElementById("profile-upload")?.click()
-              }
+              onClick={() => document.getElementById("profile-upload")?.click()}
               className="absolute bottom-0 right-0 p-2 bg-[#1D4E4E] text-white rounded-full border-2 border-white shadow-md hover:scale-105 transition"
             >
               <Camera size={14} />
@@ -140,9 +142,7 @@ export default function ProfilePage() {
               accept="image/*"
               hidden
               id="profile-upload"
-              onChange={(e) =>
-                handleProfileUpload(e.target.files)
-              }
+              onChange={(e) => handleProfileUpload(e.target.files)}
             />
           </div>
 
@@ -153,15 +153,12 @@ export default function ProfilePage() {
             </h3>
 
             <p className="text-sm text-gray-400">
-              Member since{" "}
-              {new Date(form.memberSince).toLocaleDateString()}
+              Member since {new Date(form.memberSince).toLocaleDateString()}
             </p>
 
             <button
               type="button"
-              onClick={() =>
-                document.getElementById("profile-upload")?.click()
-              }
+              onClick={() => document.getElementById("profile-upload")?.click()}
               className="mt-1 text-sm font-semibold text-[#1D4E4E] hover:underline"
             >
               Change Profile Photo
@@ -171,32 +168,25 @@ export default function ProfilePage() {
 
         {/* Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
-
           <Input
             label="First Name"
             icon={<User size={18} />}
             value={form.firstName}
-            onChange={(v: any) =>
-              setForm({ ...form, firstName: v })
-            }
+            onChange={(v: any) => setForm({ ...form, firstName: v })}
           />
 
           <Input
             label="Last Name"
             icon={<User size={18} />}
             value={form.lastName}
-            onChange={(v: any) =>
-              setForm({ ...form, lastName: v })
-            }
+            onChange={(v: any) => setForm({ ...form, lastName: v })}
           />
 
           <Input
             label="Phone no."
             icon={<Phone size={18} />}
             value={form.phone}
-            onChange={(v: any) =>
-              setForm({ ...form, phone: v })
-            }
+            onChange={(v: any) => setForm({ ...form, phone: v })}
           />
 
           <Input
@@ -206,7 +196,6 @@ export default function ProfilePage() {
             disabled
             verified
           />
-
         </div>
 
         <p className="text-[11px] text-gray-400 italic mb-10">
@@ -215,7 +204,6 @@ export default function ProfilePage() {
 
         {/* Buttons */}
         <div className="flex justify-end gap-4">
-
           <button
             onClick={handleCancel}
             className="px-10 py-3 rounded-full border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition-all"
@@ -230,9 +218,7 @@ export default function ProfilePage() {
           >
             {isPending ? "Saving..." : "Save Changes"}
           </button>
-
         </div>
-
       </main>
     </div>
   );
@@ -253,7 +239,7 @@ function Input({ label, icon, value, onChange, disabled, verified }: any) {
           type="text"
           value={value ?? ""}
           disabled={disabled}
-          onChange={e => onChange?.(e.target.value)}
+          onChange={(e) => onChange?.(e.target.value)}
           className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#1D4E4E]/10 focus:border-[#1D4E4E] outline-none transition-all disabled:bg-gray-50"
         />
 

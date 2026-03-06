@@ -3,13 +3,15 @@
 import { db } from "@/lib/db";
 import { cart, cartItem, user, productVariant } from "@/db";
 import { eq, and, sql } from "drizzle-orm";
-import { tempUserId } from "@/const/globalconst";
+import { getServerSideUser } from "@/hooks/getServerSideUser";
+// import { tempUserId } from "@/const/globalconst";
 
 export async function addProductToUserCart(
   userId: string,
   productId: string,
   quantity: number
 ) {
+    const tempUserId:any = await  getServerSideUser();
   try {
     return await db.transaction(async (tx) => {
       // 0. Ensure user exists (especially for tempUserId in dev)
