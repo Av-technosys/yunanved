@@ -27,7 +27,7 @@ export default function DashboardLayout({
           <div className="lg:hidden p-4">
             <div className="flex items-center gap-2 bg-white p-4 rounded-xl border">
               <MobileSidebar />
-              <span className="text-lg font-semibold text-[#1D4E4E]">Admin</span>
+              <span className="text-lg font-semibold text-[#1D4E4E]">Dashboard</span>
             </div>
           </div>
 

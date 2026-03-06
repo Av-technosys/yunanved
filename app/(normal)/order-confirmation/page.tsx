@@ -4,13 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Check } from "lucide-react";
-import headPhone from "../../public/headphone.png";
+import headPhone from "@/public/headphone.png";
 import Link from "next/link";
 
 export default function OrderConfirmed() {
   return (
     <>
-      <div className="max-w-4xl px-2 md:px-4 lg:px-0 mx-auto my-10 space-y-6">
+      <div className="max-w-4xl px-2 md:px-4 lg:px-0 mx-auto my-10 max-sm:my-0 space-y-6">
         <Card>
           <CardContent className="p-8 text-center space-y-3">
             <div className="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import signupImg from "../../public/authpic.png";
-import yunanved from "../../public/yunanvedLogo.png";
-import googleIcon from "../../public/Icon-Google.png";
+import signupImg from "@/public/authpic.png";
+import yunanved from "@/public/yunanvedLogo.png";
+import googleIcon from "@/public/Icon-Google.png";
 import {
   Card,
   CardDescription,
@@ -66,12 +66,12 @@ const Page = () => {
 
   return (
     <>
-      <div className="w-full h-screen flex ">
+      <div className="w-full h-screen max-sm:h-[80vh]  flex ">
         <div className="w-1/2 hidden md:block relative border border-black">
           <Image src={signupImg} alt="signup" fill className="object-cover" />
         </div>
         <div className="w-full md:w-1/2 bg-[#FFF6E3] flex items-center justify-center">
-          <Card className="w-full max-w-lg mx-auto">
+          <Card className="w-full max-w-lg mx-4">
             <div className="w-full max-w-sm   mx-auto">
               <CardHeader>
                 <div className="w-full flex flex-col items-center">

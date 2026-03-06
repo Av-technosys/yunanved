@@ -1,6 +1,6 @@
-// components/admin/mobile-sidebar.tsx
 "use client"
 
+import { useState } from "react"
 import { Menu } from "lucide-react"
 import { Sidebar } from "./Sidebar"
 import { Button } from "@/components/ui/button"
@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/sheet"
 
 export function MobileSidebar() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
@@ -24,7 +26,7 @@ export function MobileSidebar() {
       </SheetTrigger>
 
       <SheetContent side="left" className="p-0 w-64">
-        <Sidebar />
+        <Sidebar closeSidebar={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   )
