@@ -14,7 +14,9 @@ export const useAddToCart = () => {
   const removeItem = useCartStore((s) => s.removeItem);
 
   const [isPending, startTransition] = useTransition();
-    const tempUserId:any =  getClientSideUser();
+  const userInfo =  getClientSideUser();
+ 
+  const tempUserId = userInfo?.id
 
   const handleAddToCart = (product: any) => {
     // 1️⃣ Optimistic UI

@@ -18,7 +18,9 @@ export default function AddressPage() {
   const [form, setForm] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
 
-  const tempUserId:any =  getClientSideUser();
+ const userInfo =  getClientSideUser();
+   
+  const tempUserId = userInfo?.id
 
   useEffect(() => {
     loadAddresses();

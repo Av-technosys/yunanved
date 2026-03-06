@@ -12,8 +12,8 @@ import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { getClientSideUser } from "@/hooks/getClientSideUser";
 
 export default function ProfilePage() {
-  const tempUserId: any = getClientSideUser();
-  console.log("tempUserId", tempUserId);
+const userInfo =  getClientSideUser();
+  const tempUserId = userInfo?.id
   const { upload } = useFileUpload();
 
   const [form, setForm] = useState<any>(null);

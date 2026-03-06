@@ -2,12 +2,12 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { getUserId } from "@/helper/getUserId";
+import { getUserIdByEmailId } from "@/helper/getUserId";
 
 export function getClientSideUser() {
   const { data: session, status }: any = useSession();
 
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userDetails, setUserDetails] = useState<any>(null);
 
   useEffect(() => {
     if (status === "loading") {
@@ -21,9 +21,9 @@ export function getClientSideUser() {
     }
     async function fetchUserId() {
       try {
-        const id = await getUserId(session.user.email);
+        const userInfo = await getUserIdByEmailId(session.user.email);
 
-        setUserId(id);
+        setUserDetails(userInfo);
       } catch (error) {
         console.error("Error fetching userId:", error);
       }
@@ -32,5 +32,5 @@ export function getClientSideUser() {
     fetchUserId();
   }, [session, status]);
 
-  return userId;
+  return userDetails;
 }

@@ -40,9 +40,10 @@ export default function CartPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const tempUserId:any =  getClientSideUser();
+  const userInfo =  getClientSideUser();
+  
 
-  const userId = tempUserId; // later from auth/session
+  const userId =userInfo?.id; // later from auth/session
 
   const items = useCartStore((s) => s.items);
 

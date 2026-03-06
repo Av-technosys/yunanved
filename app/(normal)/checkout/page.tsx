@@ -72,7 +72,8 @@ export default function Checkout() {
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const finalTotal = subtotal - discount + deliveryFee;
 
-      const tempUserId:any =  getClientSideUser();
+   const userInfo =  getClientSideUser();
+  const tempUserId = userInfo?.id
 
 
   useEffect(() => {

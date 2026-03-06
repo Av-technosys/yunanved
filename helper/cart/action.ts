@@ -11,7 +11,8 @@ export async function addProductToUserCart(
   productId: string,
   quantity: number
 ) {
-    const tempUserId:any = await  getServerSideUser();
+     const userInfo =await  getServerSideUser();
+  const tempUserId = userInfo?.id
   try {
     return await db.transaction(async (tx) => {
       // 0. Ensure user exists (especially for tempUserId in dev)

@@ -30,7 +30,9 @@ export const MyOrdersPage = ({
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
 
-      const tempUserId:any =  getClientSideUser();
+   const userInfo =  getClientSideUser();
+  
+  const tempUserId = userInfo?.id
 
   useEffect(() => {
     const loadOrders = async () => {
