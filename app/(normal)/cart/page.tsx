@@ -24,10 +24,11 @@ import Image from "next/image";
 import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { tempUserId } from "@/const/globalconst";
+// import { tempUserId } from "@/const/globalconst";
 import { useRouter } from "next/navigation";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { useIsClient } from "@/hooks/useIsClient";
+import { getClientSideUser } from "@/hooks/getClientSideUser";
 
 const breadcrumb = [
   { name: "Home", href: "/" },
@@ -39,7 +40,10 @@ export default function CartPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const userId = tempUserId; // later from auth/session
+  const userInfo =  getClientSideUser();
+  
+
+  const userId =userInfo?.id; // later from auth/session
 
   const items = useCartStore((s) => s.items);
 

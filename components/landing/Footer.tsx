@@ -50,9 +50,9 @@ export const Footer = () => {
             </h3>
             <ul className="space-y-3 text-sm text-slate-600">
               {[
-                { name: "About Us", link: "/about" },
-                { name: "Contact Us", link: "/contact" },
-                { name: "Policies", link: "/policies" },
+                { name: "About Us", link: "/about-us" },
+                { name: "Contact Us", link: "/contact-us" },
+                { name: "Privacy-policy", link: "/privacy-policy" },
               ].map((item) => (
                 <li key={item.name}>
                   <Link

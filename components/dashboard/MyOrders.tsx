@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/select";
 
 import { getOrdersByUserId } from "@/helper/index";
-import { tempUserId } from "@/const/globalconst";
+import { getClientSideUser } from "@/hooks/getClientSideUser";
+// import { tempUserId } from "@/const/globalconst";
 
 export const MyOrdersPage = ({
   onViewDetails,
@@ -28,6 +29,10 @@ export const MyOrdersPage = ({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
+
+   const userInfo =  getClientSideUser();
+  
+  const tempUserId = userInfo?.id
 
   useEffect(() => {
     const loadOrders = async () => {
