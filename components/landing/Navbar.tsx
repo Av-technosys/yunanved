@@ -7,9 +7,17 @@ import { useIsClient } from "@/hooks/useIsClient";
 
 import Link from "next/link";
 
+import { getClientSideUser } from "@/hooks/getClientSideUser";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import { Skeleton } from "../ui";
+
 const Navbar = () => {
   const isClient = useIsClient();
   const totalItems = useCartStore((s) => s.lineItems());
+
+  const userInfo = getClientSideUser();
+  
 
   return (
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
@@ -44,9 +52,20 @@ const Navbar = () => {
             <span className="text-[10px] text-gray-500 font-medium">
               Deliver to
             </span>
-            <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
-              Jaipur
-            </span>
+            {!isClient ? (
+              <Skeleton className="h-4 w-[120px]" />
+            ) : userInfo ? (
+              <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
+                {userInfo.city}, {userInfo.state}
+              </span>
+            ) : (
+              <Link
+                href="/sign-in"
+                className="text-sm font-bold group-hover:text-slate-600 transition-colors"
+              >
+                Select a location
+              </Link>
+            )}
           </div>
         </div>
 
@@ -68,19 +87,50 @@ const Navbar = () => {
 
         {/* Actions (Sign Up, Login, Cart) */}
         <div className="flex items-center gap-3 md:gap-6">
-          <Link
-            href={"/sign-up"}
-            className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-black"
-          >
-            Sign Up
-          </Link>
+          {!isClient ? (
+            <Skeleton className="h-8 w-[120px]" />
+          ) : userInfo === null ? (
+            <>
+              <Link
+                href={"/sign-up"}
+                className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-black"
+              >
+                Sign Up
+              </Link>
 
-          <Link href={"/sign-in"}>
-            <Button className="bg-[#3D3D3D] hover:bg-black text-white rounded-full px-8 h-10 font-bold hidden md:flex">
-              Login
-            </Button>
-          </Link>
+              <Link href={"/sign-in"}>
+                <Button className="bg-[#3D3D3D] hover:bg-black text-white rounded-full px-8 h-10 font-bold hidden md:flex">
+                  Login
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 cursor-pointer group">
+              <Avatar className="h-9 w-9 border">
+                <AvatarImage
+                  src={
+                    userInfo?.profileImage
+                      ? `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${userInfo.profileImage}`
+                      : undefined
+                  }
+                  alt="profile-image"
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-slate-200 text-sm font-semibold text-slate-700">
+                  {`${userInfo?.firstName?.[0]?.toUpperCase() ?? ""}${userInfo?.lastName?.[0]?.toUpperCase() ?? ""}`}
+                </AvatarFallback>
+              </Avatar>
 
+              {userInfo?.firstName ? (
+                <span className="text-lg font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
+                  {userInfo.firstName} {userInfo.lastName}
+                </span>
+              ) : (
+                <Skeleton className="h-4 my-1 w-[120px]" />
+              )}
+            </div>
+          )}
+        
           {/* Cart Icon with Badge */}
 
           <div className="relative cursor-pointer group p-2">

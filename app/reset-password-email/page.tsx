@@ -63,7 +63,7 @@ const Page = () => {
                     <Input
                       name="email"
                       type="email"
-                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 "
+                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b border-gray-400 rounded-none p-0 "
                       placeholder="Enter Email ID"
                     />
                   </div>

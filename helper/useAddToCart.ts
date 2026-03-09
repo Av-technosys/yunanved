@@ -5,7 +5,8 @@ import { useCartStore } from "@/store/cartStore";
 import { useTransition } from "react";
 import { addProductToUserCart, getUserCart } from "./cart/action";
 import { toast } from "sonner";
-import { tempUserId } from "@/const/globalconst";
+import { getClientSideUser } from "@/hooks/getClientSideUser";
+// import { tempUserId } from "@/const/globalconst";
 
 export const useAddToCart = () => {
   const setCart = useCartStore((s) => s.setCart); // you need this
@@ -13,6 +14,9 @@ export const useAddToCart = () => {
   const removeItem = useCartStore((s) => s.removeItem);
 
   const [isPending, startTransition] = useTransition();
+  const userInfo =  getClientSideUser();
+ 
+  const tempUserId = userInfo?.id
 
   const handleAddToCart = (product: any) => {
     // 1️⃣ Optimistic UI

@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Check } from "lucide-react";
-import headPhone from "../../public/headphone.png";
 import Link from "next/link";
 
 export default function OrderConfirmed() {
@@ -59,7 +58,7 @@ export default function OrderConfirmed() {
             <div className="flex justify-between items-center gap-3">
               <div className="w-4/5 flex gap-3">
                 <Image
-                  src={headPhone}
+                  src="/authpic.png"
                   alt="Product"
                   width={80}
                   height={80}

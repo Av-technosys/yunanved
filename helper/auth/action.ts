@@ -36,25 +36,6 @@ export async function signup(payload: SignupPayload) {
 }
 
 
-export async function login(payload: LoginPayload) {
-  const res = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    return { error: data.message};
-  }
-
-  return { message: data.message};
-}
-
-
 export async function confirmSignup(payload: ConfirmPayload) {
   const res = await fetch("/api/auth/verify-otp", {
     method: "POST",
@@ -93,37 +74,37 @@ export async function resendOtp(email: string) {
 
 export async function resetPasswordUsingEmail(payload: any) {
   const response = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    return { error: data.message};
+    return { error: data.message };
   }
 
-  return { message: data.message};
+  return { message: data.message };
 }
 
 
 export async function resetPasswordUsingOTP(payload: any) {
   const response = await fetch("/api/auth/confirm-forgot-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    return { error: data.message};
+    return { error: data.message };
   }
 
-  return { message: data.message};
+  return { message: data.message };
 }

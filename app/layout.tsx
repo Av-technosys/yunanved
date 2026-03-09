@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import AppBreadcrumbs from "@/components/appBreadcrumbs";
+import AuthProvider from "@/components/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* this part is for breadcrumbs, now it is disabled untill we need it */}
-        {/* <AppBreadcrumbs />  */}
+        <AuthProvider>
+          {/* this part is for breadcrumbs, now it is disabled untill we need it */}
+          {/* <AppBreadcrumbs />  */}
 
-        <Toaster />
-        {children}
+          <Toaster />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
