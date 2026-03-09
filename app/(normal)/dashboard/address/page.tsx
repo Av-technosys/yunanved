@@ -9,26 +9,38 @@ import { getAddresses, saveAddress, deleteAddress } from "@/helper";
 import Breadcrumb from "@/components/dashboard/address/Breadcrumb";
 import AddressList from "@/components/dashboard/address/AddressList";
 import AddressForm from "@/components/dashboard/address/AddressForm";
-import { Loader2 } from "lucide-react";
+
 import { getClientSideUser } from "@/hooks/getClientSideUser";
+
+import { AddressListSkeleton } from "./addressSkeleton";
 
 export default function AddressPage() {
   const [view, setView] = useState<"list" | "add" | "edit">("list");
   const [addresses, setAddresses] = useState<any[]>([]);
   const [form, setForm] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(true);
 
- const userInfo =  getClientSideUser();
-   
-  const tempUserId = userInfo?.id
+  const userInfo = getClientSideUser();
+
+  const tempUserId = userInfo?.id;
 
   useEffect(() => {
+    if (!tempUserId) return;
     loadAddresses();
-  }, []);
+  }, [tempUserId]);
 
   const loadAddresses = async () => {
-    const data = await getAddresses(tempUserId);
-    setAddresses(data);
+    try {
+      setLoading(true);
+      const data = await getAddresses(tempUserId);
+      setAddresses(data || []);
+    } catch (error) {
+      console.error(error);
+      setAddresses([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (addr: any) => {
@@ -56,34 +68,47 @@ export default function AddressPage() {
     });
   };
 
-  return (
-    <div className="w-full">
+  if (loading) {
+    return <AddressListSkeleton />;
+  }
 
-            {/* 🔥 LOADER OVERLAY */}
-      {isPending && (
-        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="flex items-center justify-center w-full h-full">
-      <Loader2
-        className="h-12 w-12 text-[#1D4E4E] animate-spin"
-        strokeWidth={2.5}
-      />
-    </div>
-        </div>
-      )}
+  return (
+    <div className="relative w-full">
       <Breadcrumb view={view} />
 
+      {/* ADDRESS LIST VIEW */}
       {view === "list" ? (
-        <AddressList
-          addresses={addresses}
-          onAdd={handleAdd}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        addresses.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center mt-6">
+            <p className="text-lg font-semibold text-gray-700">
+              No Address Found
+            </p>
+
+            <p className="text-sm text-gray-400 mb-6">
+              You haven't added any address yet.
+            </p>
+
+            <button
+              onClick={handleAdd}
+              className="px-6 py-3 rounded-xl bg-[#1D4E4E] text-white hover:bg-[#143a3a]"
+            >
+              Add Address
+            </button>
+          </div>
+        ) : (
+          <AddressList
+            addresses={addresses}
+            onAdd={handleAdd}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )
       ) : (
+        /* ADDRESS FORM */
         <AddressForm
           mode={view}
           initialData={form}
-           addresses={addresses}   
+          addresses={addresses}
           onCancel={() => setView("list")}
           onSave={handleSave}
         />
