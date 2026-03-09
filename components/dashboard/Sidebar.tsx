@@ -9,8 +9,8 @@ const navItems = [
   { label: "Address", href: "/dashboard/address", icon: MapPin },
 ];
 
-export function Sidebar() {
-  const pathname = usePathname();
+export function Sidebar({ closeSidebar }: { closeSidebar?: () => void }) {
+    const pathname = usePathname();
 
 
 const getActive = (pathname: string, href: string) => {
@@ -39,7 +39,7 @@ const getActive = (pathname: string, href: string) => {
   const active = getActive(pathname, href);
 
   return (
-    <Link key={href} href={href}>
+<Link key={href} href={href} onClick={closeSidebar}>
       <div
         className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all ${
           active

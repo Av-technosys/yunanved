@@ -82,13 +82,13 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
 
 
         </CardContent>
-        <CardFooter >
-          <div className="flex flex-col md:flex-row mb-4 w-full md:items-center justify-between">
+        <CardFooter className="" >
+          <div className="flex flex-col md:flex-row gap-2 mb-4 w-full md:items-center justify-between">
             <div className=" font-semibold text-lg">₹{product.basePrice}</div>
             <Button
               disabled={isAdding}
               className={cn(
-                "transition-colors bg-[#235A62] hover:bg-[#1b454c] text-white",
+                "transition-colors bg-[var(--bg-product-button)]",
                 isAdding && "opacity-70 pointer-events-none"
               )}
               onClick={handleClick}

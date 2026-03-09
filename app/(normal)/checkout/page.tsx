@@ -133,7 +133,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="flex-1 ">
+      <div className="flex-1 max-sm:p-2 ">
         <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto ">
           <Breadcrumb>
             <BreadcrumbList>

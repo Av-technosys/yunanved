@@ -229,8 +229,17 @@ export const ORDER_STATUS = [
 ];
 
 
-
-
+export const NavbarCategoryRibbon = [
+                "Mens wear",
+                "Womens Wear",
+                "Electronics",
+                "Grocery",
+                "Mobiles/Tablets",
+                "Beauty",
+                "Food",
+                "Perfumes",
+                "Laptop",
+            ]
 
 export const pageSize =  4
 // export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"

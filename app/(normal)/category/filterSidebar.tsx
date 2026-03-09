@@ -105,14 +105,14 @@ export function FilterSidebar() {
           </Accordion>
         </div>
 
-        <div className="border-t p-4 space-y-3 bg-white">
-          <Button className="w-full bg-[#235A62] hover:bg-[#235A62]">
+        <div className="border-t p-4 space-y-3 ">
+          <Button className="w-full bg-[var(--bg-product-button)]">
             Apply Filter
           </Button>
 
           <Button
             variant="outline"
-            className="w-full text-[#235A62] border-[#235A62] hover:bg-white"
+            className="w-full text-[var(--bg-product-button)] border-[var(--bg-product-button)]"
           >
             Clear Filter
           </Button>

@@ -73,8 +73,8 @@ const Page = async ({ params }: PageProps) => {
 
           <div className="flex justify-end gap-4">
             <Link href="/dashboard/orders">
-            <Button  className="w-[200px] border border-[#235A62] rounded-full text-[#235A62]" variant="outline">Cancel</Button></Link>
-            <Button className="bg-[#235A62] hover:bg-[#235A62] w-[200px] rounded-full">Download Invoice</Button>
+            <Button  className="w-[200px] border border-[var(--bg-product-button)] rounded-full text-[var(--bg-product-button)]" variant="outline">Cancel</Button></Link>
+            <Button className="bg-[var(--bg-product-button)] hover:bg-[var(--bg-product-button-hover)] w-[200px] rounded-full">Download Invoice</Button>
           </div>
         </div>
       </div>

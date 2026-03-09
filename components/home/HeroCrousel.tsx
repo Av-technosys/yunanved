@@ -1,6 +1,6 @@
 export const HeroCrousel = () => {
     return (
-        <div className="relative w-full h-[300px] md:h-[300px] rounded-xl overflow-hidden group">
+        <div className="relative w-full h-[300px] md:h-[300px] md:rounded-xl overflow-hidden group">
             <img
                 src="/grocery-banner.jpg"
                 className="absolute inset-0 w-full h-full object-cover"

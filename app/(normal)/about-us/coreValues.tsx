@@ -2,7 +2,7 @@ import { Cog, Leaf, Users } from "lucide-react";
 
 export default function CoreValues() {
   return (
-    <section className="w-full bg-[#F8FAFC] py-10">
+    <section className="w-full bg-[var(--background)] py-10">
       <div className="max-w-6xl mx-auto px-6 lg:px-12">
         <div className="text-center max-w-2xl mx-auto mb-14 ">
           <p className="text-sm font-semibold tracking-widest text-blue-600 uppercase">

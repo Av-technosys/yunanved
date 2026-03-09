@@ -130,13 +130,13 @@ const Page = async (props: PageProps) => {
                 <Separator />
                 <CardFooter>
                   <div className="w-full flex flex-col gap-3 my-5">
-                    <Button className="w-full text-base md:text-xs lg:text-base bg-[#235A62] hover:bg-[#235A62]">
+                    <Button className="w-full text-base md:text-xs lg:text-base bg-[var(--bg-product-button)] hover:bg-[var(--bg-product-button-hover)]">
                       Apply Filter
                     </Button>
 
                     <Button
                       variant="outline"
-                      className="w-full text-base md:text-xs lg:text-base text-[#235A62] border-[#235A62]"
+                      className="w-full text-base md:text-xs lg:text-base text-[var(--bg-product-button)] border-[var(--bg-product-button)] "
                     >
                       Clear Filter
                     </Button>
