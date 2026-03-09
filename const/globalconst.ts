@@ -13,6 +13,11 @@
 //   { value: "mocha", label: "Mocha", hex: "#3B2F2F" },
 //   { value: "tan", label: "Tan", hex: "#D2B48C" },
 
+
+
+
+
+
 //   { value: "red", label: "Red", hex: "#FF0000" },
 //   { value: "crimson", label: "Crimson", hex: "#DC143C" },
 //   { value: "scarlet", label: "Scarlet", hex: "#FF2400" },
@@ -237,6 +242,7 @@ export const NavbarCategoryRibbon = [
             ]
 
 export const pageSize =  4
-export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
+// export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
+// export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
 export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifier);

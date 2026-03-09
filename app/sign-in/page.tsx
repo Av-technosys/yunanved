@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import signup from "@/public/authpic.png";
-import yunanved from "@/public/yunanvedLogo.png";
-import googleIcon from "@/public/Icon-Google.png"
 import {
   Card,
   CardDescription,
@@ -12,10 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { login } from "@/helper/index";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 import { signinSchema } from "@/validation/signInSchema";
 
@@ -23,42 +20,47 @@ const Page = () => {
   const router = useRouter();
   const submitHandler = async (e: any) => {
     e.preventDefault();
-   const formData = {
-    email: e.target.email.value,
-    password: e.target.password.value,
-  };
+    const formData = {
+      email: e.target.email.value,
+      password: e.target.password.value,
+    };
 
-  
-  const result = signinSchema.safeParse(formData);
 
-  if (!result.success) {
-    const firstError = result.error.issues?.[0]?.message || "Invalid data";
-     toast.error(firstError, {
+    const result = signinSchema.safeParse(formData);
+
+    if (!result.success) {
+      const firstError = result.error.issues?.[0]?.message || "Invalid data";
+      toast.error(firstError, {
         className: "!border !border-red-500 !text-red-500",
       });
-    return;
-  }
+      return;
+    }
 
-    const response = await login(formData);
-    if (response.message) {
+    const response = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (response?.error) {
+      toast.error(response.error === "CredentialsSignin" ? "Invalid credentials" : response.error);
+    } else if (response?.ok) {
       router.push("/");
       toast.success("User login successfully");
-    } else {
-      toast.error(response.error || "Failed to login user");
+      router.refresh();
     }
   };
   return (
     <>
       <div className="w-full h-screen max-sm:h-[80vh] flex ">
         <div className="w-1/2 hidden md:block relative border border-black">
-          <Image src={signup} alt="signup" fill className="object-cover" />
+          <Image src={"/authpic.png"} alt="signup" fill className="object-cover" />
         </div>
         <div className="w-full md:w-1/2 bg-[#FFF6E3] flex items-center justify-center">
           <Card className="w-full max-w-lg ">
             <div className="w-full max-w-sm   mx-auto">
               <CardHeader>
                 <div className="w-full flex flex-col items-center">
-                  <Image src={yunanved} alt="yunanved" width={70} height={70} />
+                  <Image src={"/yunanvedLogo.png"} alt="yunanved" width={70} height={70} />
                   <h1 className="text-xl font-bold mt-4">Login</h1>
                   <p className="text-gray-600 text-base">
                     Enter your details below
@@ -88,7 +90,9 @@ const Page = () => {
                       placeholder="Password"
                     />
                   </div>
-                  <p className="text-right">Forgot Password</p>
+                  <div className="w-full flex items-center justify-end">
+                    <Button type="button" variant={"link"} onClick={()=> router.push("/reset-password-email")} className="text-gray-600 p-0 cursor-pointer">Forgot Password</Button>
+                  </div>
                 </form>
               </CardDescription>
 
@@ -104,7 +108,7 @@ const Page = () => {
                   variant={"outline"}
                   className="w-full rounded-full border-black flex items-center justify-center "
                 >
-                     <Image src={googleIcon} alt="google" width={18} height={18} />
+                  <Image src={"/googleIcon-Google.png"} alt="google" width={18} height={18} />
                   <span>Sign in with Google</span>
                 </Button>
               </div>

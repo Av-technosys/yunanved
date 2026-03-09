@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { confirmSignup, resendOtp } from "@/helper/index";
 import { canResendOTPInterval } from "@/const/globalconst";
 
-const Page = () => {
+const EmailVerificationContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
@@ -61,7 +61,7 @@ const Page = () => {
 
     try {
       await confirmSignup({ email, code: otp });
-      toast.success("Email verified successfully");
+      toast.success("Email verified successfully. Please log in.");
       router.push("/sign-in");
     } catch (err: any) {
       toast.error(err.message || "Verification failed");
@@ -85,6 +85,7 @@ const Page = () => {
   };
 
   return (
+    
     <div className="w-full h-screen flex">
       <div className="w-1/2 hidden md:block relative border border-black">
         <Image src={signup} alt="signup" fill className="object-cover" />
@@ -165,4 +166,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default EmailVerificationContent;

@@ -58,14 +58,14 @@ export { getFeaturedProducts, deleteFeaturedProduct, addFeaturedProduct } from "
 export { getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory } from "./featuredCategory/action"
 //user
 
-export {getProfile , updateProfile, getAddresses, saveAddress, deleteAddress} from "./user/action"
+export { getProfile, updateProfile, getAddresses, saveAddress, deleteAddress } from "./user/action"
 
 //payment
 
-export {getPayments} from "./payment/action"
+export { getPayments } from "./payment/action"
 
 
 
 //auth
 
-export { signup, login, confirmSignup ,resendOtp , resetPasswordUsingEmail,resetPasswordUsingOTP} from "./auth/action";
+export { signup, confirmSignup, resendOtp, resetPasswordUsingEmail, resetPasswordUsingOTP } from "./auth/action";
