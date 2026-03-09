@@ -14,223 +14,238 @@ import {
 
 import { getClientSideUser } from "@/hooks/getClientSideUser";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { Skeleton } from "../ui";
+import { NAVBAR_CATEGORY_RIBBON } from "@/const";
 
 const Navbar = () => {
   const isClient = useIsClient();
   const totalItems = useCartStore((s) => s.lineItems());
 
   const userInfo = getClientSideUser();
-  
+
 
   return (
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
       <div
         className={
-          "max-w-6xl mx-auto flex items-center justify-between gap-4 md:gap-16"
+          "max-w-6xl mx-auto flex items-center justify-between gap-4 md:gap-12"
         }
       >
         <Sheet>
-  <SheetTrigger asChild>
-    <Button
-      variant="ghost"
-      size="icon"
-      className="md:hidden"
-    >
-      <Menu className="h-5 w-5" />
-    </Button>
-  </SheetTrigger>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
 
-        {/* Logo */}
-        <Link href={"/"} className="shrink-0">
-          <h1 className="text-2xl font-black tracking-tighter text-[#1A2E35]">
-            YUNANVED
-          </h1>
-        </Link>
+          {/* Logo */}
+          <Link href={"/"} className="shrink-0">
+            <h1 className="text-2xl font-black tracking-tighter text-primary">
+              YUNANVED
+            </h1>
+          </Link>
 
-        {/* Location Picker */}
-        <div className="hidden lg:flex items-center gap-2 text-[var(--text)] cursor-pointer group">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6"
-          >
-            <path
-              fillRule="evenodd"
-              d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <div className=" hidden md:flex w-full justify-between gap-4">
+            <UserLocation isClient={isClient} userInfo={userInfo} />
 
-          <div className="flex flex-col leading-tight">
-            <span className="text-[10px] text-gray-500 font-medium">
-              Deliver to
-            </span>
-            {!isClient ? (
-              <Skeleton className="h-4 w-[120px]" />
-            ) : userInfo ? (
-              <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
-                {userInfo.city}, {userInfo.state}
-              </span>
-            ) : (
-              <Link
-                href="/sign-in"
-                className="text-sm font-bold group-hover:text-slate-600 transition-colors"
-              >
-                Select a location
-              </Link>
-            )}
+            {/* Search Bar Container */}
+            <SearchWithIcon />
+
+            {/* Actions (Sign Up, Login, Cart) */}
+            <div className="flex items-center gap-3">
+              {!isClient ? (
+                <Skeleton className="h-8 w-[120px]" />
+              ) : userInfo === null ? (
+                <AuthBtns />
+
+              ) : (
+                <LogedInUserDetail userInfo={userInfo} />
+              )}
+
+              {/* Cart Icon with Badge */}
+            </div>
           </div>
-        </div>
+          <CartIcon isClient={isClient} totalItems={totalItems} />
+          <SheetContent side="left" className="w-72 px-4 py-6 pt-12">
 
-        {/* Search Bar Container */}
-<div className="hidden md:flex grow max-w-2xl items-center gap-2">
-            <Input
-            type="text"
-            placeholder="Search for Products, Brands & More"
-            className="flex-1 h-11 rounded-full border-slate-300 pl-6 text-sm focus-visible:ring-1 focus-visible:ring-slate-400"
-          />
 
-          <Button
-            size="icon"
-            className="h-11 w-11 rounded-full bg-[var(--bg-button)] hover:bg-black text-white"
-          >
-            <Search size={18} />
-          </Button>
-        </div>
 
-        {/* Actions (Sign Up, Login, Cart) */}
-        <div className="flex items-center gap-3 md:gap-6">
-          {!isClient ? (
-            <Skeleton className="h-8 w-[120px]" />
-          ) : userInfo === null ? (
-            <>
-              <Link
-                href={"/sign-up"}
-                className="hidden sm:block text-sm font-semibold text-slate-700 hover:text-black"
-              >
-                Sign Up
-              </Link>
+            {/* Search */}
+            <SearchWithIcon />
+            {/* Categories */}
+            <div className="flex flex-col gap-3 border-t pt-4">
 
-              <Link href={"/sign-in"}>
-                <Button className="bg-[#3D3D3D] hover:bg-black text-white rounded-full px-8 h-10 font-bold hidden md:flex">
+              {NAVBAR_CATEGORY_RIBBON.map((item) => (
+                <Link
+                  key={item}
+                  href="/category"
+                  className="text-sm font-medium text-slate-700 hover:text-black"
+                >
+                  {item}
+                </Link>
+              ))}
+
+            </div>
+
+            {/* Auth */}
+            <div className=" pt-4 flex flex-col gap-3">
+
+              <Link href="/sign-in">
+                <Button className="w-full">
                   Login
                 </Button>
               </Link>
-            </>
-          ) : (
-            <div className="flex items-center gap-2 cursor-pointer group">
-              <Avatar className="h-9 w-9 border">
-                <AvatarImage
-                  src={
-                    userInfo?.profileImage
-                      ? `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${userInfo.profileImage}`
-                      : undefined
-                  }
-                  alt="profile-image"
-                  className="object-cover"
-                />
-                <AvatarFallback className="bg-slate-200 text-sm font-semibold text-slate-700">
-                  {`${userInfo?.firstName?.[0]?.toUpperCase() ?? ""}${userInfo?.lastName?.[0]?.toUpperCase() ?? ""}`}
-                </AvatarFallback>
-              </Avatar>
 
-              {userInfo?.firstName ? (
-                <span className="text-lg font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
-                  {userInfo.firstName} {userInfo.lastName}
-                </span>
-              ) : (
-                <Skeleton className="h-4 my-1 w-[120px]" />
-              )}
+              <Link href="/sign-up">
+                <Button variant="outline" className="w-full">
+                  Sign Up
+                </Button>
+              </Link>
+
             </div>
-          )}
-        
-          {/* Cart Icon with Badge */}
 
-          <div className="relative cursor-pointer group p-2">
-            <Link href={"/cart"}>
-              <div className="bg-[var(--bg-button)] p-2 rounded-full text-white group-hover:bg-black transition-colors">
-                <ShoppingCart size={20} />
-              </div>
-              {/* Notification Badge */}
-
-              {isClient && totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full border-2 border-white">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
-          </div>
-        </div>
-        <SheetContent side="left" className="w-72 p-6">
-
-
-
-  {/* Search */}
-  <div className="flex items-center gap-2  my-12">
-    <Input
-      type="text"
-      placeholder="Search products..."
-      className="flex-1 h-10 rounded-full"
-    />
-
-    <Button
-      size="icon"
-      className="h-10 w-10 rounded-full bg-[var(--bg-button)] text-white"
-    >
-      <Search size={16} />
-    </Button>
-  </div>
-
-  {/* Categories */}
-  <div className="flex flex-col gap-3 border-t pt-4">
-
-    {[
-      "Mens wear",
-      "Womens Wear",
-      "Electronics",
-      "Grocery",
-      "Mobiles/Tablets",
-      "Beauty",
-      "Food",
-      "Perfumes",
-      "Laptop",
-    ].map((item) => (
-      <Link
-        key={item}
-        href="/category"
-        className="text-sm font-medium text-slate-700 hover:text-black"
-      >
-        {item}
-      </Link>
-    ))}
-
-  </div>
-
-  {/* Auth */}
-  <div className="border-t mt-6 pt-6 flex flex-col gap-3">
-
-    <Link href="/sign-in">
-      <Button className="w-full bg-[var(--bg-button)] text-white">
-        Login
-      </Button>
-    </Link>
-
-    <Link href="/sign-up">
-      <Button variant="outline" className="w-full">
-        Sign Up
-      </Button>
-    </Link>
-
-  </div>
-
-</SheetContent>
-</Sheet>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );
 };
 
 export default Navbar;
+
+
+function LogedInUserDetail({ userInfo }: any) {
+  return (
+    <Link href={"/dashboard"} className="flex shrink-0 items-center gap-2 cursor-pointer group">
+      <Avatar className="h-9 w-9 border">
+        <AvatarImage
+          src={
+            userInfo?.profileImage
+              ? `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${userInfo.profileImage}`
+              : undefined
+          }
+          alt="profile-image"
+          className="object-cover"
+        />
+        <AvatarFallback className="bg-slate-200 text-sm font-semibold text-slate-700">
+          {`${userInfo?.firstName?.[0]?.toUpperCase() ?? ""}${userInfo?.lastName?.[0]?.toUpperCase() ?? ""}`}
+        </AvatarFallback>
+      </Avatar>
+
+      {userInfo?.firstName ? (
+        <span className="text-lg font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
+          {userInfo.firstName}
+        </span>
+      ) : (
+        <Skeleton className="h-4 my-1 w-[120px]" />
+      )}
+    </Link>
+  )
+}
+
+function AuthBtns() {
+  return (
+    <>
+      <Link
+        href={"/sign-up"}
+        className="hidden sm:block text-sm font-semibold "
+      >
+        <Button variant={"ghost"} className=" rounded-full px-8 hidden md:flex">
+          Sign Up
+        </Button>
+      </Link>
+
+      <Link href={"/sign-in"}>
+        <Button className=" rounded-full px-8 hidden md:flex">
+          Login
+        </Button>
+      </Link>
+    </>
+  )
+}
+function CartIcon({ isClient, totalItems }: { isClient: boolean, totalItems: number }) {
+  return (
+    <div className="relative cursor-pointer p-2">
+      <Link href={"/cart"}>
+        <Button className=" rounded-full h-11 w-11">
+          <ShoppingCart size={20} />
+        </Button>
+        {/* Notification Badge */}
+
+        {isClient && totalItems > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full border-2 border-white">
+            {totalItems}
+          </span>
+        )}
+      </Link>
+    </div>
+  )
+}
+
+function SearchWithIcon() {
+  return (
+    <div className="flex w-full max-w-2xl items-center gap-2">
+      <Input
+        type="text"
+        placeholder="Search for Products, Brands & More"
+        className="flex-1 h-11 rounded-full pl-6 text-sm "
+      />
+
+      <Button
+        size="icon"
+        className="h-11 w-11 rounded-full "
+      >
+        <Search size={18} />
+      </Button>
+    </div>
+  )
+}
+
+function MapPinSVG() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="size-6"
+    >
+      <path
+        fillRule="evenodd"
+        d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
+
+function UserLocation({ isClient, userInfo }: { isClient: boolean, userInfo: any }) {
+  return (
+    <div className="flex items-center gap-2 shrink-0 cursor-pointer group">
+      <MapPinSVG />
+
+      <div className="flex flex-col leading-tight">
+        <span className="text-[10px] text-gray-500 font-medium">
+          Deliver to
+        </span>
+        {!isClient ? (
+          <Skeleton className="h-4 w-[120px]" />
+        ) : userInfo ? (
+          <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
+            {userInfo.city}, {userInfo.state}
+          </span>
+        ) : (
+          <Link
+            href="/sign-in"
+            className="text-sm font-bold group-hover:text-slate-600 transition-colors"
+          >
+            Select a location
+          </Link>
+        )}
+      </div>
+    </div>
+  )
+}
