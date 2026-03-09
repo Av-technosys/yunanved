@@ -8,7 +8,7 @@ import FounderMessage from "./founderSection";
 import CorePurpose from "./corePurpose";
 import CareersCTA from "./CTA";
 import CoreValues from "./coreValues";
-import { Newsletter } from "@/components/landing/NewsLetter";
+import { Newsletter } from "@/components/landing/Newsletter";
 
 const Page = () => {
   return (
