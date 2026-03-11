@@ -1,6 +1,6 @@
 
 import AboutUsBanner from "@/public/aboutUsBanner.png";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import HeroSection from "./heroSection";
 import WhyChooseUs from "./whyChooseUs";
 import FounderMessage from "./founderSection";

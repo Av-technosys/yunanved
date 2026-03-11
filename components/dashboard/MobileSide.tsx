@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Menu } from "lucide-react"
 import { Sidebar } from "./Sidebar"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui"
 import {
   Sheet,
   SheetContent,

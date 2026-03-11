@@ -1,8 +1,8 @@
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { getFeaturedProducts } from "@/helper";
-import FeaturedProductCard from "./featuredProductCard";
+import {FeaturedProductCard} from "./featuredProductCard";
 
 export async function FeaturedProducts() {
   const products = await getFeaturedProducts();

@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import { getOrderById } from "@/helper/index";
 import { useRouter } from "next/navigation";
 
-import OrderReview from "./OrderReview";
-import OrderStatusCard from "@/components/order/OrderStatusCard";
-import DeliveryDetailsCard from "@/components/order/DeliveryDetailsCard";
-import OrderSummaryCard from "@/components/order/OrderSummaryCard";
-import OrderItemsTable from "@/components/order/OrderItemsTable";
-import OrderDetailsSkeleton from "@/components/order/OrderDetailsSkeleton";
+import {OrderReview} from "./OrderReview";
+import {OrderStatusCard} from "@/components/order";
+import {DeliveryDetailsCard} from "@/components/order";
+import {OrderSummaryCard} from "@/components/order";
+import {OrderItemsTable} from "@/components/order";
+import {OrderDetailsSkeleton} from "@/components/order";
 import { ChevronRight } from "lucide-react";
 
 export const OrderDetailsPage = ({

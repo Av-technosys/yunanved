@@ -4,7 +4,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/components/ui";
 import { getCategories } from "@/helper";
 import Link from "next/link";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";

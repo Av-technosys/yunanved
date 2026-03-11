@@ -7,16 +7,15 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Search, User } from "lucide-react";
-import ProductPagination from "@/components/pagination";
-import BadgeIcon from "@/components/BadgeIcon";
+import { ProductPagination } from "@/components/pagination";
 import ReviewTable from "./ReviewTable";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useEffect, useState } from "react";
 import { useUpdateQuery } from "@/components/filter";
 import { useDebounce } from "@/components/debouceSearch";

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import Navbar from "@/components/landing/Navbar"
+import { Navbar } from "@/components/landing"
 import { useClientSideUser } from "@/hooks/getClientSideUser"
 
 type Props = {

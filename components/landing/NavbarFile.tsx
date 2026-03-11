@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import Link from "next/link";
 import { Menu } from "lucide-react"
 import {
@@ -12,10 +12,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui";
 import { NAVBAR_CATEGORY_RIBBON } from "@/const";
-import SearchWithIcon from "./navbar/SearchBar";
-import CartIcon from "./navbar/Cart";
+import { SearchWithIcon } from "./navbar/SearchBar";
+import { CartIcon } from "./navbar/Cart";
 
-const Navbar = ({userInfo, loading}:any) => {
+export const Navbar = ({userInfo, loading}:any) => {
 
   return (
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
@@ -106,7 +106,7 @@ const Navbar = ({userInfo, loading}:any) => {
   );
 };
 
-export default Navbar;
+
 
 
 function LogedInUserDetail({ userInfo }: any) {

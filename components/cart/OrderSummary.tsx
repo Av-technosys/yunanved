@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui"
 
-export default function OrderSummaryCard({
+export  function OrderSummaryCard({
   subtotal,
   discount,
   deliveryFee,

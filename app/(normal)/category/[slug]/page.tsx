@@ -9,18 +9,18 @@ import {
   CardDescription,
   CardFooter,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/components/ui";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Slider } from "@/components/ui/slider";
+} from "@/components/ui";
+import { Slider } from "@/components/ui";
 import { FilterSidebar } from "../filterSidebar";
 
 import { getAllProductsByCategorySlug, getCategoryBySlug } from "@/helper/category/action";

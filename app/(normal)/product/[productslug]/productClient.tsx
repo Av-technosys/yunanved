@@ -3,8 +3,8 @@
 
 import Image from "next/image";
 import { RefreshCw, Star, Truck, Undo2 } from "lucide-react";
-import ProductCard from "@/components/productCard";
-import { Button } from "@/components/ui/button";
+import {ProductCard} from "@/components/productCard";
+import { Button } from "@/components/ui";
 import { useRef, useState } from "react";
 import { useAddToCart } from "@/helper/useAddToCart";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";

@@ -8,7 +8,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import { Loader2, Pencil } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 
 
 interface CategoryTableProps {

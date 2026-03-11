@@ -1,11 +1,11 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui"
+import { Input } from "@/components/ui"
 import { Search } from "lucide-react"
 
 
-export default function SearchWithIcon() {
+export  function SearchWithIcon() {
   return (
     <div className="flex w-full max-w-2xl items-center gap-2">
       <Input

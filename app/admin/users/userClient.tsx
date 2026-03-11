@@ -7,18 +7,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui";
+
 import { Search, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import UserTable from "./UserTable";
-import BadgeIcon from "@/components/BadgeIcon";
+import { BadgeIcon } from "@/components/BadgeIcon";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useUpdateQuery } from "@/components/filter";
 import { useDebounce } from "@/components/debouceSearch";
 

@@ -10,14 +10,14 @@ import { useCheckoutStore } from "@/store/checkoutStore"
 import { useClientSideUser } from "@/hooks/getClientSideUser"
 import { useIsClient } from "@/hooks/useIsClient"
 
-import { Card, CardDescription } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Card, CardDescription } from "@/components/ui"
+import { Separator } from "@/components/ui"
 
 import { toast } from "sonner"
 
-import EmptyCart from "@/components/cart/EmptyCart"
-import CartItemsSection from "@/components/cart/CartItemsList"
-import OrderSummaryCard from "@/components/cart/OrderSummary"
+import {EmptyCart} from "@/components/cart"
+import {CartItemsSection} from "@/components/cart"
+import {OrderSummaryCard} from "@/components/cart/OrderSummary"
 
 export default function CartPage() {
 
