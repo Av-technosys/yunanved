@@ -23,6 +23,7 @@ const Page = () => {
     const formData = {
       email: e.target.email.value,
       password: e.target.password.value,
+      
     };
 
 
@@ -39,6 +40,8 @@ const Page = () => {
     const response = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
+      redirect: false,
+
     });
 
     if (response?.error) {

@@ -180,6 +180,13 @@ export async function removeCartItem(userId: string, productId: string) {
 }
 
 export async function getUserCart(userId: string) {
+  
+  if (!userId) {
+    return {
+      error: "User ID not provided. Unable to fetch profile."
+    };
+  }
+
   try {
     const existingCart = await db
       .select()
