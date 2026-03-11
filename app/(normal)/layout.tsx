@@ -1,11 +1,13 @@
 import Footer from "@/components/landing/Footer";
-import Navbar from "@/components/landing/Navbar";
+import ClientLayoutWrapper from "@/components/landing/navbar/ClientNavbarLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <>
-            <Navbar />
+        <ClientLayoutWrapper>
             {children}
+         </ClientLayoutWrapper>
+
             <Footer />
         </>
     )
