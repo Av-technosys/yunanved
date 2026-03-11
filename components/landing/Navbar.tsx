@@ -1,8 +1,6 @@
-"use client";
-import { Search, ShoppingCart } from "lucide-react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 import { Menu } from "lucide-react"
 import {
@@ -11,15 +9,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { getClientSideUser } from "@/hooks/getClientSideUser";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui";
 import { NAVBAR_CATEGORY_RIBBON } from "@/const";
+import SearchWithIcon from "./navbar/SearchBar";
+import CartIcon from "./navbar/Cart";
 
-const Navbar = () => {
-  const totalItems = useCartStore((s) => s.lineItems());
-
-  const userInfo = getClientSideUser();
+const Navbar = ({userInfo, loading}:any) => {
 
   return (
     <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
@@ -42,29 +38,29 @@ const Navbar = () => {
           {/* Logo */}
           <Link href={"/"} className="shrink-0">
             <h1 className="text-2xl font-black tracking-tighter text-primary">
-              YUNANVED
+             YUNANVED
             </h1>
           </Link>
 
           <div className=" hidden md:flex w-full justify-between gap-4">
-            <UserLocation userInfo={userInfo} />
-
+          <UserLocation userInfo={userInfo} loading={loading} />
             {/* Search Bar Container */}
             <SearchWithIcon />
 
             {/* Actions (Sign Up, Login, Cart) */}
             <div className="flex items-center gap-3">
-              {userInfo === null ? (
-                <AuthBtns />
-
-              ) : (
-                <LogedInUserDetail userInfo={userInfo} />
-              )}
+           {loading ? (
+              <Skeleton className="h-9 w-30" />
+            ) : userInfo ? (
+              <LogedInUserDetail userInfo={userInfo} />
+            ) : (
+              <AuthBtns />
+            )}
 
               {/* Cart Icon with Badge */}
             </div>
           </div>
-          <CartIcon totalItems={totalItems} />
+          <CartIcon />
           <SheetContent side="left" className="w-72 px-4 py-6 pt-12">
 
 
@@ -115,7 +111,10 @@ export default Navbar;
 
 function LogedInUserDetail({ userInfo }: any) {
   return (
-    <Link href={"/dashboard"} className="flex shrink-0 items-center gap-2 cursor-pointer group">
+    <Link
+      href={"/dashboard"}
+      className="flex shrink-0 items-center gap-2 cursor-pointer group"
+    >
       <Avatar className="h-9 w-9 border">
         <AvatarImage
           src={
@@ -126,22 +125,28 @@ function LogedInUserDetail({ userInfo }: any) {
           alt="profile-image"
           className="object-cover"
         />
+
         <AvatarFallback className="bg-slate-200 text-sm font-semibold text-slate-700">
           {`${userInfo?.firstName?.[0]?.toUpperCase() ?? ""}${userInfo?.lastName?.[0]?.toUpperCase() ?? ""}`}
         </AvatarFallback>
       </Avatar>
 
-      {userInfo?.firstName ? (
-        <span className="text-lg font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
-          {userInfo.firstName}
+      <div className="flex flex-col leading-tight">
+        <span className="text-[13px] text-gray-500">
+          Welcome ,
         </span>
-      ) : (
-        <Skeleton className="h-4 my-1 w-[120px]" />
-      )}
+
+        {userInfo?.firstName ? (
+          <span className="text-md font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
+            {userInfo.firstName}
+          </span>
+        ) : (
+          <Skeleton className="h-4 w-[80px]" />
+        )}
+      </div>
     </Link>
   )
 }
-
 function AuthBtns() {
   return (
     <>
@@ -163,43 +168,8 @@ function AuthBtns() {
   )
 }
 
-function CartIcon({ totalItems }: { totalItems: number }) {
-  return (
-    <div className="relative cursor-pointer p-2">
-      <Link href={"/cart"}>
-        <Button className=" rounded-full h-11 w-11">
-          <ShoppingCart size={20} />
-        </Button>
-        {/* Notification Badge */}
 
-        {totalItems > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-[10px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full border-2 border-white">
-            {totalItems}
-          </span>
-        )}
-      </Link>
-    </div>
-  )
-}
 
-function SearchWithIcon() {
-  return (
-    <div className="flex w-full max-w-2xl items-center gap-2">
-      <Input
-        type="text"
-        placeholder="Search for Products, Brands & More"
-        className="flex-1 h-11 rounded-full pl-6 text-sm "
-      />
-
-      <Button
-        size="icon"
-        className="h-11 w-11 rounded-full "
-      >
-        <Search size={18} />
-      </Button>
-    </div>
-  )
-}
 
 function MapPinSVG() {
   return (
@@ -218,7 +188,7 @@ function MapPinSVG() {
   )
 }
 
-function UserLocation({ userInfo }: { userInfo: any }) {
+function UserLocation({ userInfo , loading }: { userInfo: any  , loading:boolean }) {
   return (
     <div className="flex items-center gap-2 shrink-0 cursor-pointer group">
       <MapPinSVG />
@@ -227,7 +197,9 @@ function UserLocation({ userInfo }: { userInfo: any }) {
         <span className="text-[10px] text-gray-500 font-medium">
           Deliver to
         </span>
-        {userInfo ? (
+  {loading ? (
+          <Skeleton className="h-4 w-[120px]" />
+        ) : userInfo ? (
           <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
             {userInfo.city}, {userInfo.state}
           </span>

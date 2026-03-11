@@ -28,7 +28,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { useIsClient } from "@/hooks/useIsClient";
-import { getClientSideUser } from "@/hooks/getClientSideUser";
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 const breadcrumb = [
   { name: "Home", href: "/" },
@@ -40,11 +40,9 @@ export default function CartPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const userInfo =  getClientSideUser();
-  
+  const { userDetails } = useClientSideUser();
 
-  const userId =userInfo?.id; // later from auth/session
-
+  const userId = userDetails?.id;
   const items = useCartStore((s) => s.items);
 
   const increase = useCartStore((s) => s.increase);

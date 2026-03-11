@@ -9,7 +9,12 @@ const navItems = [
   { label: "Address", href: "/dashboard/address", icon: MapPin },
 ];
 
-export function Sidebar() {
+
+interface SidebarProps {
+  closeSidebar?: () => void
+}
+
+export function Sidebar({ closeSidebar }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -50,7 +55,7 @@ export function Sidebar() {
             const active = getActive(pathname, href);
 
             return (
-              <Link key={href} href={href}>
+              <Link key={href} href={ href} onClick={closeSidebar}>
                 <div
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all ${
                     active

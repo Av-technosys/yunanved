@@ -9,12 +9,12 @@ import { toast } from "sonner";
 // import { tempUserId } from "@/const";
 import { useFileUpload } from "@/helper/useFileUpload";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
-import { getClientSideUser } from "@/hooks/getClientSideUser";
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { ProfileSkeleton } from "./profileSkeleton";
 
 export default function ProfilePage() {
-  const userInfo = getClientSideUser();
-  const tempUserId = userInfo?.id;
+  const { userDetails } = useClientSideUser();
+  const tempUserId = userDetails?.id;
   const { upload } = useFileUpload();
 
   const [form, setForm] = useState<any>(null);

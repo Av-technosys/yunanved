@@ -23,7 +23,7 @@ import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
-import { getClientSideUser } from "@/hooks/getClientSideUser";
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 
 type ApiAddress = {
@@ -72,8 +72,8 @@ export default function Checkout() {
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const finalTotal = subtotal - discount + deliveryFee;
 
-   const userInfo =  getClientSideUser();
-  const tempUserId = userInfo?.id
+   const {userDetails} =  useClientSideUser();
+  const tempUserId = userDetails?.id
 
 
   useEffect(() => {

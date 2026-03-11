@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 
 import { getOrdersByUserId } from "@/helper/index";
-import { getClientSideUser } from "@/hooks/getClientSideUser";
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { OrdersSkeleton } from "@/app/(normal)/dashboard/orders/orderSkeleton";
 // import { tempUserId } from "@/const/globalconst";
 
@@ -31,9 +31,9 @@ export const MyOrdersPage = ({
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
 
-  const userInfo = getClientSideUser();
+  const {userDetails} = useClientSideUser();
 
-  const tempUserId = userInfo?.id;
+  const tempUserId = userDetails?.id;
 
  useEffect(() => {
   if (!tempUserId) return;

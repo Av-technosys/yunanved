@@ -10,7 +10,7 @@ import Breadcrumb from "@/components/dashboard/address/Breadcrumb";
 import AddressList from "@/components/dashboard/address/AddressList";
 import AddressForm from "@/components/dashboard/address/AddressForm";
 
-import { getClientSideUser } from "@/hooks/getClientSideUser";
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 import { AddressListSkeleton } from "./addressSkeleton";
 
@@ -21,9 +21,9 @@ export default function AddressPage() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
 
-  const userInfo = getClientSideUser();
+  const {userDetails} = useClientSideUser();
 
-  const tempUserId = userInfo?.id;
+  const tempUserId = userDetails?.id;
 
   useEffect(() => {
     if (!tempUserId) return;
