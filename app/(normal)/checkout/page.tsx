@@ -6,12 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import Navbar from "@/components/landing/Navbar";
 import { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
+ 
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
@@ -75,8 +74,8 @@ export default function Checkout() {
    const {userDetails} =  useClientSideUser();
   const tempUserId = userDetails?.id
 
-
   useEffect(() => {
+      if (!tempUserId) return;
     const fetchAddresses = async () => {
       try {
         const data: any = await getAddresses(tempUserId);
@@ -95,7 +94,7 @@ export default function Checkout() {
     };
 
     fetchAddresses();
-  }, []);
+  }, [tempUserId]);
 
 
   const handlePayment = async () => {

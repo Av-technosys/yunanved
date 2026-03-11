@@ -4,7 +4,7 @@ import { FeaturedProducts } from "@/components/landing/FeaturedProducts";
 import { FAQ } from "@/components/landing/FAQ";
 import Collections from "@/components/landing/ProductCarousel";
 import { BentoGallery } from "@/components/landing/BentoGallery";
-import { Newsletter } from "@/components/landing/Newsletter";
+import { Newsletter } from "@/components/landing/NewsLetter";
 import { NavbarCategoryRibbon } from "@/components/landing/NavbarCategoryRibbon";
 
 

@@ -1,5 +1,4 @@
-import Footer from "@/components/landing/Footer";
-import Navbar from "@/components/landing/Navbar";
+
 import AboutUsBanner from "@/public/aboutUsBanner.png";
 import { Button } from "@/components/ui/button";
 import HeroSection from "./heroSection";
@@ -8,7 +7,7 @@ import FounderMessage from "./founderSection";
 import CorePurpose from "./corePurpose";
 import CareersCTA from "./CTA";
 import CoreValues from "./coreValues";
-import { Newsletter } from "@/components/landing/Newsletter";
+import { Newsletter } from "@/components/landing/NewsLetter";
 
 const Page = () => {
   return (
