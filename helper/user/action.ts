@@ -50,6 +50,7 @@ export async function updateProfile(userId: string, payload: {
 }
 
 export async function getAddresses(userId: string) {
+  console.log("Fetching addresses for userId:", userId);  
   const rows = await db
     .select()
     .from(userAddress)

@@ -4,8 +4,7 @@ import { db } from "@/lib/db";
 import { cart, cartItem, user, productVariant } from "@/db";
 import { eq, and, sql } from "drizzle-orm";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
-import { success } from "zod";
-// import { tempUserId } from "@/const/globalconst";
+
 
 export async function addProductToUserCart(
   userId: string,
@@ -13,6 +12,7 @@ export async function addProductToUserCart(
   quantity: number,
 ) {
   const userInfo = await getServerSideUser();
+  console.log("User info in addProductToUserCart:", userInfo);
   if (!userInfo?.id) {
     console.log("User not logged in, skipping DB transaction");
     return { success: true };

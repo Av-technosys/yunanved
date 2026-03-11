@@ -1,5 +1,4 @@
-import Footer from "@/components/landing/Footer";
-import Navbar from "@/components/landing/Navbar";
+
 import AboutUsBanner from "@/public/aboutUsBanner.png";
 import { Button } from "@/components/ui/button";
 import HeroSection from "./heroSection";
