@@ -37,6 +37,11 @@ export const fetchOrders = async ({
 };
 
 export const fetchOrderDetails = async (orderId: string) => {
+  if (!orderId) {
+    return {
+      error: "order ID not provided. Unable to fetch order details.",
+    };
+  }
   try {
     const orderInfo = await db
       .select({
@@ -58,9 +63,11 @@ export const fetchOrderDetails = async (orderId: string) => {
         productVariant: productVariant,
       })
       .from(orderItem)
-      .leftJoin(productVariant, eq(orderItem.productVarientId, productVariant.id))
+      .leftJoin(
+        productVariant,
+        eq(orderItem.productVarientId, productVariant.id),
+      )
       .where(eq(orderItem.orderId, orderId));
-
 
     const items = rawItems.map((row) => ({
       ...row.item,
@@ -114,7 +121,9 @@ export async function createOrder({
       throw new Error("Order items are required");
     }
 
-    const productIds = items.map((i) => (i as any).productVarientId || (i as any).productId);
+    const productIds = items.map(
+      (i) => (i as any).productVarientId || (i as any).productId,
+    );
 
     const products = await db
       .select()
@@ -127,9 +136,7 @@ export async function createOrder({
 
     const productMap = new Map(products.map((p) => [p.id, p]));
 
-
     const safeAmount = Math.round(fixedAmount);
-
 
     const result = await db.transaction(async (tx) => {
       const insertedOrder = await tx
@@ -150,9 +157,9 @@ export async function createOrder({
 
       const orderId = insertedOrder[0].id;
 
-
       const orderItemsToInsert = items.map((item) => {
-        const variantId = (item as any).productVarientId || (item as any).productId;
+        const variantId =
+          (item as any).productVarientId || (item as any).productId;
         const p = productMap.get(variantId);
 
         if (!p || !p.name || !p.slug || p.basePrice == null) {
@@ -192,17 +199,14 @@ export async function createOrder({
     });
 
     if (cartRes) {
-      await db.delete(cartItem)
-        .where(eq(cartItem.cartId, cartRes.id));
+      await db.delete(cartItem).where(eq(cartItem.cartId, cartRes.id));
 
-      await db.delete(cart)
-        .where(eq(cart.id, cartRes.id));
+      await db.delete(cart).where(eq(cart.id, cartRes.id));
     }
     return {
       success: true,
       orderId: result.orderId,
     };
-
   } catch (error) {
     console.error("Order creation failed:", error);
     return {
@@ -213,6 +217,11 @@ export async function createOrder({
 }
 
 export async function getOrdersByUserId(userId: string) {
+  if (!userId) {
+    return {
+      error: "User ID not provided. Unable to fetch profile.",
+    };
+  }
 
   const orders = await db
     .select()
@@ -223,9 +232,12 @@ export async function getOrdersByUserId(userId: string) {
   return orders;
 }
 
-
-
 export async function getOrderById(orderId: string) {
+  if (!orderId) {
+    return {
+      error: "order ID not provided. Unable to fetch order details.",
+    };
+  }
   const rows = await db
     .select({
       order: order,

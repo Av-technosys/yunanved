@@ -6,6 +6,13 @@ import { eq } from "drizzle-orm";
 
 
 export async function getProfile(userId: string) {
+
+  if (!userId) {
+    return {
+      error: "User ID not provided. Unable to fetch profile."
+    };
+  }
+
   const data = await db
     .select()
     .from(user)
@@ -50,7 +57,12 @@ export async function updateProfile(userId: string, payload: {
 }
 
 export async function getAddresses(userId: string) {
-  console.log("Fetching addresses for userId:", userId);  
+
+  if (!userId) {
+    return {
+      error: "User ID not provided. Unable to fetch profile."
+    };
+  }
   const rows = await db
     .select()
     .from(userAddress)

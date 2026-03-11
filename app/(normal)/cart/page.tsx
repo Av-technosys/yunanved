@@ -168,7 +168,7 @@ export default function CartPage() {
 
   return (
 
-    <div className="min-h-96 flex flex-col">
+    <div className="flex flex-col">
 
       <div className="flex-1">
 

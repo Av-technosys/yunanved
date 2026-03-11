@@ -33,8 +33,13 @@ export default function AddressPage() {
   const loadAddresses = async () => {
     try {
       setLoading(true);
-      const data = await getAddresses(tempUserId);
-      setAddresses(data || []);
+      const data = await getAddresses(tempUserId)
+
+        if (Array.isArray(data)) {
+          setAddresses(data)
+        } else {
+          setAddresses([])
+        }
     } catch (error) {
       console.error(error);
       setAddresses([]);

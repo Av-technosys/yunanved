@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import Navbar from "@/components/landing/Navbar";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ interface PageProps {
 
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
-  const orderDetails = await getOrderById(id);
+  const orderDetails:any = await getOrderById(id);
 
   return (
     <>
