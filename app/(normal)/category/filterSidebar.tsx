@@ -6,7 +6,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/components/ui";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,16 +14,16 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui";
+import { Button } from "@/components/ui";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui";
+import { Separator } from "@/components/ui";
 import {
   Sheet,
   SheetClose,
@@ -32,7 +32,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Slider } from "@/components/ui/slider";
+import { Slider } from "@/components/ui";
 import { Filter, Menu, X } from "lucide-react";
 
 export function FilterSidebar() {

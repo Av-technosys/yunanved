@@ -1,4 +1,4 @@
-import { Select as SelectComponent, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select as SelectComponent, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui"
 import { Button } from "./ui/button"
 import { X } from "lucide-react"
 import { useState } from "react"

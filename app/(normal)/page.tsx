@@ -1,11 +1,11 @@
-import { Hero } from "@/components/landing/Hero";
-import { Categories } from "@/components/landing/Categories";
-import { FeaturedProducts } from "@/components/landing/FeaturedProducts";
-import { FAQ } from "@/components/landing/FAQ";
-import Collections from "@/components/landing/ProductCarousel";
-import { BentoGallery } from "@/components/landing/BentoGallery";
-import { Newsletter } from "@/components/landing/Newsletter";
-import { NavbarCategoryRibbon } from "@/components/landing/NavbarCategoryRibbon";
+import { Hero } from "@/components/landing";
+import { Categories } from "@/components/landing";
+import { FeaturedProducts } from "@/components/landing";
+import { FAQ } from "@/components/landing";
+import { Collections } from "@/components/landing";
+import { BentoGallery } from "@/components/landing";
+import { Newsletter } from "@/components/landing";
+import { NavbarCategoryRibbon } from "@/components/landing";
 
 
 export default function Home() {

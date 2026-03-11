@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import MobileAnimateNavBar from "./mobileAnimateNavBar";
+import {MobileAnimateNavBar} from "./mobileAnimateNavBar";
 import { MenuIcon } from "lucide-react";
 
-const NavBarClient = () => {
+export const NavBarClient = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
@@ -24,4 +24,4 @@ const NavBarClient = () => {
   );
 };
 
-export default NavBarClient;
+

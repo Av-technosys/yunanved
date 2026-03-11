@@ -2,9 +2,9 @@
 "use client";
 
 import { Calendar } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Badge } from "@/components/ui";
 
 export function OrderCard({ order, onViewDetails }: any) {
 

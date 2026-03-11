@@ -10,7 +10,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@/components/ui";
 
 import { Home } from "lucide-react";
 
@@ -22,7 +22,7 @@ const routeNameMap: Record<string, string> = {
   orders: "Orders",
 };
 
-export default function AppBreadcrumbs() {
+export  function AppBreadcrumbs() {
   const pathname = usePathname();
 
   const pathnames = pathname.split("/").filter(Boolean);

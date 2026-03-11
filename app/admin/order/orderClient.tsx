@@ -8,16 +8,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import OrderTable from "./OrderTable";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
 import { useTransition } from "react";

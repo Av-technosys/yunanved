@@ -2,8 +2,8 @@
 "use client"
 
 import { Menu } from "lucide-react"
-import { Sidebar } from "@/components/admin/sidebar"
-import { Button } from "@/components/ui/button"
+import { Sidebar } from "@/components/admin"
+import { Button } from "@/components/ui"
 import {
   Sheet,
   SheetContent,

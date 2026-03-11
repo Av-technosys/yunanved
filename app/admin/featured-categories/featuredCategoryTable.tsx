@@ -7,11 +7,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 
 import { Edit, Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { deleteFeaturedCategory, deleteProduct } from "@/helper/index";
 import { useTransition } from "react";
 import { toast } from "sonner";

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { NavBarDropdown } from "./dripdownMenu";
 import { LogIn, SearchIcon } from "lucide-react";
 
-const NavBarClient = () => {
+export const NavBarClient = () => {
   return (
     <>
       <div className=" flex gap-3 items-center justify-end">
@@ -21,7 +21,7 @@ const NavBarClient = () => {
   );
 };
 
-export default NavBarClient;
+
 
 async function NavbarUserMenu() {
   // const session = await getServerSession(authOptions);

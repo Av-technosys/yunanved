@@ -1,8 +1,8 @@
-import { OrderStatusBoxes } from "@/components/admin/orderStatusBoxes"
-import { OrderStatusChart } from "@/components/admin/orderStatusChart"
-import { RecentOrdersTable } from "@/components/admin/recentOrdersTable"
-import { QuickActions } from "@/components/admin/quickActions"
-import { DashboardCards } from "@/components/admin/dashboardCard"
+import { OrderStatusBoxes } from "@/components/admin"
+import { OrderStatusChart } from "@/components/admin"
+import { RecentOrdersTable } from "@/components/admin"
+import { QuickActions } from "@/components/admin"
+import { DashboardCards } from "@/components/admin"
 
 export default async function DashboardPage() {
   // const data = await db.select().from(productTable)

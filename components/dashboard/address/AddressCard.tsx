@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui";
 
 type Address = {
   id: string;
@@ -35,7 +35,7 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-export default function AddressCard({
+export  function AddressCard({
   address,
   onEdit,
   onDelete,

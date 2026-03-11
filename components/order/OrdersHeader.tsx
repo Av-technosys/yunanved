@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChevronRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui";
 import { OrdersFilters } from "./OrdersFilters";
 import { StatusTabs } from "./StatusTabs";
 

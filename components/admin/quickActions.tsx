@@ -1,6 +1,6 @@
 // components/quick-actions.tsx
 import { Plus, ShoppingCart, Users, Layers, ChevronRight } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui"
 
 const actions = [
   { label: "Add Product", icon: <Plus size={18} />, color: "bg-emerald-100 text-emerald-600" },

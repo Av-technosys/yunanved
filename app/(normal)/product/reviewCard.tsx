@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
 import Image from "next/image";

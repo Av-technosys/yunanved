@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Card } from "@/components/ui"
+import { Separator } from "@/components/ui"
 
-export default function OrderSummaryCard({ orderData }: any) {
+export  function OrderSummaryCard({ orderData }: any) {
 
   return (
     <Card className="rounded-[24px] border-none shadow-sm p-8">

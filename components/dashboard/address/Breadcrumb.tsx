@@ -8,7 +8,7 @@ type Props = {
   view: ViewType;
 };
 
-export default function Breadcrumb({ view }: Props) {
+export function Breadcrumb({ view }: Props) {
   const currentLabel = getLabel(view);
 
   return (

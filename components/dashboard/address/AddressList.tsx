@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from "@/components/ui/card";
-import AddressCard from "../address/AddressCard";
+import { Card } from "@/components/ui";
+import {AddressCard} from "../address/AddressCard";
 import { Plus } from "lucide-react";
 
-export default function AddressList({
+export  function AddressList({
   addresses,
   onAdd,
   onEdit,

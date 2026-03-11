@@ -5,7 +5,7 @@ import Link from "next/link";
 import React from "react";
 import { Separator } from "../ui/separator";
 
-const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
+export const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
   const contactIconsDetails = [
     {
       icon: <LinkedinIcon size={32} />,
@@ -116,4 +116,4 @@ const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any) => {
   );
 };
 
-export default MobileAnimateNavBar;
+

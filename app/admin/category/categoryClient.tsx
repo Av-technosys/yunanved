@@ -1,27 +1,23 @@
 "use client";
 
 import { Select } from "@/components/select";
-import { Button } from "@/components/ui/button";
+import { Button, InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Plus, Search, Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import CategoryTable from "./categoryTable";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+
 import { getCategories } from "@/helper";
 
 interface Props {

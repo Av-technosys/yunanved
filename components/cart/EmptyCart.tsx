@@ -3,7 +3,7 @@ import emptyCart from "../../public/emptycart.png";
 import { Button } from "../ui/button";
 import Link from "next/link";
 
-export default function EmptyCart() {
+export  function EmptyCart() {
   return (
     <div className="flex justify-center items-center h-96">
       <div className="flex flex-col items-center gap-4 ">

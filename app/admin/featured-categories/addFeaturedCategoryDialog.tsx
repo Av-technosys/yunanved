@@ -12,17 +12,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { Loader2, Plus, Search, Trash2 } from "lucide-react";
 import React, { useEffect, useState, useTransition } from "react";
 import CategoryTable from "../category/categoryTable";
 import FeaturedCategoryTable from "./featuredCategoryTable";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import { toast } from "sonner";
 import { addFeaturedCategory } from "@/helper";
 

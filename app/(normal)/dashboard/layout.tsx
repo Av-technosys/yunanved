@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/dashboard/Sidebar"
-import { MobileSidebar } from "@/components/dashboard/MobileSide"
-import Navbar from "@/components/landing/Navbar"
+import { Sidebar } from "@/components/dashboard"
+import { MobileSidebar } from "@/components/dashboard"
+
 
 export default function DashboardLayout({
   children,

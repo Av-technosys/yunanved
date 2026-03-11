@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { on } from "events";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
-const orderDetailsReview = ({
+export const OrderReview = ({
   orderDetails,
   setorderDetailsReview,
   onBack,
@@ -310,4 +310,3 @@ const orderDetailsReview = ({
   );
 };
 
-export default orderDetailsReview;

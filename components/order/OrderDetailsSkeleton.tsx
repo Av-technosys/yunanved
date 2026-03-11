@@ -1,6 +1,6 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui";
 
-export default function OrderDetailsSkeleton() {
+export  function OrderDetailsSkeleton() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 animate-pulse">

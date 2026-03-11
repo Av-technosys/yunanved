@@ -1,12 +1,12 @@
 "use client"
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Loader2, Plus } from "lucide-react";
 import React, { useState, useTransition } from "react";
 import FeaturedProductTable from "./featuredProductTable";

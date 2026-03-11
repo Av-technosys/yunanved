@@ -7,16 +7,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Search, Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import ProductPagination from "@/components/pagination";
+import {ProductPagination} from "@/components/pagination";
 import PaymentTable from "./PaymentTable";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
 

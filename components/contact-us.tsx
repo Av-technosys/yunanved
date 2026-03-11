@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useTransition } from "react";
 import { contactUsSchema } from "@/validation/contactUsSchema";
 
-const ContactUs = () => {
+export const ContactUs = () => {
   const [isPending, startTransition] = useTransition();
   const submitHandler = async (e: any) => {
     e.preventDefault();
@@ -152,4 +152,4 @@ const ContactUs = () => {
   );
 };
 
-export default ContactUs;
+
