@@ -6,9 +6,9 @@ import { useEffect, useState, useTransition } from "react";
 import { getAddresses, saveAddress, deleteAddress } from "@/helper";
 // import { tempUserId } from "@/const/globalconst";
 
-import Breadcrumb from "@/components/dashboard/address/Breadcrumb";
-import AddressList from "@/components/dashboard/address/AddressList";
-import AddressForm from "@/components/dashboard/address/AddressForm";
+import {Breadcrumb} from "@/components/dashboard";
+import {AddressList} from "@/components/dashboard";
+import {AddressForm} from "@/components/dashboard";
 
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui"
 import { MapPin, User } from "lucide-react"
 
-export default function DeliveryDetailsCard({ orderData }: any) {
+export  function DeliveryDetailsCard({ orderData }: any) {
 
   return (
     <Card className="rounded-[24px] border-none shadow-sm p-8">

@@ -12,7 +12,7 @@ import StarRatings from "react-star-ratings";
 import { useAddToCart } from "@/helper/useAddToCart";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
-const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
+export const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
 
   const { handleAddToCart, isPending } = useAddToCart();
   const [isAdding, setIsAdding] = useState(false);
@@ -105,4 +105,4 @@ const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
   );
 };
 
-export default ProductCard;
+

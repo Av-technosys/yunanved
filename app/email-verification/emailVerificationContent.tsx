@@ -4,13 +4,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import signup from "../../public/authpic.png";
@@ -20,8 +20,8 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui";
+import { Separator } from "@/components/ui";
 import { toast } from "sonner";
 import { confirmSignup, resendOtp } from "@/helper/index";
 import { canResendOTPInterval } from "@/const/globalconst";

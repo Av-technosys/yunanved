@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import ProductCard from "@/components/productCard";
+import {ProductCard} from "@/components/productCard";
 
 export default function CategoryView({ products, slug }: any) {
   return (

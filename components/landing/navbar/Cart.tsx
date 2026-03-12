@@ -1,11 +1,11 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui"
 import {  ShoppingCart } from "lucide-react"
 import { useCartStore } from "@/store/cartStore";
 import Link from "next/link";
 
-export default function CartIcon() {
+export  function CartIcon() {
   const totalItems = useCartStore((s) => s.lineItems());
     
   return (

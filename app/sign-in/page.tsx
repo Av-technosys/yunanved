@@ -6,9 +6,9 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";

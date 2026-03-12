@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui"
 
-export default function CartItemSkeleton() {
+export  function CartItemSkeleton() {
   return (
     <div className="group">
       <hr className="mb-4" />

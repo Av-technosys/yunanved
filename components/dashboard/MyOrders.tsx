@@ -7,8 +7,8 @@ import { getOrdersByUserId } from "@/helper/index";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 import { OrdersSkeleton } from "@/app/(normal)/dashboard/orders/orderSkeleton";
-import { OrdersHeader } from "@/components/order/OrdersHeader";
-import { OrdersList } from "@/components/order/OrdersList";
+import { OrdersHeader } from "@/components/order";
+import { OrdersList } from "@/components/order";
 
 export const MyOrdersPage = () => {
   const [orders, setOrders] = useState<any[]>([]);

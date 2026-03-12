@@ -3,23 +3,23 @@
 
 import {useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Plus, Search, Loader2 } from "lucide-react";
 import ProductTable from "./productTable";
 import { Select } from "@/components/select";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
 import { getCategories } from "@/helper";

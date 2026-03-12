@@ -2,9 +2,9 @@
 import { Loader2, RotateCcw, Star, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env"
-import CartItemSkeleton from "./CartItemSkeleton"
+import {CartItemSkeleton} from "./CartItemSkeleton"
 
-export default function CartItemsSection({
+export  function CartItemsSection({
   items,
   productMap,
   isFetching,

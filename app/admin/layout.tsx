@@ -1,5 +1,5 @@
-import { Sidebar } from "@/components/admin/sidebar"
-import { MobileSidebar } from "@/components/admin/mobileSidebar"
+import { Sidebar } from "@/components/admin"
+import { MobileSidebar } from "@/components/admin"
 
 export default function AdminLayout({
   children,

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui"
+import { Button } from "@/components/ui"
 import { CheckCircle2, Circle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export default function OrderStatusCard({ orderData, setOrderReview }: any) {
+export  function OrderStatusCard({ orderData, setOrderReview }: any) {
 
   const router = useRouter()
 

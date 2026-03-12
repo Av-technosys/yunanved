@@ -5,7 +5,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/components/ui"
 
 interface SectionProps {
   title: string;
@@ -76,7 +76,7 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
 
 
 // Example usage
-export default function Collections() {
+export  function Collections() {
   const DUMMY_DATA = [
     { id: 1, image: "/ProductCarousel1.jpg", bgColor: "#000000" },
     { id: 2, image: "/ProductCarousel2.jpg", bgColor: "#800000" },

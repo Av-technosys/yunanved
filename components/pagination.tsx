@@ -7,7 +7,7 @@
 //   PaginationLink,
 //   PaginationNext,
 //   PaginationPrevious,
-// } from "@/components/ui/pagination";
+// } from "@/components/ui";
 // import { useRouter } from "next/navigation";
 
 // interface Props {
@@ -75,7 +75,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "@/components/ui";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface Props {
@@ -83,7 +83,7 @@ interface Props {
   totalPages: number;
 }
 
-const ProductPagination = ({ currentPage, totalPages }: Props) => {
+export const ProductPagination = ({ currentPage, totalPages }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -145,4 +145,4 @@ const ProductPagination = ({ currentPage, totalPages }: Props) => {
   );
 };
 
-export default ProductPagination;
+

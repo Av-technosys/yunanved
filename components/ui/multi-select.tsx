@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { Command as CommandPrimitive, useCommandState } from 'cmdk'
 import { XIcon } from 'lucide-react'
 
-import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command'
+import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
 export interface Option {

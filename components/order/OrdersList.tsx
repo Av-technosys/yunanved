@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui";
 import { OrderCard } from "./OrderCard";
 
 export function OrdersList({ orders, onViewDetails }: any) {

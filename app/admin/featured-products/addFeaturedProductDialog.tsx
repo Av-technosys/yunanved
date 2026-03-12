@@ -1,7 +1,7 @@
 "use client";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import { Select } from "@/components/select";
 import {
   AlertDialog,
@@ -11,12 +11,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import {
   Table,
   TableBody,
@@ -24,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import { addFeaturedProduct, getCategories } from "@/helper";
 import { Loader2, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";

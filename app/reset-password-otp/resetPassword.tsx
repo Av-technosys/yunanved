@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import signup from "../../public/authpic.png";
@@ -16,9 +16,9 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui";
+import { Separator } from "@/components/ui";
+import { Input } from "@/components/ui";
 
 import { useState } from "react";
 import { toast } from "sonner";

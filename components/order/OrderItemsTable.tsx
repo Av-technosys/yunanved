@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from "@/components/ui/card"
+import { Card } from "@/components/ui"
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env"
 
-export default function OrderItemsTable({ orderData }: any) {
+export  function OrderItemsTable({ orderData }: any) {
 
   const S3_BASE = NEXT_PUBLIC_S3_BASE_URL
 

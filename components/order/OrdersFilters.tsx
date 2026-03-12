@@ -2,14 +2,14 @@
 "use client";
 
 import { Search, Calendar } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 
 export function OrdersFilters({
   search,
