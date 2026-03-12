@@ -41,7 +41,7 @@ const navItems = [
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
-export function Sidebar({ mobile = false, logout }: { mobile?: boolean, logout: () => void }) {
+export function Sidebar({ mobile = false, logout }: { mobile?: boolean,   logout?: () => void}) {
   const pathname = usePathname();
 
   // remove trailing slash
