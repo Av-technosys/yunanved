@@ -103,7 +103,7 @@ async function handleDelete() {
       <Table>
         <TableHeader>
           <TableRow className="text-muted-foreground">
-            <TableHead className="w-[70px] pl-4">#</TableHead>
+            <TableHead className="w-[70px] ">S.No</TableHead>
             <TableHead>User</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead className="w-[160px]">Rating</TableHead>

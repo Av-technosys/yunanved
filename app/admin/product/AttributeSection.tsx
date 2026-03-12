@@ -20,7 +20,7 @@ export default function AttributeSection({ productAttributes, handleValueChange 
       </CardHeader>
 
       <CardContent>
-        <Accordion type="multiple" className="space-y-4 max-sm:bg-black">
+        <Accordion type="multiple" className="space-y-4 ">
           {PRODUCT_ATTRIBUTES.map((group, idx) => (
             <AccordionItem key={idx} value={`attr-${idx}`} className="border rounded-xl px-4">
               <AccordionTrigger>{group.title}</AccordionTrigger>

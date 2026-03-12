@@ -90,7 +90,7 @@ export default function EditCategory({ categoryInfo }: any) {
 
   return (
     <div className="w-full p-1">
-      <Card className="border-none shadow-none">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-slate-900">
             Manage Category
@@ -130,10 +130,10 @@ export default function EditCategory({ categoryInfo }: any) {
                     value={selectedParent}
                     onValueChange={(value) => setSelectedParent(value)}
                   >
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="h-11 w-full">
                       <SelectValue placeholder="Select parent" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="w-full">
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
@@ -198,7 +198,7 @@ export default function EditCategory({ categoryInfo }: any) {
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 px-0 pt-10">
+            <div className="flex justify-center sm:justify-end gap-4 px-0 pt-10">
               <Button
                 type="button"
                 onClick={() => router.push("/admin/category")}

@@ -84,7 +84,7 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
 
   return (
     <div className="w-full p-1">
-      <Card>
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Product Management</CardTitle>
           <CardDescription>Manage your products here</CardDescription>
@@ -100,7 +100,7 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
           </div>
 
           {/* FILTER BAR */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             {/* SEARCH */}
             <div className="w-full max-w-xl">
               <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none">
@@ -130,20 +130,6 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
               }
             />
 
-            {/* STOCK */}
-            <Select
-              placeholder="Select Stock Status"
-              label="Stock Status"
-              selectItems={[
-                { value: "in_stock", label: "In Stock" },
-                { value: "out_of_stock", label: "Out of Stock" },
-              ]}
-              value={selectedStockStatus}
-              onValueChange={(val) =>
-                startTransition(() => updateQuery("stock", val))
-              }
-            />
-
             {/* VISIBILITY */}
             <Select
               placeholder="Select Visibility"
@@ -155,6 +141,20 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
               value={selectedVisibility}
               onValueChange={(val) =>
                 startTransition(() => updateQuery("visibility", val))
+              }
+            />
+
+            {/* STOCK */}
+            <Select
+              placeholder="Select Stock Status"
+              label="Stock Status"
+              selectItems={[
+                { value: "in_stock", label: "In Stock" },
+                { value: "out_of_stock", label: "Out of Stock" },
+              ]}
+              value={selectedStockStatus}
+              onValueChange={(val) =>
+                startTransition(() => updateQuery("stock", val))
               }
             />
           </div>

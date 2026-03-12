@@ -31,7 +31,7 @@ import {
 const ProductTable = ({ products, total, currentPage }: any) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
- 
+
   const handleDelete = (id: string) => {
     startTransition(async () => {
       try {
@@ -43,13 +43,11 @@ const ProductTable = ({ products, total, currentPage }: any) => {
         }
 
         toast.success(res.message ?? "Product deleted");
-
       } catch {
         toast.error("Server crashed while deleting");
       }
     });
   };
-
 
   return (
     <>
@@ -70,7 +68,11 @@ const ProductTable = ({ products, total, currentPage }: any) => {
           {products.length > 0 ? (
             products.map((item: any) => (
               <TableRow key={item.id}>
-                <TableCell>{item.name}</TableCell>
+                <TableCell>
+                  <div className="w-44 sm:w-full break-all whitespace-normal">
+                    {item.name}
+                  </div>
+                </TableCell>
                 <TableCell>₹{item.basePrice}</TableCell>
                 <TableCell>₹{item.strikethroughPrice}</TableCell>
                 <TableCell>{item.isCancelable ? "Yes" : "No"}</TableCell>
@@ -78,7 +80,6 @@ const ProductTable = ({ products, total, currentPage }: any) => {
                 <TableCell>{item.isDeleted ? "Yes" : "No"}</TableCell>
 
                 <TableCell className="flex gap-2">
-
                   {/* EDIT */}
                   <Button
                     variant="outline"
@@ -126,7 +127,6 @@ const ProductTable = ({ products, total, currentPage }: any) => {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
-
                 </TableCell>
               </TableRow>
             ))

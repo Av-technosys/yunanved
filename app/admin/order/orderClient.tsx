@@ -81,8 +81,8 @@ const ORDER_STATUS = [
   }
 
   return (
-    <div className="w-full p-1">
-      <Card>
+    <div className="w-full ">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Order Management</CardTitle>
           <CardDescription>Manage your orders here</CardDescription>

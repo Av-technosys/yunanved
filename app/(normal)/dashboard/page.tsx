@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { use, useEffect, useState, useTransition } from "react";
 import { getProfile, updateProfile } from "@/helper/index";
 import { User, Phone, Mail, Camera, ChevronRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -22,14 +22,15 @@ export default function ProfilePage() {
   const [isPending, startTransition] = useTransition();
 
   /* LOAD PROFILE */
-  useEffect(() => {
-    startTransition(async () => {
-      const data = await getProfile(tempUserId);
-      setForm(data);
-      setInitial(data);
-    });
-  }, [tempUserId]);
+useEffect(() => {
+  if (!tempUserId) return;
 
+  startTransition(async () => {
+    const data = await getProfile(tempUserId);
+    setForm(data);
+    setInitial(data);
+  });
+}, [tempUserId]);
   /* SAVE */
   function handleSave() {
     startTransition(async () => {
@@ -73,20 +74,14 @@ export default function ProfilePage() {
   };
 
   const fullName = `${form?.firstName} ${form?.lastName}`.trim();
+  if (!userDetails || !form) {
+  return <ProfileSkeleton />;
+  }
   return (
     <div className="w-full relative">
-      {!form ? (
-        <ProfileSkeleton />
-      ) : (
+     
         <>
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1 text-[13px] text-gray-500 p-2">
-            <span>Home</span> <ChevronRight size={12} />
-            <span>Account</span> <ChevronRight size={12} />
-            <span className="font-medium text-gray-800">Profile</span>
-          </nav>
-
-          <main className="bg-white rounded-[24px] p-8 md:p-6 shadow-sm border border-gray-100">
+          <main className="bg-white  p-8 md:p-6 ">
             {/* Header */}
             <header className="mb-10">
               <h1 className="text-2xl font-bold text-[#1D4E4E]">
@@ -200,7 +195,7 @@ export default function ProfilePage() {
             </p>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-center sm:justify-end gap-4">
               <button
                 onClick={handleCancel}
                 className="px-10 py-3 rounded-full border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition-all"
@@ -213,12 +208,12 @@ export default function ProfilePage() {
                 disabled={isPending}
                 className="px-10 py-3 rounded-full bg-[#1D4E4E] text-white font-semibold hover:bg-[#153a3a] shadow-lg transition-all disabled:opacity-50"
               >
-                {isPending ? "Saving..." : "Save Changes"}
+                {isPending ? "Saving..." : "Save "}
               </button>
             </div>
           </main>
         </>
-      )}
+    
     </div>
   );
 }

@@ -78,8 +78,8 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
   }, [searchParams]);
 
   return (
-    <div className="w-full min-h-screen">
-      <Card>
+    <div className="w-full min-h-screen ">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Category Management</CardTitle>
           <CardDescription>Manage your categories here</CardDescription>
@@ -98,7 +98,7 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
           </div>
 
           {/* FILTER BAR */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
 
             {/* SEARCH */}
             <div className="w-full max-w-xl">
