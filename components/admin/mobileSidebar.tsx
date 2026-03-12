@@ -9,23 +9,29 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { logoutHandler } from "@/helper/auth/action"
+import { useRouter } from "next/navigation"
 
 export function MobileSidebar() {
+const router = useRouter();
+  
+   const logout = async() => {
+     await logoutHandler();
+    router.push("/sign-in");
+      localStorage.removeItem("token");
+   }
+   
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden"
-        >
+        <Button variant="ghost" size="icon" className="lg:hidden">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="p-0 w-64">
-        <Sidebar />
+      <SheetContent side="left" className="p-0 md:w-[40vw] w-[70vw]">
+        <Sidebar mobile  logout={logout} />
       </SheetContent>
     </Sheet>
-  )
+  );
 }

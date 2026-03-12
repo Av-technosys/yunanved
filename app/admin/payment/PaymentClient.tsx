@@ -65,7 +65,7 @@ useEffect(() => {
 
   return (
     <div className="w-full p-1">
-      <Card>
+      <Card className="rounded-none">
         <CardHeader>
           <CardTitle>Payment Management</CardTitle>
           <CardDescription>Manage and track all payments</CardDescription>

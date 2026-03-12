@@ -17,7 +17,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-full space-y-4">
       {/* Header */}
-      <Card>
+      <Card className="rounded-none">
         <CardContent className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-14 w-14">

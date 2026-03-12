@@ -108,3 +108,8 @@ export async function resetPasswordUsingOTP(payload: any) {
 
   return { message: data.message };
 }
+
+
+ export const logoutHandler = async () => {
+  await fetch("/api/logout", { method: "POST" });
+};

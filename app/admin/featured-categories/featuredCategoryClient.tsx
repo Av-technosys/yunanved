@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui";
 import {
@@ -25,8 +26,8 @@ const FeaturedCategoryClient = ({ featuredCategories ,categories,total ,currentP
     {
       openDialog &&  <AddFeaturedCategoryDialog categories={categories} total={total} currentPage={currentPage} open={openDialog} setOpen={setOpenDialog}  />
     }
-      <div className="w-full p-1">
-        <Card>
+      <div className="w-full p-1 ">
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Category Management</CardTitle>
             <CardDescription>Manage your categories here</CardDescription>

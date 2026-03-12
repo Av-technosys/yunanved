@@ -5,7 +5,6 @@ import { QuickActions } from "@/components/admin"
 import { DashboardCards } from "@/components/admin"
 
 export default async function DashboardPage() {
-  // const data = await db.select().from(productTable)
   return (
     <div className="space-y-6 p-3">
       {/* Page Header */}

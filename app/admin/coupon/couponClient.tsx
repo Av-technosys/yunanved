@@ -42,7 +42,7 @@ const CouponClient = ({ coupons }: any) => {
         couponDetails={""}
       />
       <div className="w-full px-1 min-h-screen">
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Coupon Management</CardTitle>
             <CardDescription>Manage your coupons here</CardDescription>
