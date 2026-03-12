@@ -78,8 +78,8 @@ export default function AddressPage() {
   }
 
   return (
-    <div className="relative w-full">
-      <Breadcrumb view={view} />
+    <div className="relative  w-full">
+
 
       {/* ADDRESS LIST VIEW */}
       {view === "list" ? (

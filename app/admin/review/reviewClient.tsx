@@ -57,8 +57,8 @@ const ReviewClient = ({ reviews, total, currentPage }: Props) => {
     setSearchText(e.target.value);
   }
   return (
-    <div className="w-full p-1">
-      <Card>
+    <div className="w-full ">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Review Management</CardTitle>
           <CardDescription>

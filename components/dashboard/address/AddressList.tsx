@@ -10,7 +10,7 @@ export  function AddressList({
   onDelete,
 }: any) {
   return (
-    <Card className="rounded-[24px] min-h-screen p-8">
+    <Card className="rounded-none shadow-none border-none min-h-screen p-8">
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {addresses.map((addr: any) => (
           <AddressCard

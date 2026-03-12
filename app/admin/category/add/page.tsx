@@ -74,7 +74,7 @@ export default function AddCategoryForm() {
 
   return (
     <div className="w-full p-1">
-      <Card className="border-none shadow-none">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-slate-900">
             Add Categories
@@ -106,15 +106,15 @@ export default function AddCategoryForm() {
                   />
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 ">
                   <Label className="text-slate-600 font-medium">
                     Parent Category
                   </Label>
-                  <Select onValueChange={setParentId}>
-                    <SelectTrigger className="h-11 text-slate-400">
+                  <Select   onValueChange={setParentId}>
+                    <SelectTrigger className="h-11 w-full text-slate-400">
                       <SelectValue placeholder="Select Parent Category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="w-full">
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
@@ -187,7 +187,7 @@ export default function AddCategoryForm() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 px-0 pt-10">
+            <div className="flex justify-center sm:justify-end  gap-4 px-0 pt-10">
               <Button
                 type="button"
                 variant="outline"

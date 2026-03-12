@@ -42,6 +42,7 @@ const UserTable = ({ page, users }: UserTableProps) => {
             <TableHead>User Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone</TableHead>
+            <TableHead>Created At</TableHead>
             <TableHead>Loyalty points</TableHead>
           </TableRow>
         </TableHeader>
@@ -55,9 +56,10 @@ const UserTable = ({ page, users }: UserTableProps) => {
                 <TableCell>
                   <p>{rowNumber}</p>
                 </TableCell>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.first_name} {user.last_name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.number}</TableCell>
+                <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
                 <TableCell>
                   <Badge className={getStatusBadgeColor("active")}>
                     {user.loyaltyPoints}

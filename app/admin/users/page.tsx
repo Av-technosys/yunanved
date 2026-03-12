@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/lib/db";
-import { product } from "@/db/productSchema";
+
 import { user } from "@/db/userSchema";
 import UserClient from "./userClient";
 import { and, asc, ilike, sql } from "drizzle-orm";
@@ -33,7 +33,14 @@ const Page = async ({ searchParams }: PageProps) => {
   const offset = (page - 1) * pageSize;
 
   const users = await db
-    .select()
+    .select({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      number: user.number,
+      loyaltyPoints: user.loyaltyPoints,
+      createdAt: user.createdAt,
+    })
     .from(user)
     .orderBy(asc(user.createdAt))
     .limit(PAGE_SIZE)
