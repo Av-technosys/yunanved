@@ -2,12 +2,8 @@
 
 import { Button } from "@/components/ui";
 import Link from "next/link";
-import { Menu } from "lucide-react"
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui";
@@ -26,11 +22,7 @@ export const Navbar = ({userInfo, loading}:any) => {
       >
         <Sheet>
           <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-            >
+            <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -38,38 +30,41 @@ export const Navbar = ({userInfo, loading}:any) => {
           {/* Logo */}
           <Link href={"/"} className="shrink-0">
             <h1 className="text-2xl font-black tracking-tighter text-primary">
-             YUNANVED
+              YUNANVED
             </h1>
           </Link>
 
           <div className=" hidden md:flex w-full justify-between gap-4">
-          <UserLocation userInfo={userInfo} loading={loading} />
+            <UserLocation userInfo={userInfo} loading={loading} />
             {/* Search Bar Container */}
             <SearchWithIcon />
 
             {/* Actions (Sign Up, Login, Cart) */}
             <div className="flex items-center gap-3">
-           {loading ? (
-              <Skeleton className="h-9 w-30" />
-            ) : userInfo ? (
-              <LogedInUserDetail userInfo={userInfo} />
-            ) : (
-              <AuthBtns />
-            )}
+              {loading ? (
+                <Skeleton className="h-9 w-30" />
+              ) : userInfo ? (
+                <LogedInUserDetail userInfo={userInfo} />
+              ) : (
+                <AuthBtns />
+              )}
 
               {/* Cart Icon with Badge */}
             </div>
           </div>
           <CartIcon />
-          <SheetContent side="left" className="w-72 px-4 py-6 pt-12">
-
-
-
+          <SheetContent
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            side="left"
+            className="w-72 px-4 py-6 pt-12"
+          >
             {/* Search */}
-            <SearchWithIcon />
+            <div className="pb-2">
+              <SearchWithIcon />
+            </div>
+
             {/* Categories */}
             <div className="flex flex-col gap-3 border-t pt-4">
-
               {NAVBAR_CATEGORY_RIBBON.map((item) => (
                 <Link
                   key={item}
@@ -79,33 +74,52 @@ export const Navbar = ({userInfo, loading}:any) => {
                   {item}
                 </Link>
               ))}
-
             </div>
 
             {/* Auth */}
-            <div className=" pt-4 flex flex-col gap-3">
+            <div className="border-t pt-4 flex flex-col gap-3">
+              {loading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : userInfo ? (
+                <Link href="/dashboard" className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border">
+                    <AvatarImage
+                      src={
+                        userInfo?.profileImage
+                          ? `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${userInfo.profileImage}`
+                          : undefined
+                      }
+                    />
+                    <AvatarFallback>
+                      {`${userInfo?.firstName?.[0] ?? ""}${userInfo?.lastName?.[0] ?? ""}`}
+                    </AvatarFallback>
+                  </Avatar>
 
-              <Link href="/sign-in">
-                <Button className="w-full">
-                  Login
-                </Button>
-              </Link>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500">Welcome</span>
+                    <span className="font-semibold">{userInfo.firstName}</span>
+                  </div>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/sign-in">
+                    <Button className="w-full">Login</Button>
+                  </Link>
 
-              <Link href="/sign-up">
-                <Button variant="outline" className="w-full">
-                  Sign Up
-                </Button>
-              </Link>
-
+                  <Link href="/sign-up">
+                    <Button variant="outline" className="w-full">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
-
           </SheetContent>
         </Sheet>
       </div>
     </header>
   );
 };
-
 
 
 
@@ -132,9 +146,7 @@ function LogedInUserDetail({ userInfo }: any) {
       </Avatar>
 
       <div className="flex flex-col leading-tight">
-        <span className="text-[13px] text-gray-500">
-          Welcome ,
-        </span>
+        <span className="text-[13px] text-gray-500">Welcome ,</span>
 
         {userInfo?.firstName ? (
           <span className="text-md font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
@@ -145,7 +157,7 @@ function LogedInUserDetail({ userInfo }: any) {
         )}
       </div>
     </Link>
-  )
+  );
 }
 function AuthBtns() {
   return (
@@ -160,16 +172,11 @@ function AuthBtns() {
       </Link>
 
       <Link href={"/sign-in"}>
-        <Button className=" rounded-full px-8 hidden md:flex">
-          Login
-        </Button>
+        <Button className=" rounded-full px-8 hidden md:flex">Login</Button>
       </Link>
     </>
-  )
+  );
 }
-
-
-
 
 function MapPinSVG() {
   return (
@@ -185,10 +192,16 @@ function MapPinSVG() {
         clipRule="evenodd"
       />
     </svg>
-  )
+  );
 }
 
-function UserLocation({ userInfo , loading }: { userInfo: any  , loading:boolean }) {
+function UserLocation({
+  userInfo,
+  loading,
+}: {
+  userInfo: any;
+  loading: boolean;
+}) {
   return (
     <div className="flex items-center gap-2 shrink-0 cursor-pointer group">
       <MapPinSVG />
@@ -197,7 +210,7 @@ function UserLocation({ userInfo , loading }: { userInfo: any  , loading:boolean
         <span className="text-[10px] text-gray-500 font-medium">
           Deliver to
         </span>
-  {loading ? (
+        {loading ? (
           <Skeleton className="h-4 w-[120px]" />
         ) : userInfo ? (
           <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">

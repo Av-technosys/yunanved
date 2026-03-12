@@ -11,10 +11,10 @@ export default function DashboardLayout({
     <>
 
       {/* FULL VIEWPORT APP SHELL */}
-      <div className="h-[calc(100vh-64px)] flex bg-[#F4F7F6] overflow-hidden">
+      <div className="h-[calc(100vh-64px)]  flex bg-[#F4F7F6] overflow-hidden">
 
         {/* DESKTOP SIDEBAR */}
-        <div className="hidden lg:flex w-72 shrink-0 ">
+        <div className="hidden lg:flex w-72 hide-scrollbar shrink-0 ">
           <div className="w-full  overflow-hidden">
             <Sidebar />
           </div>
@@ -32,7 +32,7 @@ export default function DashboardLayout({
           </div>
 
           {/* SCROLLABLE CONTENT — ONLY THIS SCROLLS */}
-          <main className="flex-1 overflow-y-auto p-1">
+          <main className="flex-1 overflow-y-auto hide-scrollbar p-1">
             <div className="max-w-7xl mx-auto">
               {children}
             </div>

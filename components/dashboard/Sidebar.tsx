@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { User, ShoppingBag, MapPin, LogOut } from "lucide-react";
+import { logoutHandler } from "@/helper";
 
 const navItems = [
   { label: "Profile", href: "/dashboard", icon: User },
@@ -19,15 +20,11 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
   const router = useRouter();
 
 
-  const logoutHandler = async () => {
-  await fetch("/api/logout", { method: "POST" });
-
-  localStorage.removeItem("token");
-
+ const logout = async() => {
+   await logoutHandler();
   router.push("/sign-in");
-};
-  
-
+    localStorage.removeItem("token");
+ }
   const getActive = (pathname: string, href: string) => {
     // Profile → ONLY exact dashboard
     if (href === "/dashboard") {
@@ -76,7 +73,7 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
 
         {/* Bottom Logout Section */}
         <div className="mt-auto">
-          <button onClick={logoutHandler}  className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#B8860B]  font-semibold hover:bg-[#ffefd5] transition-colors">
+          <button onClick={logout}  className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#B8860B]  font-semibold hover:bg-[#ffefd5] transition-colors">
             <LogOut size={20} />
             <span className="text-[15px]">Logout</span>
           </button>

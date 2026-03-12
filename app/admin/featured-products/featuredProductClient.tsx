@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui";
 import {
@@ -22,7 +23,7 @@ const FeaturedProductClient = ({ featuredProducts , products, total, currentPage
       openDialog &&  <AddFeaturedProductDialog products={products} total={total} currentPage={currentPage} open={openDialog} setOpen={setOpenDialog}  />
     }
       <div className="w-full p-1">
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Product Management</CardTitle>
             <CardDescription>Manage your products here</CardDescription>

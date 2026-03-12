@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
- 
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui";
@@ -24,7 +23,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
-
 
 type ApiAddress = {
   id: string;
@@ -52,35 +50,36 @@ const breadcrumb = [
 ];
 
 export default function Checkout() {
-
   const [selected, setSelected] = useState<string | null>(null);
   const [addresses, setAddresses] = useState<ApiAddress[]>([]);
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const items = useCheckoutStore((s) => s.items);
   const setPaymentStatus = useCheckoutStore((s) => s.setPaymentStatus);
   const clearCheckout = useCheckoutStore((s) => s.clearCheckout);
-  const clearCart = useCartStore((s) => s.clearCart)
+  const clearCart = useCartStore((s) => s.clearCart);
   const userId: any = useCheckoutStore((s) => s.userId);
 
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
 
   const discount = subtotal * 0.2;
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const finalTotal = subtotal - discount + deliveryFee;
 
-   const {userDetails} =  useClientSideUser();
-  const tempUserId = userDetails?.id
+  const { userDetails } = useClientSideUser();
+  const tempUserId = userDetails?.id;
 
   useEffect(() => {
-      if (!tempUserId) return;
+    if (!tempUserId) return;
+
     const fetchAddresses = async () => {
       try {
-        const data: any = await getAddresses(tempUserId);
+        setLoading(true);
 
+        const data: any = await getAddresses(tempUserId);
         setAddresses(data);
 
         if (data?.length > 0) {
@@ -91,12 +90,13 @@ export default function Checkout() {
         }
       } catch (err) {
         console.error("Failed to fetch addresses", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAddresses();
   }, [tempUserId]);
-
 
   const handlePayment = async () => {
     if (!selected) {
@@ -108,21 +108,19 @@ export default function Checkout() {
       setLoading(true);
       setPaymentStatus("processing");
 
-
       await initiateRazorpayPayment({
         amount: finalTotal,
         name: "YUNANVED",
         description: "Order Payment",
         items: items,
         userId,
-        address: addresses.find(a => a.id === selected)
+        address: addresses.find((a) => a.id === selected),
       });
       setPaymentStatus("success");
       clearCheckout();
-      clearCart()
+      clearCart();
       toast.success("Payment Successful 🎉");
       router.push("/order-confirmation");
-
     } catch (err) {
       setPaymentStatus("failed");
       toast.error("Payment Failed ❌");
@@ -169,62 +167,72 @@ export default function Checkout() {
               onValueChange={setSelected}
               className="space-y-3"
             >
-              {addresses.map((item) => {
-                const isActive = selected === item.id;
+              {loading
+                ? [...Array(3)].map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                      <CardContent className="p-4">
+                        <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                      </CardContent>
+                    </Card>
+                  ))
+                : addresses.map((item) => {
+                    const isActive = selected === item.id;
 
-                return (
-                  <Card
-                    key={item.id}
-                    className={`transition border cursor-pointer
+                    return (
+                      <Card
+                        key={item.id}
+                        className={`transition border cursor-pointer
         ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}
-                  >
-                    <CardContent className="p-4 flex gap-3 items-start justify-between">
-                      <div className="w-full flex gap-3 items-start">
-                        <RadioGroupItem
-                          value={item.id}
-                          id={item.id}
-                          className="mt-1"
-                        />
+                      >
+                        <CardContent className="p-4 flex gap-3 items-start justify-between">
+                          <div className="w-full flex gap-3 items-start">
+                            <RadioGroupItem
+                              value={item.id}
+                              id={item.id}
+                              className="mt-1"
+                            />
 
-                        <Label
-                          htmlFor={item.id}
-                          className="flex flex-col items-start gap-1 cursor-pointer w-full"
-                        >
-                          <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-900">
-                              {item.addressLine1}
-                            </p>
+                            <Label
+                              htmlFor={item.id}
+                              className="flex flex-col items-start gap-1 cursor-pointer w-full"
+                            >
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-gray-900">
+                                  {item.addressLine1}
+                                </p>
 
-                            {item.isDefault && (
-                              <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                Default
-                              </span>
-                            )}
+                                {item.isDefault && (
+                                  <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                                    Default
+                                  </span>
+                                )}
 
-                            {!item.isDefault && (
-                              <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                                Saved
-                              </span>
-                            )}
+                                {!item.isDefault && (
+                                  <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                    Saved
+                                  </span>
+                                )}
+                              </div>
+
+                              <p className="text-sm text-gray-600">
+                                {item.addressLine2}
+                              </p>
+
+                              <p className="text-sm text-gray-500">
+                                {item.city}, {item.state} - {item.pincode}
+                              </p>
+                            </Label>
                           </div>
 
-                          <p className="text-sm text-gray-600">
-                            {item.addressLine2}
-                          </p>
-
-                          <p className="text-sm text-gray-500">
-                            {item.city}, {item.state} - {item.pincode}
-                          </p>
-                        </Label>
-                      </div>
-
-                      <Button variant="link" size="sm">
-                        Edit
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                          <Button variant="link" size="sm">
+                            Edit
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
             </RadioGroup>
           </div>
 
@@ -271,7 +279,6 @@ export default function Checkout() {
                 >
                   {loading ? "Processing..." : `Pay ₹${finalTotal.toFixed(0)}`}
                 </Button>
-
               </CardContent>
             </Card>
           </div>
