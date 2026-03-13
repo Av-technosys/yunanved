@@ -1,4 +1,3 @@
-// components/order-status-chart.tsx
 "use client"
 
 import {
@@ -16,17 +15,70 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui"
+} from "@/components/ui/card"
 
-const MAX = 130
+import { Skeleton } from "@/components/ui/skeleton"
 
-const data = [
-  { status: "Processing", value: 28, color: "#CA8A04" },
-  { status: "New", value: 75, color: "#2563EB" },
-  { status: "Completed", value: 118, color: "#16A34A" },
-]
+import { ORDER_STATUS } from "@/const"
 
-export function OrderStatusChart() {
+type StatusData = {
+  status: string
+  count: number
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  [ORDER_STATUS.PENDING]: "#2563EB",
+  [ORDER_STATUS.PROCESSING]: "#CA8A04",
+  [ORDER_STATUS.SHIPPED]: "#9333EA",
+  [ORDER_STATUS.DELIVERED]: "#16A34A",
+  [ORDER_STATUS.COMPLETED]: "#22C55E",
+  [ORDER_STATUS.CANCELED]: "#EF4444",
+}
+
+export function OrderStatusChart({ data }: { data?: StatusData[] }) {
+
+  if (!data) {
+    return (
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle>Order Status Overview</CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <Skeleton className="h-[200px] w-full rounded-lg" />
+
+          <div className="mt-10 space-y-2">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-4 w-full" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  /* Normalize DB values */
+  const normalized = data.map((item) => {
+    const key = item.status.trim().toLowerCase()
+
+    return {
+      status: key,
+      value: item.count,
+      color: STATUS_COLORS[key] ?? "#64748B",
+    }
+  })
+
+  /* Sort by count */
+  const sorted = [...normalized].sort((a, b) => b.value - a.value)
+
+  /* Chart shows only top 3 */
+  const chartData = sorted.slice(0, 3)
+
+  /* Legend shows all */
+  const legendData = sorted
+
+  const MAX = Math.max(...chartData.map((d) => d.value), 10)
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -34,15 +86,19 @@ export function OrderStatusChart() {
       </CardHeader>
 
       <CardContent>
+
+        {/* Chart */}
         <div className="h-[200px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+            >
               <XAxis dataKey="status" hide />
               <YAxis hide domain={[0, MAX]} />
 
-              {/* Tooltip (required for hover data) */}
               <Tooltip
-                cursor={false}
+                cursor={{ fill: "transparent" }}
                 contentStyle={{
                   backgroundColor: "white",
                   borderRadius: "8px",
@@ -52,7 +108,6 @@ export function OrderStatusChart() {
                 formatter={(value: number) => [`${value}`, "Orders"]}
               />
 
-              {/* Single bar with background track */}
               <Bar
                 dataKey="value"
                 barSize={54}
@@ -62,7 +117,7 @@ export function OrderStatusChart() {
                   radius: 10,
                 }}
               >
-                {data.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell key={index} fill={entry.color} />
                 ))}
               </Bar>
@@ -70,9 +125,9 @@ export function OrderStatusChart() {
           </ResponsiveContainer>
         </div>
 
-        {/* Legend */}
+        {/* Legend / Full Status List */}
         <div className="mt-10 space-y-1.5 text-md">
-          {data.map((item) => (
+          {legendData.map((item) => (
             <div
               key={item.status}
               className="flex items-center justify-between"
@@ -82,14 +137,19 @@ export function OrderStatusChart() {
                   className="h-2 w-2 rounded-full"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-muted-foreground">
+
+                <span className="text-muted-foreground capitalize">
                   {item.status}
                 </span>
               </div>
-              <span className="font-medium">{item.value}</span>
+
+              <span className="font-medium">
+                {item.value.toLocaleString()}
+              </span>
             </div>
           ))}
         </div>
+
       </CardContent>
     </Card>
   )
