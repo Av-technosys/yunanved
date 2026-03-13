@@ -28,3 +28,5 @@ export * from "./chart";
 export * from "./dialog"
 export * from "./breadcrumb";
 export * from "./alert-dialog";
+export * from "./sheet";
+export * from "./popover";

@@ -1,20 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Button } from "@/components/ui";
+import { Button, Input, Label, Separator } from "@/components/ui";
 import Link from "next/link";
-import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CircleUserRound, LogOut, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui";
 import { NAVBAR_CATEGORY_RIBBON } from "@/const";
 import { SearchWithIcon } from "./navbar/SearchBar";
 import { CartIcon } from "./navbar/Cart";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui";
+import { logoutHandler } from "@/helper";
+import { toast } from "sonner";
+import LogoutNavbar from "./logoutNavbar";
 
-export const Navbar = ({userInfo, loading}:any) => {
-
+export const Navbar = ({ userInfo, loading }: any) => {
+ 
   return (
-    <header className="w-full  bg-white py-3 px-2 md:px-4 lg:px-12">
+    <header className="w-full sticky top-0 z-50 bg-white py-2 ">
       <div
         className={
           "max-w-6xl mx-auto flex items-center justify-between gap-4 md:gap-12"
@@ -23,7 +27,7 @@ export const Navbar = ({userInfo, loading}:any) => {
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
+              <Menu style={{width:22 , height : 22}} />
             </Button>
           </SheetTrigger>
 
@@ -52,7 +56,39 @@ export const Navbar = ({userInfo, loading}:any) => {
               {/* Cart Icon with Badge */}
             </div>
           </div>
-          <CartIcon />
+          <div className="flex  items-center">
+            <CartIcon  />
+
+            <Popover>
+              <PopoverTrigger className=" block sm:hidden" asChild>
+                <Button className="flex items-center justify-center" variant="ghost">
+                  <CircleUserRound style={{width:22 , height : 22}} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40 mr-2  flex flex-col gap-1">
+                {userInfo ? (
+                  <>
+                    <LogedInUserDetail userInfo={userInfo} />
+                    <div className=" sm:hidden  mt-3 flex flex-col items-start gap-2">
+                      <Separator />
+                     <LogoutNavbar/>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <Link href="/sign-in">Login</Link>
+                    </div>
+                    <Separator />
+                    <div>
+                      <Link href="/sign-up">Sign Up</Link>
+                    </div>
+                  </>
+                )}
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <SheetContent
             onOpenAutoFocus={(e) => e.preventDefault()}
             side="left"
@@ -96,8 +132,8 @@ export const Navbar = ({userInfo, loading}:any) => {
                   </Avatar>
 
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Welcome</span>
-                    <span className="font-semibold">{userInfo.firstName}</span>
+                    <span className="text-sm text-gray-500">Welcome,</span>
+                    <span className="font-semibold">{userInfo.firstName} {userInfo.lastName}</span>
                   </div>
                 </Link>
               ) : (
@@ -120,8 +156,6 @@ export const Navbar = ({userInfo, loading}:any) => {
     </header>
   );
 };
-
-
 
 function LogedInUserDetail({ userInfo }: any) {
   return (
@@ -150,7 +184,7 @@ function LogedInUserDetail({ userInfo }: any) {
 
         {userInfo?.firstName ? (
           <span className="text-md font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
-            {userInfo.firstName}
+            {userInfo.firstName} 
           </span>
         ) : (
           <Skeleton className="h-4 w-[80px]" />

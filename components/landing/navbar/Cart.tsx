@@ -11,8 +11,8 @@ export  function CartIcon() {
   return (
     <div className="relative cursor-pointer p-2">
       <Link href={"/cart"}>
-        <Button className=" rounded-full h-11 w-11">
-          <ShoppingCart size={20} />
+        <Button className=" rounded-full flex items-center justify-center bg-white text-black sm:text-white sm:bg-[#424242] h-11 w-11">
+          <ShoppingCart style={{width:22 , height : 22}} />
         </Button>
         {/* Notification Badge */}
 

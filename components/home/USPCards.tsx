@@ -12,7 +12,7 @@ export const USPCards = () => {
             ${card.bgColor}
             rounded-xl p-4 relative overflow-hidden
             h-60 flex flex-col justify-between
-            min-w-[360px] md:min-w-0
+            min-w-80 md:min-w-0
           `}
         >
 

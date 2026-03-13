@@ -8,7 +8,7 @@ export const Hero = () => {
       {/* Top Category Nav */}
 
 
-      <div className="max-w-7xl mx-auto  py-4 space-y-10">
+      <div className="max-w-7xl mx-auto   sm:py-4 space-y-10">
         {/* Main Hero Banner */}
         <HeroCrousel />
 
