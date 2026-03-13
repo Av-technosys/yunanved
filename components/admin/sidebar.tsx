@@ -38,7 +38,7 @@ const navItems = [
     icon: Feather,
   },
   { label: "Coupon", href: "/admin/coupon", icon: Code },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
+  // { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function Sidebar({ mobile = false, logout }: { mobile?: boolean,   logout?: () => void}) {

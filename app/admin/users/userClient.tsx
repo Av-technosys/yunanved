@@ -66,7 +66,7 @@ const UserClient = ({ users, total, currentPage }: Props) => {
 
         <CardContent>
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Card key={index}>
                 <CardContent>
@@ -82,7 +82,7 @@ const UserClient = ({ users, total, currentPage }: Props) => {
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </div> */}
 
           <div className="mt-6 flex gap-3">
             <div className="w-full max-w-xl">
