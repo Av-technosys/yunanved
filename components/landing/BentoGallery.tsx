@@ -17,7 +17,7 @@ export const BentoGallery = async () => {
             <Link
               key={card.id}
               href={`/category/${card.slug}`}
-              className={`relative overflow-hidden rounded-[2rem] group cursor-pointer bg-white ${
+              className={`relative overflow-hidden rounded-4xl group cursor-pointer bg-white ${
                 isLarge ? "md:col-span-2 md:row-span-2" : ""
               }`}
             >
@@ -32,7 +32,7 @@ export const BentoGallery = async () => {
               </div>
 
               {/* MOBILE CONTENT (below image) */}
-              <div className="md:hidden p-4">
+              <div className="md:hidden p-4 border border-gray-200 border-t-0 rounded-b-4xl">
                 <h3 className="text-lg font-bold text-[var(--text)] mb-1">
                   {card.name}
                 </h3>

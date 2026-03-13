@@ -90,7 +90,7 @@ export const FeaturedProductCard = ({ product, key }: any) => {
 
           {/* Price + Button */}
           <div className="flex flex-col md:flex-row justify-between md:items-center">
-            <span className="font-bold text-lg text-black">
+            <span className="font-bold text-lg mb-2 sm:mb-0 text-black">
               ₹{product.basePrice}
             </span>
 

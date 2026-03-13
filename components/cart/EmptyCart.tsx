@@ -15,7 +15,7 @@ export  function EmptyCart() {
           className="rounded-lg bg-gray-100"
         />
         <h1 className="font-bold text-xl">Your Cart is Empty</h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-center p-4">
           Looks like your cart is empty. Start shopping to add items
         </p>
         <Button className="bg-teal-700 text-white py-2 px-3 rounded-full font-medium hover:bg-teal-800">

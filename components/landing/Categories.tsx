@@ -28,11 +28,11 @@ export async function Categories() {
           }}
           className="w-full md:px-8"
         >
-          <CarouselContent className="overflow-visible py-2">
+          <CarouselContent className="overflow-visible py-2 px-3 sm:px-0">
             {categories?.map((cat, index) => (
               <CarouselItem
                 key={index}
-                className="basis-[132px] sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/7"
+                className="basis-33 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/7"
               >
                 <CategoryCard cat={cat} />
               </CarouselItem>
