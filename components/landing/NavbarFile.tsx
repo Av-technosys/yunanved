@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import LogoutNavbar from "./logoutNavbar";
 
 export const Navbar = ({ userInfo, loading }: any) => {
+
+  console.log("user info", userInfo);
  
   return (
     <header className="w-full sticky top-0 z-50 bg-white py-2 ">
@@ -246,13 +248,13 @@ function UserLocation({
         </span>
         {loading ? (
           <Skeleton className="h-4 w-[120px]" />
-        ) : userInfo ? (
+        ) : userInfo.city ? (
           <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
             {userInfo.city}, {userInfo.state}
           </span>
         ) : (
           <Link
-            href="/sign-in"
+            href={`${userInfo ? "/dashboard/address" : "/sign-in"}`}
             className="text-sm font-bold group-hover:text-slate-600 transition-colors"
           >
             Select a location

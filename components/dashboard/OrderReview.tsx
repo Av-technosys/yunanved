@@ -28,49 +28,72 @@ export const OrderReview = ({
   const { upload, uploading } = useFileUpload();
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
   // const [previews, setPreviews] = useState<{ [key: string]: string }>({});
+  // const [previews, setPreviews] = useState<
+  //   { productId: string; preview: string; index: number }[]
+  // >([]);
+  // const [fileKey, setFileKey] = useState<
+  //   { productId: string; fileKey: string; index: number }[]
+  // >([]);
+
   const [previews, setPreviews] = useState<
-    { productId: string; preview: string; index: number }[]
+    { variantId: string; preview: string; index: number }[]
   >([]);
+
   const [fileKey, setFileKey] = useState<
-    { productId: string; fileKey: string; index: number }[]
+    { variantId: string; fileKey: string; index: number }[]
   >([]);
+
   const [comments, setComments] = useState<{ [key: string]: string }>({});
   const [loadingProduct, setLoadingProduct] = useState<string | null>(null);
 
+
   const handleImageChange = async (
     e: any,
-    productId: string,
+    variantId: string,
     index: number,
   ) => {
     const file = e.target.files[0];
-    if (file) {
-      const folder = "review";
-      const { preview, fileKey } = await upload(file, folder);
+    if (!file) return;
 
-      setPreviews((prev) => {
-        const filtered = prev.filter(
-          (p) => !(p.productId === productId && p.index === index),
-        );
+    const folder = "review";
+    const { preview, fileKey } = await upload(file, folder);
 
-        return [...filtered, { productId, preview, index }];
-      });
+    setPreviews((prev) => {
+      const filtered = prev.filter(
+        (p) => !(p.variantId === variantId && p.index === index),
+      );
 
-      setFileKey((prev) => [...prev, { productId, fileKey, index }]);
-    }
+      return [...filtered, { variantId, preview, index }];
+    });
+
+    setFileKey((prev) => {
+      const filtered = prev.filter(
+        (p) => !(p.variantId === variantId && p.index === index),
+      );
+
+      return [...filtered, { variantId, fileKey, index }];
+    });
   };
 
   const handleSubmitReview = async (productVarientId: string) => {
+
+    const productMedia = fileKey
+      .filter((f) => f.variantId === productVarientId)
+      .map((f) => f.fileKey);
+
     const reviewData = {
       userId: orderDetails.userId,
       productVarientId,
       rating: ratings[productVarientId] || 0,
       message: comments[productVarientId] || "",
-      media: fileKey || [],
+      media: productMedia,
     };
 
+   
 
     try {
-      setLoadingProduct(productVarientId);
+     if(reviewData.rating > 0 && reviewData.message !== ""){
+       setLoadingProduct(productVarientId);
 
       const response = await createReview(reviewData);
 
@@ -84,6 +107,9 @@ export const OrderReview = ({
       } else {
         toast.error("Failed to submit review");
       }
+     }else{
+      toast.error("Please give rating and write a review to the product");
+     }
     } finally {
       setLoadingProduct(null);
     }
@@ -94,7 +120,6 @@ export const OrderReview = ({
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
           onClick={() => onBack()}
-
         >
           <span>Home</span> <ChevronRight size={12} />
           <span>My orders</span> <ChevronRight size={12} />
@@ -184,7 +209,10 @@ export const OrderReview = ({
             <CardDescription className="my-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {orderDetails.items.map((item: any, index: number) => {
-                  const variantId = item.productVarientId || item.productId || item.productVariant?.id;
+                  const variantId =
+                    item.productVarientId ||
+                    item.productId ||
+                    item.productVariant?.id;
 
                   return (
                     <Card
@@ -221,10 +249,11 @@ export const OrderReview = ({
                             <Star
                               key={star}
                               size={28}
-                              className={`cursor-pointer transition-colors ${star <= (ratings[variantId] || 0)
-                                ? "fill-yellow-400 text-yellow-400"
-                                : "text-gray-300"
-                                }`}
+                              className={`cursor-pointer transition-colors ${
+                                star <= (ratings[variantId] || 0)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
                               onClick={() =>
                                 setRatings((prev) => ({
                                   ...prev,
@@ -239,8 +268,7 @@ export const OrderReview = ({
                           {[1, 2, 3, 4, 5].map((index: number) => {
                             const currentPreview = previews.find(
                               (p) =>
-                                p.productId === item.productId &&
-                                p.index === index,
+                                p.variantId === variantId && p.index === index,
                             );
 
                             return (
@@ -252,7 +280,7 @@ export const OrderReview = ({
                                   type="file"
                                   accept="image/*"
                                   onChange={(e) =>
-                                    handleImageChange(e, item.productId, index)
+                                    handleImageChange(e, variantId, index)
                                   }
                                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                 />
@@ -290,10 +318,14 @@ export const OrderReview = ({
 
                         <Button
                           className="w-full"
-                          disabled={loadingProduct === variantId && loadingProduct !== null}
+                          disabled={
+                            loadingProduct === variantId &&
+                            loadingProduct !== null
+                          }
                           onClick={() => handleSubmitReview(variantId)}
                         >
-                          {loadingProduct === variantId && loadingProduct !== null
+                          {loadingProduct === variantId &&
+                          loadingProduct !== null
                             ? "Submitting..."
                             : "Submit Review"}
                         </Button>
@@ -309,4 +341,3 @@ export const OrderReview = ({
     </>
   );
 };
-

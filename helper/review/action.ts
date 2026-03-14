@@ -61,6 +61,8 @@ export async function createReview(reviewData: any) {
   try {
     const { userId, productVarientId, rating, message, media } = reviewData;
 
+    
+
     if (!productVarientId) {
       throw new Error("Product Variant ID is required for review submission");
     }
@@ -90,13 +92,15 @@ export async function createReview(reviewData: any) {
         })
         .returning({ id: review.id });
 
-      await tx.insert(reviewMedia).values(
-        media.map((img: any) => ({
-          reviewId: reviewId[0].id,
-          mediaType: "image",
-          mediaURL: img.fileKey,
-        })),
-      );
+      if (media && media.length > 0) {
+        await tx.insert(reviewMedia).values(
+          media.map((img: any) => ({
+            reviewId: reviewId[0].id,
+            mediaType: "image",
+            mediaURL: img,
+          })),
+        );
+      }
     });
 
     return { success: true };
