@@ -9,6 +9,9 @@ import {
   category,
   productCategory,
   productVariant,
+  review,
+  reviewMedia,
+  user,
 } from "@/db";
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
@@ -67,7 +70,6 @@ export async function createProduct(formData: FormData) {
     const variants: VariantInput[] = JSON.parse(variantsData);
 
     const productId = await db.transaction(async (tx) => {
-
       // 1. Create the parent product
       const [createdProduct] = await tx
         .insert(product)
@@ -88,10 +90,9 @@ export async function createProduct(formData: FormData) {
 
       const slugs = await Promise.all(
         variants.map((v) =>
-          generateUniqueSlug(tx, v.name, productVariant.slug)
-        )
+          generateUniqueSlug(tx, v.name, productVariant.slug),
+        ),
       );
-
 
       const variantInsertData = variants.map((v, index) => ({
         productId: pId,
@@ -117,7 +118,6 @@ export async function createProduct(formData: FormData) {
         .insert(productVariant)
         .values(variantInsertData)
         .returning({ id: productVariant.id });
-
 
       const allMediaRows: {
         productVarientId: string;
@@ -367,18 +367,20 @@ export async function getFullProduct(identifier: string) {
         .where(eq(productCategory.productId, productGroupId)),
     ]);
 
-    const variantIds = variants.map(v => v.id);
+    const variantIds = variants.map((v) => v.id);
 
     let allMedia: any[] = [];
     let allAttributes: any[] = [];
 
     if (variantIds.length > 0) {
       [allMedia, allAttributes] = await Promise.all([
-        db.select()
+        db
+          .select()
           .from(productVarientMedia)
           .where(inArray(productVarientMedia.productVarientId, variantIds)),
 
-        db.select()
+        db
+          .select()
           .from(productVarientAttribute)
           .where(inArray(productVarientAttribute.productVarientId, variantIds)),
       ]);
@@ -401,10 +403,10 @@ export async function getFullProduct(identifier: string) {
       mediaMap.get(m.productVarientId)!.push(m);
     }
 
-    const variantsWithDetails = variants.map(v => ({
+    const variantsWithDetails = variants.map((v) => ({
       ...v,
       media: mediaMap.get(v.id) || [],
-      attributes: attributeMap.get(v.id) || []
+      attributes: attributeMap.get(v.id) || [],
     }));
     return {
       id: productGroupId,
@@ -555,6 +557,49 @@ export async function getProductSimilarProducts(slug: string | any) {
     return similarVariants;
   } catch (error) {
     console.error("getProductSimilarProducts failed:", error);
+  }
+}
+
+export async function getProductReviews(slug: string | any) {
+  try {
+    const v = await db.query.productVariant.findFirst({
+      where: eq(productVariant.slug, slug),
+    });
+    if (!v || !v.productId) return [];
+    const reviews = await db
+      .select({
+        id: review.id,
+        rating: review.rating,
+        userId: review.userId,
+        name: review.name,
+        email: review.email,
+        message: review.message,
+        productVarientId: review.productVarientId,
+        image: user.profileImage,
+        createdAt: review.createdAt,
+      })
+      .from(review)
+      .innerJoin(user, eq(review.userId, user.id))
+      .where(
+        and(
+          eq(review.productVarientId, v.id),
+          eq(review.isAdminApproved, true),
+        ),
+      );
+
+    const reviewsWithMedia = await Promise.all(
+      reviews.map(async (r) => ({
+        ...r,
+        media: await db
+          .select()
+          .from(reviewMedia)
+          .where(eq(reviewMedia.reviewId, r.id)),
+      })),
+    );
+
+    return reviewsWithMedia;
+  } catch (error) {
+    return [];
   }
 }
 

@@ -16,7 +16,7 @@ export default function Details({ id }: { id: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
 
-  console.log("order Info", orderInfo);
+  
 
   const BASE = NEXT_PUBLIC_S3_BASE_URL!;
 

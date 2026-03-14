@@ -27,6 +27,7 @@ const ORDER_STATUS = [
   { value: "completed", label: "Completed" },
   { value: "cancelled", label: "Cancelled" },
   { value: "failed", label: "Failed" },
+    { value: "paid", label: "Paid" },
   { value: "shipped", label: "Shipped" },
   { value: "delivered", label: "Delivered" },
 ];
@@ -37,6 +38,8 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
 
   const router = useRouter();
   const pathname = usePathname();
+
+
 
   return (
     <div className="mt-8">

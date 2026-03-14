@@ -15,6 +15,7 @@ const ProductClient = ({
   productInfo: initialProduct,
   variants = [],
   similarProducts = [],
+  reviewWithMedia = [],
 }: any) => {
   const [activeVariant, setActiveVariant] = useState(initialProduct);
   const [bannerImage, setBannerImage] = useState<any>(activeVariant.bannerImage);
@@ -164,8 +165,8 @@ const ProductClient = ({
         <div className="text-lg mb-5 font-bold">Customer Reviews</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
 
-          {(activeVariant.reviewsWithMedia || []).length > 0 ? (
-            activeVariant.reviewsWithMedia.map((review: any, index: number) => (
+          {(reviewWithMedia || []).length > 0 ? (
+            reviewWithMedia?.map((review: any, index: number) => (
               <ReviewCard key={index} review={review} />
             ))
           ) : (

@@ -153,9 +153,10 @@ export default function Checkout() {
           <div className="col-span-3 md:col-span-2 space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold">Checkout</h2>
-              <Button variant="link" className="text-sm">
-                + Add New
-              </Button>
+             
+              <Link href="/dashboard/address" className="text-sm">
+                + Add New Address
+              </Link>
             </div>
 
             <h3 className="text-sm font-semibold text-gray-700">
@@ -177,7 +178,8 @@ export default function Checkout() {
                       </CardContent>
                     </Card>
                   ))
-                : addresses.map((item) => {
+                : addresses.length > 0 ? (
+                  addresses.map((item) => {
                     const isActive = selected === item.id;
 
                     return (
@@ -232,7 +234,11 @@ export default function Checkout() {
                         </CardContent>
                       </Card>
                     );
-                  })}
+                  })
+                ) : (
+                  <div>No address found..</div>
+                )
+                }
             </RadioGroup>
           </div>
 

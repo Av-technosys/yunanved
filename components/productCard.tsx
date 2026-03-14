@@ -88,7 +88,7 @@ export const ProductCard = ({ product, index, className = "", slug = "" }: any) 
             <Button
               disabled={isAdding}
               className={cn(
-                "transition-colors bg-[var(--bg-product-button)]",
+                "transition-colors ",
                 isAdding && "opacity-70 pointer-events-none"
               )}
               onClick={handleClick}
