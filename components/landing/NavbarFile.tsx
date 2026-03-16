@@ -246,13 +246,13 @@ function UserLocation({
         </span>
         {loading ? (
           <Skeleton className="h-4 w-[120px]" />
-        ) : userInfo ? (
+        ) : userInfo?.city ? (
           <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
-            {userInfo.city}, {userInfo.state}
+            {userInfo?.city}, {userInfo?.state}
           </span>
         ) : (
           <Link
-            href="/sign-in"
+            href={`${userInfo ? "/dashboard/address" : "/sign-in"}`}
             className="text-sm font-bold group-hover:text-slate-600 transition-colors"
           >
             Select a location

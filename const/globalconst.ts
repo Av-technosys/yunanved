@@ -149,6 +149,7 @@ export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifi
 
 export const ORDER_STATUS = {
   PENDING: "pending",
+  Paid:"paid",
   PROCESSING: "processing",
   SHIPPED: "shipped",
   DELIVERED: "delivered",

@@ -5,13 +5,11 @@ import {
   Twitter,
   Instagram,
   Mail,
+  Phone,
+  MapPin,
+  Clock,
 } from "lucide-react";
-import {
-  MapPinIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  ClockIcon,
-} from "@heroicons/react/24/solid"
+
 export const Footer = () => {
   return (
     <footer className="w-full bg-white">
@@ -103,7 +101,7 @@ export const Footer = () => {
             <ul className="space-y-4 text-sm text-slate-900">
 
               <li className="flex items-start gap-3">
-                <MapPinIcon className="w-5 h-5 text-slate-700 shrink-0 mt-1" />
+                <MapPin className="w-5 h-5 text-slate-700 shrink-0 mt-1" />
                 <span>
                   456 Fashion Avenue, Fashion District,
                   <br />
@@ -112,17 +110,17 @@ export const Footer = () => {
               </li>
 
               <li className="flex items-center gap-3">
-                <PhoneIcon className="w-5 h-5 text-slate-700 shrink-0" />
+                <Phone className="w-5 h-5 text-slate-700 shrink-0" />
                 <span>+1 (555) 987-6543</span>
               </li>
 
               <li className="flex items-center gap-3">
-                <EnvelopeIcon className="w-5 h-5 text-slate-700 shrink-0" />
+                <Mail  className="w-5 h-5 text-slate-700 shrink-0" />
                 <span>hello@yunanved.com</span>
               </li>
 
               <li className="flex items-center gap-3">
-                <ClockIcon className="w-5 h-5 text-slate-700 shrink-0" />
+                <Clock className="w-5 h-5 text-slate-700 shrink-0" />
                 <span>Mon - Sun: 10:00 AM - 8:00 PM</span>
               </li>
 

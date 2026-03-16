@@ -24,7 +24,7 @@ export async function FeaturedProducts() {
         {/* Products Grid */}
         <div className="grid grid-cols-2  items-stretch sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
           {products.map((product) => (
-            <FeaturedProductCard key={product.productId} product={product} />
+            <FeaturedProductCard key={product.id} product={product} />
           ))}
         </div>
 
