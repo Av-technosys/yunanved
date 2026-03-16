@@ -15,9 +15,9 @@ import {
 
 export default function ProfilePage() {
   return (
-    <div className="max-w-full space-y-4">
+    <div className="max-w-full space-y-4 md:p-8 p-4">
       {/* Header */}
-      <Card className="rounded-none">
+      <Card>
         <CardContent className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-14 w-14">
@@ -83,10 +83,10 @@ export default function ProfilePage() {
               </Select>
             </div>
 
-            <div className="space-y-1.5">
+            {/* <div className="space-y-1.5">
               <Label>Password</Label>
               <Input placeholder="Enter Password" type="password" />
-            </div>
+            </div> */}
           </div>
 
           <div className="flex justify-end gap-3 pt-2">

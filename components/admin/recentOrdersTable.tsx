@@ -1,5 +1,4 @@
-// components/recent-orders-table.tsx
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Eye } from "lucide-react"
 
@@ -21,41 +20,44 @@ import {
 
 import { Badge } from "@/components/ui"
 import { Button } from "@/components/ui"
+import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
+import { ORDER_STATUS } from "@/const"
 
-type OrderStatus = "New" | "Processing" | "Completed"
+const statusStyleMap: Record<string, string> = {
+  [ORDER_STATUS.PENDING]:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
 
-const orders: {
-  id: string
-  customer: string
-  items: number
-  total: string
-  status: OrderStatus
-}[] = [
-  { id: "#ORD154", customer: "John Doe", items: 5, total: "$45", status: "New" },
-  { id: "#ORD155", customer: "John Doe", items: 5, total: "$45", status: "Processing" },
-  { id: "#ORD156", customer: "John Doe", items: 5, total: "$45", status: "Completed" },
-  { id: "#ORD157", customer: "John Doe", items: 5, total: "$45", status: "Processing" },
-  { id: "#ORD158", customer: "John Doe", items: 5, total: "$45", status: "Completed" },
-  { id: "#ORD159", customer: "John Doe", items: 5, total: "$45", status: "New" },
-]
-
-const statusStyleMap: Record<OrderStatus, string> = {
-  New: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
-  Processing:
+  [ORDER_STATUS.PROCESSING]:
     "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
-  Completed:
+
+  [ORDER_STATUS.SHIPPED]:
+    "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400",
+
+  [ORDER_STATUS.DELIVERED]:
+    "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
+
+  [ORDER_STATUS.COMPLETED]:
     "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
+
+  [ORDER_STATUS.CANCELED]:
+    "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
 }
 
-export function RecentOrdersTable() {
+
+export function RecentOrdersTable({ orders }: { orders?: any }) {
+
+  const skeletonRows = Array.from({ length: 5 })
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Recent Orders</CardTitle>
 
-        <Button variant="link" className="px-0 text-emerald-600">
+        <Link href="/admin/order" 
+ className="px-0 text-emerald-600">
           View all orders
-        </Button>
+        </Link>
       </CardHeader>
 
       <CardContent>
@@ -72,44 +74,75 @@ export function RecentOrdersTable() {
           </TableHeader>
 
           <TableBody>
-            {orders.map((order) => (
-              <TableRow
-                key={order.id}
-                className="hover:bg-muted/50 transition-colors"
-              >
-                <TableCell className="font-medium">
-                  {order.id}
-                </TableCell>
 
-                <TableCell>{order.customer}</TableCell>
+            {!orders
+              ? skeletonRows.map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-6 mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Skeleton className="h-4 w-12 mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Skeleton className="h-6 w-20 mx-auto rounded-full" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-8 w-8 rounded-md ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))
+             : orders.map((order:any) => {
+                  const statusKey =
+                    order.status?.trim().toLowerCase()
 
-                <TableCell className="text-center">
-                  {order.items}
-                </TableCell>
+                  return (
+                    <TableRow
+                      key={order.id}
+                      className="hover:bg-muted/50 transition-colors"
+                    >
+                      <TableCell className="font-medium">
+                        {order.id}
+                      </TableCell>
 
-                <TableCell className="text-center">
-                  {order.total}
-                </TableCell>
+                      <TableCell>
+                        {order.customer}
+                      </TableCell>
 
-                <TableCell className="text-center">
-                 <Badge
-                    className={`border-none font-medium ${statusStyleMap[order.status]}`}
-                  >
-                    {order.status}
-                  </Badge>
-                </TableCell>
+                      <TableCell className="text-center">
+                        {order.items}
+                      </TableCell>
 
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                      <TableCell className="text-center">
+                        ₹ {order.total.toLocaleString()}
+                      </TableCell>
+
+                      <TableCell className="text-center">
+                        <Badge
+                          className={`border-none font-medium ${
+                            statusStyleMap[statusKey] ??
+                            "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {statusKey}
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+
           </TableBody>
         </Table>
       </CardContent>

@@ -18,7 +18,7 @@ const router = useRouter();
    const logout = async() => {
      await logoutHandler();
     router.push("/sign-in");
-      localStorage.removeItem("token");
+      
    }
    
   return (

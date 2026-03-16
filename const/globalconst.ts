@@ -127,28 +127,6 @@ export const CATEGORY_2 = [
   },
 ];
 
-export const ORDER_STATUS = [
-  {
-    id: "91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87",
-    status: "pending",
-    color: "#facc15", // yellow
-  },
-  {
-    id: "f2b50957-93ae-4c49-91ea-5b52d3c89743",
-    status: "processing",
-    color: "#60a5fa", // blue
-  },
-  {
-    id: "1c9c5038-94b0-4607-8203-f6ea72b5617d",
-    status: "shipped",
-    color: "#38bdf8", // light blue
-  },
-  {
-    id: "ae0d91c0-736b-4b4c-8e90-2275cd14c47b",
-    status: "delivered",
-    color: "#10b981", // Teal / Success
-  },
-];
 
 
 export const NAVBAR_CATEGORY_RIBBON = [
@@ -168,3 +146,16 @@ export const pageSize = 4
 // export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
 export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifier);
+
+export const ORDER_STATUS = {
+  PENDING: "pending",
+  PROCESSING: "processing",
+  SHIPPED: "shipped",
+  DELIVERED: "delivered",
+  COMPLETED: "completed",
+  CANCELED: "canceled",
+} as const;
+
+export type OrderStatus =
+  (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
+
