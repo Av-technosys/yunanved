@@ -1,3 +1,6 @@
+
+import { getDashboardData } from "@/helper/getDashboardData"
+
 import { OrderStatusBoxes } from "@/components/admin"
 import { OrderStatusChart } from "@/components/admin"
 import { RecentOrdersTable } from "@/components/admin"
@@ -5,35 +8,39 @@ import { QuickActions } from "@/components/admin"
 import { DashboardCards } from "@/components/admin"
 
 export default async function DashboardPage() {
+
+  const data = await getDashboardData()
   return (
     <div className="space-y-6 p-3">
-      {/* Page Header */}
+
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800">
           Dashboard Overview
         </h1>
+
         <p className="text-slate-500">
           Welcome back! Here's what's happening with your store today
         </p>
       </header>
 
-      <DashboardCards />
+      <DashboardCards stats={data.stats} />
 
-      {/* Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <OrderStatusBoxes />
+          <OrderStatusBoxes status={data.orderStatus} />
         </div>
+
         <QuickActions />
       </div>
 
-      {/* Row 3 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <RecentOrdersTable />
+          <RecentOrdersTable orders={data.recentOrders} />
         </div>
-        <OrderStatusChart />
+
+        <OrderStatusChart data={data.orderStatus} />
       </div>
+
     </div>
   )
 }
