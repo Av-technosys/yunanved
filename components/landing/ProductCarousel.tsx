@@ -89,7 +89,7 @@ export  function Collections() {
   ];
 
   return (
-    <div className="bg-white mt-8">
+    <div className="bg-white  mt-8">
       <ProductCarousel title="New Arrival" items={DUMMY_DATA} />
       <ProductCarousel title="Best Seller" items={DUMMY_DATA} />
     </div>

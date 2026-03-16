@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +15,7 @@ export async function Categories() {
   const categories = await getCategories();
 
   return (
-    <section className="w-full mt-8  bg-white">
+    <section className="w-full mt-8 mx-auto  max-w-7xl bg-white">
       <h2 className="text-3xl font-bold text-center mb-4 md:mb-10 text-slate-900 tracking-tight">
         Explore All Categories
       </h2>

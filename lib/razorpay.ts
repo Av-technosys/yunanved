@@ -32,6 +32,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   items,
   userId,
   address,
+  couponId,
+  couponCode,
+
 }: {
   amount: number;
   name: string;
@@ -39,6 +42,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   items: any[];
   userId: string;
   address: any;
+  couponId?: string | null;  
+  couponCode? : string | null;
+
 }) => {
   const scriptLoaded = await loadRazorpayScript();
 
@@ -81,6 +87,8 @@ export const loadRazorpayScript = (): Promise<boolean> => {
               userId,
               address,
               amount,
+              couponId,
+              couponCode
             }),
           });
 

@@ -10,7 +10,7 @@ import { NavbarCategoryRibbon } from "@/components/landing";
 
 export default function Home() {
   return (
-    <div className="flex max-w-7xl px-4 max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
+    <div className="flex px-4 max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
       <NavbarCategoryRibbon />
       <Hero />
       <Categories />

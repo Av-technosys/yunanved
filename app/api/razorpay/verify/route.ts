@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { createOrder } from "@/helper/index"; // adjust path
+import { createOrder, recordCouponUsage } from "@/helper"; // adjust path
 import { RAZORPAY_KEY_SECRET } from "@/env";
 
 export async function POST(req: Request) {
@@ -14,6 +14,8 @@ export async function POST(req: Request) {
     userId,
     address,
     amount,
+    couponId,
+    couponCode
   } = body;
 
   // 1️⃣ Verify signature
@@ -34,6 +36,15 @@ export async function POST(req: Request) {
     razorpayPaymentId: razorpay_payment_id,
     razorpayOrderId: razorpay_order_id,
   });
+
+  // Record coupon usage only if a coupon exists
+  if (couponId) {
+    await recordCouponUsage({
+      userId,
+      couponId,
+      code: couponCode,
+    });
+  }
 
   return NextResponse.json(result);
 }

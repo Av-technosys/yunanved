@@ -30,7 +30,7 @@ export  function OrderSummaryCard({
         </div>
 
         <div className="flex justify-between text-sm text-red-500">
-          <span>Discount (-20%)</span>
+          <span>Discount (-0%)</span>
           {loading ? (
             <Skeleton className="h-4 w-16" />
           ) : (

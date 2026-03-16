@@ -137,7 +137,8 @@ export default function CartPage() {
 
   }, [items, productMap])
 
-  const discount = subtotal * 0.2
+  // const discount = subtotal * 0.2
+  const discount = 0
   const deliveryFee = subtotal > 0 ? 15 : 0
   const total = subtotal - discount + deliveryFee
 

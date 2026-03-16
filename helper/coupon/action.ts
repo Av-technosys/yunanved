@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { coupon } from "@/db";
+import { coupon, couponTransaction } from "@/db";
 import { db } from "@/lib/db";
 import { and, asc, eq, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function getCoupons(
-  search = "",
-) {
+export async function getCoupons(search = "") {
   const filters = [];
 
   if (search && search.trim() !== "") {
@@ -72,4 +71,76 @@ export async function updateCoupon(couponData: any, couponId: string) {
     console.error(error);
     return { success: false };
   }
+}
+
+export async function validateCoupon({
+  code,
+  subtotal,
+  userId,
+}: {
+  code: string;
+  subtotal: number;
+  userId: string;
+}) {
+  const couponData = await db.query.coupon.findFirst({
+    where: eq(coupon.code, code),
+  });
+
+  if (!couponData) {
+    throw new Error("Invalid coupon");
+  }
+
+  if (subtotal < couponData.minimumOrderValue) {
+    throw new Error("Minimum order value not met");
+  }
+
+  if (couponData.useOnce) {
+    const alreadyUsed = await db.query.couponTransaction.findFirst({
+      where: and(
+        eq(couponTransaction.userId, userId),
+        eq(couponTransaction.couponId, couponData.id),
+      ),
+    });
+
+    if (alreadyUsed) {
+      throw new Error("Coupon already used");
+    }
+  }
+
+  let discount = 0;
+
+  if (couponData.isDiscountPercentage) {
+    discount = (subtotal * couponData.discountPercentage!) / 100;
+
+    if (couponData.maximumDiscountAmount) {
+      discount = Math.min(discount, couponData.maximumDiscountAmount);
+    }
+  } else {
+    discount = couponData.discountFixedAmount ?? 0;
+  }
+
+  return {
+    couponId: couponData.id,
+    discount,
+    isDiscountPercentage: couponData.isDiscountPercentage,
+    discountPercentage: couponData.discountPercentage,
+    discountFixedAmount: couponData.discountFixedAmount,
+  };
+}
+
+
+export async function recordCouponUsage({
+  userId,
+  couponId,
+  code,
+}: {
+  userId: string;
+  couponId: string;
+  code: string;
+}) {
+  await db.insert(couponTransaction).values({
+    userId,
+    couponId,
+    code,
+  });
 }
