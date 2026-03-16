@@ -12,7 +12,7 @@ export default function Loading() {
                 {[1, 2, 3].map((item) => (
                     <div
                         key={item}
-                        className="rounded-xl p-6 border space-y-4 h-48 flex flex-col justify-between"
+                        className="relative rounded-xl p-6 border space-y-4 h-48 flex flex-col justify-between"
                     >
                         <div className="space-y-2">
                             <Skeleton className="h-6 w-40" />

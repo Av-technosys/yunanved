@@ -10,6 +10,7 @@ import { useAddToCart } from "@/helper/useAddToCart";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { cn } from "@/lib/utils";
 import ReviewCard from "../reviewCard";
+import { useRouter } from "next/navigation";
 
 const ProductClient = ({
   productInfo: initialProduct,
@@ -17,6 +18,7 @@ const ProductClient = ({
   similarProducts = [],
   reviewWithMedia = [],
 }: any) => {
+  const router = useRouter();
   const [activeVariant, setActiveVariant] = useState(initialProduct);
   const [bannerImage, setBannerImage] = useState<any>(activeVariant.bannerImage);
   const [isAdding, setIsAdding] = useState(false);
@@ -58,7 +60,8 @@ const ProductClient = ({
     setActiveVariant(variant);
     setBannerImage(variant.bannerImage);
     // Optionally update the URL without a full reload
-    window.history.replaceState(null, "", `/product/${variant.slug}`);
+    // window.history.replaceState(null, "", `/product/${variant.slug}`);
+     router.push(`/product/${variant.slug}`);
   };
 
   return (
