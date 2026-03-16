@@ -39,6 +39,8 @@ export {
   createCoupon,
   updateCoupon,
   deleteCoupon,
+  validateCoupon,
+  recordCouponUsage
 } from "./coupon/action";
 
 

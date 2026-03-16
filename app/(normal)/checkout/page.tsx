@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { Card, CardContent } from "@/components/ui";
@@ -23,6 +24,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
+import { validateCoupon } from "@/helper";
+import CheckoutBreadcrumb from "./components/CheckoutBreadcrumb";
+import AddressSelector from "./components/AddressSelector";
+import CouponInput from "./components/CouponInput";
+import OrderSummary from "./components/OrderSummary";
 
 type ApiAddress = {
   id: string;
@@ -34,20 +40,7 @@ type ApiAddress = {
   isDefault: boolean;
 };
 
-const breadcrumb = [
-  {
-    name: "Home",
-    href: "/",
-  },
-  {
-    name: "Cart",
-    href: "/cart",
-  },
-  {
-    name: "Checkout",
-    href: "/checkout",
-  },
-];
+
 
 export default function Checkout() {
   const [selected, setSelected] = useState<string | null>(null);
@@ -59,13 +52,42 @@ export default function Checkout() {
   const clearCheckout = useCheckoutStore((s) => s.clearCheckout);
   const clearCart = useCartStore((s) => s.clearCart);
   const userId: any = useCheckoutStore((s) => s.userId);
-
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [couponId, setCouponId] = useState<string | null>(null);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
+ 
+const handleRemoveCoupon = () => {
+  setDiscount(0);
+  setCouponId(null);
+  setAppliedCouponCode(null);
+  setCouponCode("");
 
-  const discount = subtotal * 0.2;
+  toast.success("Coupon removed");
+};
+
+const handleApplyCoupon = async () => {
+  try {
+    const data = await validateCoupon({
+      code: couponCode,
+      subtotal,
+      userId,
+    });
+
+    setDiscount(data.discount);
+    setCouponId(data.couponId);
+    setAppliedCouponCode(couponCode);
+
+    toast.success("Coupon applied 🎉");
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+};
+  // const discount = subtotal * 0.2;
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const finalTotal = subtotal - discount + deliveryFee;
 
@@ -115,6 +137,8 @@ export default function Checkout() {
         items: items,
         userId,
         address: addresses.find((a) => a.id === selected),
+        couponId,
+        couponCode: appliedCouponCode,
       });
       setPaymentStatus("success");
       clearCheckout();
@@ -129,171 +153,42 @@ export default function Checkout() {
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-1 max-sm:p-2 ">
-        <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto ">
-          <Breadcrumb>
-            <BreadcrumbList>
-              {breadcrumb.map((item, index) => (
-                <div
-                  className="flex items-center justify-center gap-1"
-                  key={index}
-                >
-                  <BreadcrumbItem>
-                    <Link href={item.href}>{item.name}</Link>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                </div>
-              ))}
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <div className="max-w-6xl  px-2 md:px-4 lg:px-0 mx-auto grid grid-cols-3 gap-6 md:gap-3 lg:gap-6">
-          <div className="col-span-3 md:col-span-2 space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Checkout</h2>
-             
-              <Link href="/dashboard/address" className="text-sm">
-                + Add New Address
-              </Link>
-            </div>
+return (
+  <div className="min-h-screen flex flex-col">
 
-            <h3 className="text-sm font-semibold text-gray-700">
-              Shipping Address
-            </h3>
+    <div className="flex-1 max-sm:p-2">
 
-            <RadioGroup
-              value={selected ?? ""}
-              onValueChange={setSelected}
-              className="space-y-3"
-            >
-              {loading
-                ? [...Array(3)].map((_, i) => (
-                    <Card key={i} className="animate-pulse">
-                      <CardContent className="p-4">
-                        <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                      </CardContent>
-                    </Card>
-                  ))
-                : addresses.length > 0 ? (
-                  addresses.map((item) => {
-                    const isActive = selected === item.id;
-
-                    return (
-                      <Card
-                        key={item.id}
-                        className={`transition border cursor-pointer
-        ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}
-                      >
-                        <CardContent className="p-4 flex gap-3 items-start justify-between">
-                          <div className="w-full flex gap-3 items-start">
-                            <RadioGroupItem
-                              value={item.id}
-                              id={item.id}
-                              className="mt-1"
-                            />
-
-                            <Label
-                              htmlFor={item.id}
-                              className="flex flex-col items-start gap-1 cursor-pointer w-full"
-                            >
-                              <div className="flex items-center gap-2">
-                                <p className="font-semibold text-gray-900">
-                                  {item.addressLine1}
-                                </p>
-
-                                {item.isDefault && (
-                                  <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                    Default
-                                  </span>
-                                )}
-
-                                {!item.isDefault && (
-                                  <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                                    Saved
-                                  </span>
-                                )}
-                              </div>
-
-                              <p className="text-sm text-gray-600">
-                                {item.addressLine2}
-                              </p>
-
-                              <p className="text-sm text-gray-500">
-                                {item.city}, {item.state} - {item.pincode}
-                              </p>
-                            </Label>
-                          </div>
-
-                          <Button variant="link" size="sm">
-                            Edit
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    );
-                  })
-                ) : (
-                  <div>No address found..</div>
-                )
-                }
-            </RadioGroup>
-          </div>
-
-          <div className="col-span-3  md:col-span-1  flex flex-col items-center justify-end">
-            <Card className="w-full">
-              <CardContent className="p-6  space-y-4">
-                <div className="flex gap-2">
-                  <Input placeholder="Enter coupon code" />
-                  <Button>Apply</Button>
-                </div>
-
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>₹ {subtotal.toFixed(0)}</span>
-                  </div>
-
-                  <div className="flex justify-between text-red-500">
-                    <span>Discount (-20%)</span>
-                    <span>- ₹ {discount.toFixed(0)}</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Delivery Fee</span>
-                    <span>₹ {deliveryFee}</span>
-                  </div>
-                </div>
-
-                <hr />
-
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span>₹ {finalTotal.toFixed(0)}</span>
-                </div>
-
-                {/* <Button className="w-full rounded-full bg-teal-800 hover:bg-teal-900">
-                  <Link href="/order-confirmation"> Continue</Link>
-                </Button> */}
-
-                <Button
-                  onClick={handlePayment}
-                  disabled={loading}
-                  className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3 rounded-full mt-4 hover:bg-teal-900"
-                >
-                  {loading ? "Processing..." : `Pay ₹${finalTotal.toFixed(0)}`}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+      <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto">
+        <CheckoutBreadcrumb />
       </div>
-      <div className="max-w-6xl w-full px-2 md:px-4 lg:px-0 my-5 mx-auto text-gray-600 flex flex-wrap items-center justify-center  md:justify-between">
-        <div>© 2024 Yunanved. All rights reserved.</div>
-        <div>Privacy Policy | Terms & Conditions | Shipping Policy</div>
+
+<div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto grid grid-cols-3 gap-6 md:gap-3 lg:gap-6">
+        <AddressSelector
+          addresses={addresses}
+          selected={selected}
+          setSelected={setSelected}
+          loading={loading}
+        />
+
+        <OrderSummary
+          subtotal={subtotal}
+          discount={discount}
+          deliveryFee={deliveryFee}
+          finalTotal={finalTotal}
+          appliedCouponCode={appliedCouponCode}
+          handleRemoveCoupon={handleRemoveCoupon}
+          handlePayment={handlePayment}
+          loading={loading}
+          couponCode={couponCode}
+          setCouponCode={setCouponCode}
+          handleApplyCoupon={handleApplyCoupon}
+        />
+
       </div>
+
     </div>
-  );
+
+  </div>
+);
 }
+

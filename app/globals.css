@@ -28,6 +28,7 @@
   --chart-3: oklch(0.5500 0.2200 263);
   --chart-4: oklch(0.4900 0.2200 264);
   --chart-5: oklch(0.4200 0.1800 266);
+  --featureBg: #FFF8E7;
   --sidebar: oklch(0.9850 0 0);
   --sidebar-foreground: oklch(0.1450 0 0);
   --sidebar-primary: oklch(0.2050 0 0);
@@ -203,4 +204,8 @@
 .hide-scrollbar::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+.bg-featureSection {
+ background-color: var(--featureBg);
 }

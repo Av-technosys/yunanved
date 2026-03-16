@@ -8,8 +8,8 @@ export const BentoGallery = async () => {
   const cards = await getFeaturedCategories();
 
   return (
-    <section className="mt-12">
-      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px]">
+<section className="mt-12 md:min-w-7xl mx-auto ">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[600px]">
         {cards.map((card, index) => {
           const isLarge = index === 0;
 

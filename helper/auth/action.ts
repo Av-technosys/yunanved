@@ -26,7 +26,6 @@ export async function signup(payload: SignupPayload) {
     },
     body: JSON.stringify(payload),
   });
-
   const data = await res.json();
 
   if (!res.ok) {

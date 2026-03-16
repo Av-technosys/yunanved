@@ -4,7 +4,7 @@ import { HeroCrousel } from "../home/HeroCrousel";
 
 export const Hero = () => {
   return (
-    <div className="w-full max-sm:px-0 bg-white">
+    <div className="w-full mx-auto max-w-7xl max-sm:px-0 bg-white">
       {/* Top Category Nav */}
 
 

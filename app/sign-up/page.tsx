@@ -34,9 +34,7 @@ const Page = () => {
       password: form.password.value,
       confirmPassword: form.confirmPassword.value,
     };
-
     const result = signupSchema.safeParse(formData);
-
     if (!result.success) {
       const firstError = result.error.issues[0].message;
       toast.error(firstError, {
