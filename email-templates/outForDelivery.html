@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Out for Delivery Today! - Yunanved</title>
+
     <style>
-      /* Responsive scaling for desktop stretch */
       @media screen and (min-width: 600px) {
         .container {
           width: 600px !important;
@@ -13,6 +13,7 @@
       }
     </style>
   </head>
+
   <body
     style="
       margin: 0;
@@ -22,264 +23,285 @@
     "
   >
     <center>
-      <table
-        role="presentation"
-        border="0"
-        cellpadding="0"
-        cellspacing="0"
-        width="100%"
-        style="background-color: #f7f9f9; border-bottom: 1px solid #eeeeee"
+      <!-- Header -->
+      <div
+        style="
+          background-color: #f7f9f9;
+          border-bottom: 1px solid #eeeeee;
+          padding: 15px 0;
+          text-align: center;
+          width: 100%;
+        "
       >
-        <tr>
-          <td align="center" style="padding: 15px 0">
+        <span
+          style="
+            font-size: 18px;
+            color: #0b1320;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+          "
+        >
+          Order Status
+        </span>
+      </div>
+
+      <!-- Container -->
+      <div
+        class="container"
+        style="
+          max-width: 500px;
+          background-color: #ffffff;
+          text-align: center;
+          margin: auto;
+        "
+      >
+        <div style="padding: 40px 20px">
+          <div
+            style="
+              width: 90px;
+              height: 90px;
+              background-color: #f6efe0;
+              border-radius: 50%;
+              margin: 0 auto 20px auto;
+              line-height: 90px;
+            "
+          >
+            <img
+              src="https://ik.imagekit.io/avtechnosys/yunanved/orderShippedIcon4.png"
+              width="36"
+              style="vertical-align: middle"
+            />
+          </div>
+
+          <div style="margin-bottom: 20px">
             <span
               style="
-                font-size: 18px;
-                color: #0b1320;
-                font-weight: 800;
-                letter-spacing: 0.5px;
-              "
-              >Order Status</span
-            >
-          </td>
-        </tr>
-      </table>
-
-      <table
-        role="presentation"
-        border="0"
-        cellpadding="0"
-        cellspacing="0"
-        width="100%"
-        class="container"
-        style="max-width: 500px; background-color: #ffffff; text-align: center"
-      >
-        <tr>
-          <td style="padding: 40px 20px">
-            <div
-              style="
-                width: 90px;
-                height: 90px;
-                background-color: #f6efe0;
-                border-radius: 50%;
-                margin: 0 auto 20px auto;
-                line-height: 90px;
+                background-color: #fcf6e5;
+                color: #d4a017;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                display: inline-flex;
+                align-items: center;
               "
             >
-              <img
-                src="https://ik.imagekit.io/avtechnosys/yunanved/orderShippedIcon4.png"
-                width="36"
-                style="vertical-align: middle"
-              />
-            </div>
-
-            <div style="margin-bottom: 20px">
               <span
                 style="
-                  background-color: #fcf6e5;
-                  color: #d4a017;
-                  padding: 8px 16px;
-                  border-radius: 20px;
-                  font-size: 12px;
-                  font-weight: 800;
-                  letter-spacing: 1px;
-                  display: inline-flex;
-                  align-items: center;
+                  width: 8px;
+                  height: 8px;
+                  background-color: #d4a017;
+                  border-radius: 50%;
+                  display: inline-block;
+                  margin-right: 8px;
                 "
-              >
-                <span
-                  style="
-                    width: 8px;
-                    height: 8px;
-                    background-color: #d4a017;
-                    border-radius: 50%;
-                    display: inline-block;
-                    margin-right: 8px;
-                  "
-                ></span>
-                LIVE UPDATE
-              </span>
-            </div>
+              ></span>
 
-            <h1
-              style="
-                font-size: 32px;
-                color: #0b1320;
-                margin: 0 0 10px 0;
-                font-weight: 800;
-              "
-            >
-              Out for Delivery Today!
-            </h1>
-            <p
-              style="
-                font-size: 16px;
-                color: #5a6a85;
-                line-height: 1.5;
-                margin: 0 0 30px 0;
-              "
-            >
-              Your Yunanved order is on its way to your doorstep.
-            </p>
+              LIVE UPDATE
+            </span>
+          </div>
 
+          <h1
+            style="
+              font-size: 32px;
+              color: #0b1320;
+              margin: 0 0 10px 0;
+              font-weight: 700;
+            "
+          >
+            Out for Delivery Today!
+          </h1>
+
+          <p
+            style="
+              font-size: 16px;
+              color: #5a6a85;
+              line-height: 1.5;
+              margin: 0 0 30px 0;
+            "
+          >
+            Your Yunanved order is on its way to your doorstep.
+          </p>
+
+
+          <!-- Order Details Card -->
+          <div
+            style="
+              border: 1px solid #f7f0e1;
+              border-radius: 12px;
+              padding: 20px;
+              text-align: left;
+              margin-bottom: 30px;
+            "
+          >
             <div
               style="
-                border: 1px solid #eef2f6;
-                border-radius: 24px;
-                padding: 24px;
-                text-align: left;
-                margin-bottom: 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
               "
             >
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td>
-                    <span
-                      style="
-                        font-size: 12px;
-                        color: #9aa4af;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                      "
-                      >Order ID</span
-                    >
-                    <h3 style="font-size: 22px; color: #0b1320; margin: 4px 0">
-                      #YNV12345
-                    </h3>
-                  </td>
-                  <td align="right" valign="top">
-                    <div
-                      style="
-                        background-color: #f6efe0;
-                        border-radius: 50%;
-                        width: 36px;
-                        height: 36px;
-                        text-align: center;
-                      "
-                    >
-                      <img
-                        src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon1.png"
-                        width="20"
-                        style="margin-top: 8px"
-                      />
-                    </div>
-                  </td>
-                </tr>
-              </table>
+              <div>
+                <span
+                  style="
+                    font-size: 12px;
+                    color: #9aa4af;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                  "
+                >
+                  Order ID
+                </span>
 
-              <hr
-                style="border: 0; border-top: 1px solid #f1f4f9; margin: 20px 0"
-              />
+                <h3 style="font-size: 22px; color: #0b1320; margin: 4px 0">
+                  #YNV12345
+                </h3>
+              </div>
 
               <div
                 style="
-                  display: flex;
-                  align-items: flex-start;
-                  margin-bottom: 20px;
+                  background-color: #f6efe0;
+                  border-radius: 50%;
+                  width: 36px;
+                  height: 36px;
+                  text-align: center;
                 "
               >
                 <img
-                  src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon4.png"
-                  width="18"
-                  style="margin-right: 12px; margin-top: 2px"
+                  src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon1.png"
+                  width="20"
+                  style="margin-top: 8px"
                 />
-                <div>
-                  <p
-                    style="
-                      margin: 0;
-                      font-size: 14px;
-                      font-weight: bold;
-                      color: #0b1320;
-                    "
-                  >
-                    Estimated Arrival
-                  </p>
-                  <p style="margin: 0; font-size: 14px; color: #5a6a85">
-                    By 6:00 PM Today
-                  </p>
-                </div>
               </div>
-
-              <table
-                width="100%"
-                cellpadding="0"
-                cellspacing="0"
-                style="
-                  background-color: #fcf6e5;
-                  border-radius: 12px;
-                  padding: 15px;
-                  border-left: 4px solid #d4a017;
-                "
-              >
-                <tr>
-                  <td width="30" valign="top">
-                    <img
-                      src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon4.png"
-                      width="18"
-                      style="margin-top: 4px"
-                    />
-                  </td>
-                  <td style="font-size: 13px; color: #5a6a85; line-height: 1.5">
-                    Please keep your phone accessible for delivery coordination.
-                    Our courier may call you upon arrival.
-                  </td>
-                </tr>
-              </table>
             </div>
 
-            <div style="margin-bottom: 15px">
-              <a
-                href="#"
-                style="
-                  display: block;
-                  background-color: #d4a017;
-                  color: #ffffff;
-                  padding: 18px;
-                  text-decoration: none;
-                  border-radius: 40px;
-                  font-weight: bold;
-                  font-size: 17px;
-                  text-align: center;
-                "
-              >
-                <img
-                  src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon2.png"
-                  width="18"
-                  style="vertical-align: middle; margin-right: 8px"
-                />
-                Track Delivery
-              </a>
-            </div>
-            <div style="margin-bottom: 40px">
-              <a
-                href="#"
-                style="
-                  display: block;
-                  border: 1px solid #d4a017;
-                  color: #d4a017;
-                  padding: 18px;
-                  text-decoration: none;
-                  border-radius: 40px;
-                  font-weight: bold;
-                  font-size: 17px;
-                  text-align: center;
-                "
-              >
-                <img
-                  src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon3.png"
-                  width="18"
-                  style="vertical-align: middle; margin-right: 8px"
-                />
-                Contact Courier
-              </a>
+            <hr
+              style="border: 0; border-top: 1px solid #f1f4f9; margin: 20px 0"
+            />
+
+            <div
+              style="
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 20px;
+              "
+            >
+              <img
+                src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon4.png"
+                width="18"
+                style="margin-right: 12px; margin-top: 2px"
+              />
+
+              <div>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #0b1320;
+                  "
+                >
+                  Estimated Arrival
+                </p>
+
+                <p style="margin: 0; font-size: 14px; color: #5a6a85">
+                  By 6:00 PM Today
+                </p>
+              </div>
             </div>
 
-            <p style="font-size: 14px; color: #5a6a85; margin: 0">
-              Thank you for shopping with Yunanved 🌿
-            </p>
-          </td>
-        </tr>
-      </table>
+            <div
+              style="
+                background-color: #fcf6e5;
+                border-radius: 12px;
+                padding: 15px;
+                border-left: 4px solid #d4a017;
+                display: flex;
+                align-items: flex-start;
+                gap: 5px;
+              "
+            >
+              <img
+                src="https://ik.imagekit.io/avtechnosys/yunanved/infoyellow.png"
+                width="22"
+                style="margin-right: 10px; margin-top: 4px"
+              />
+
+              <div style="font-size: 13px; color: #5a6a85; line-height: 1.5">
+                Please keep your phone accessible for delivery coordination. Our
+                courier may call you upon arrival.
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+
+          <div style="margin-bottom: 15px">
+            <a
+              href="#"
+              style="
+                display: block;
+                background-color: #d7b36a;
+                color: #ffffff;
+                padding: 18px;
+                text-decoration: none;
+                border-radius: 40px;
+                font-weight: bold;
+                font-size: 17px;
+                text-align: center;
+              "
+            >
+              <img
+                src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon2.png"
+                width="18"
+                style="vertical-align: middle; margin-right: 8px"
+              />
+
+              Track Delivery
+            </a>
+          </div>
+
+          <div style="margin-bottom: 40px">
+            <a
+              href="#"
+              style="
+                display: block;
+                border: 1px solid #d7b36a;
+                color: #d7b36a;
+                padding: 18px;
+                text-decoration: none;
+                border-radius: 40px;
+                font-weight: bold;
+                font-size: 17px;
+                text-align: center;
+              "
+            >
+              <img
+                src="https://ik.imagekit.io/avtechnosys/yunanved/outForDelIcon3.png"
+                width="18"
+                style="vertical-align: middle; margin-right: 8px"
+              />
+
+              Contact Courier
+            </a>
+          </div>
+
+       
+            <p
+            style="font-size: 12px; color: #9aa4af; line-height: 1.5; margin: 0"
+          >
+            If you have any questions, feel free to reach us at<br />
+
+            <a
+              href="mailto:support@yunanved.com"
+              style="color: #d4a017; text-decoration: none; font-weight:bold"
+            >
+              support@yunanved.com
+            </a>
+          </p>
+        </div>
+      </div>
     </center>
   </body>
 </html>
