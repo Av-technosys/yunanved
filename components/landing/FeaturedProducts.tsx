@@ -1,4 +1,5 @@
 
+
 import React from "react";
 import { Button } from "@/components/ui";
 import { getFeaturedProducts } from "@/helper";
@@ -8,8 +9,9 @@ export async function FeaturedProducts() {
   const products = await getFeaturedProducts();
 
   return (
-<section className="bg-featureSection w-[min(80%,100%)] lg:bg-rounded-full mx-auto mt-8 py-6 rounded-[3.5rem]">
-     <div className="max-w-7xl px-8 mx-auto">
+// Cleaned up the section classes
+    <section className="md:py-12 py-8"> 
+      <div className="max-w-7xl md:px-7 px-2 mx-auto">
         {/* Heading */}
         <div className="text-center mb-12">
           <h2 className=" text-3xl md:text-4xl font-bold text-slate-900 mb-3">
