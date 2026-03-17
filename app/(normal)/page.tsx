@@ -7,7 +7,6 @@ import { BentoGallery } from "@/components/landing";
 import { Newsletter } from "@/components/landing";
 import { NavbarCategoryRibbon } from "@/components/landing";
 
-
 export default function Home() {
   return (
     <div className="flex px-4 max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
@@ -16,7 +15,13 @@ export default function Home() {
       <Categories />
       <BentoGallery />
       <Collections />
-      <FeaturedProducts />
+
+      <div className="w-full md:max-w-[95%] xl:max-w-360 bg-featureSection mx-auto md:rounded-[3.5rem] mt-8">
+        <div className="max-w-7xl mx-auto">
+          <FeaturedProducts />
+        </div>
+      </div>
+      
       <Newsletter />
       <FAQ />
     </div>
