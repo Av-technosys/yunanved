@@ -2,20 +2,9 @@
 
 "use client";
 
-import { Card, CardContent } from "@/components/ui";
-import { Button } from "@/components/ui";
-import { Input } from "@/components/ui";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui";
 
 import { useEffect, useState } from "react";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui";
-import Link from "next/link";
+
 import { getAddresses } from "@/helper";
 // import { tempUserId } from "@/const";
 import { useCheckoutStore } from "@/store/checkoutStore";
@@ -27,7 +16,6 @@ import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { validateCoupon } from "@/helper";
 import CheckoutBreadcrumb from "./components/CheckoutBreadcrumb";
 import AddressSelector from "./components/AddressSelector";
-import CouponInput from "./components/CouponInput";
 import OrderSummary from "./components/OrderSummary";
 
 type ApiAddress = {
@@ -56,6 +44,9 @@ export default function Checkout() {
   const [discount, setDiscount] = useState(0);
   const [couponId, setCouponId] = useState<string | null>(null);
   const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
+  const [isDiscountPercentage, setIsDiscountPercentage] = useState(false);
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
+  const [discountFixedAmount, setDiscountFixedAmount] = useState<number | null>(null);
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
@@ -81,6 +72,11 @@ const handleApplyCoupon = async () => {
     setDiscount(data.discount);
     setCouponId(data.couponId);
     setAppliedCouponCode(couponCode);
+
+    setIsDiscountPercentage(data.isDiscountPercentage);
+    setDiscountPercentage(data.discountPercentage);
+    setDiscountFixedAmount(data.discountFixedAmount);
+
 
     toast.success("Coupon applied 🎉");
   } catch (err: any) {
@@ -139,6 +135,9 @@ const handleApplyCoupon = async () => {
         address: addresses.find((a) => a.id === selected),
         couponId,
         couponCode: appliedCouponCode,
+        isDiscountPercentage,
+        discountPercentage,
+        discountFixedAmount
       });
      
       setPaymentStatus("success");

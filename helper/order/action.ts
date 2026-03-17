@@ -108,6 +108,7 @@ export async function createOrder({
   address,
   razorpayPaymentId,
   razorpayOrderId,
+  couponTransactionId,
 }: {
   items: { productVarientId: string; quantity: number }[];
   userId: string;
@@ -115,6 +116,8 @@ export async function createOrder({
   address: any;
   razorpayPaymentId: string;
   razorpayOrderId: string;
+  couponTransactionId?: string | null;
+
 }) {
   try {
     if (!items || items.length === 0) {
@@ -145,6 +148,7 @@ export async function createOrder({
           userId,
           status: "paid",
           totalAmountPaid: safeAmount,
+          couponTransactionId: couponTransactionId ?? null,
           addressLine1: address.addressLine1,
           addressLine2: address.addressLine2,
           city: address.city,
