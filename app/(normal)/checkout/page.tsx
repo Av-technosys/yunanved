@@ -130,7 +130,7 @@ const handleApplyCoupon = async () => {
       setLoading(true);
       setPaymentStatus("processing");
 
-      await initiateRazorpayPayment({
+    const res:any =  await initiateRazorpayPayment({
         amount: finalTotal,
         name: "YUNANVED",
         description: "Order Payment",
@@ -140,11 +140,12 @@ const handleApplyCoupon = async () => {
         couponId,
         couponCode: appliedCouponCode,
       });
+     
       setPaymentStatus("success");
       clearCheckout();
       clearCart();
       toast.success("Payment Successful 🎉");
-      router.push("/order-confirmation");
+      router.push(`/order-confirmation/${res?.orderId}`);
     } catch (err) {
       setPaymentStatus("failed");
       toast.error("Payment Failed ❌");
