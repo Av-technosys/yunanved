@@ -18,10 +18,10 @@ import LogoutNavbar from "./logoutNavbar";
 export const Navbar = ({ userInfo, loading }: any) => {
  
   return (
-    <header className="max-w-7xl mx-auto sticky top-0 z-50 bg-white py-2 ">
+    <header className="w-full sticky top-0 z-50 bg-white py-2 ">
       <div
         className={
-          "w-full mx-auto px-4 flex items-center justify-between gap-4 md:gap-12"
+          "max-w-7xl mx-auto w-full px-4 flex items-center justify-between gap-4 md:gap-12"
         }
       >
         <Sheet>

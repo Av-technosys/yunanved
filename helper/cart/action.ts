@@ -12,10 +12,13 @@ export async function addProductToUserCart(
   quantity: number,
 ) {
   const userInfo = await getServerSideUser();
-  console.log("User info in addProductToUserCart:", userInfo);
+
   if (!userInfo?.id) {
     console.log("User not logged in, skipping DB transaction");
-    return { success: true };
+    return { 
+      success: true,
+      userIsNotLoggedIn: true,       
+     };
   }
 
   const tempUserId = userInfo?.id;
