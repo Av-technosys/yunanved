@@ -3,7 +3,7 @@ import React from "react";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 
-const UpperNavBar = () => {
+export const UpperNavBar = () => {
   const navbarHeadLines = [
     "Lorem ipsum dolor sit amet consectetur adipisicing",
     "Lorem ipsum dolor sit amet consectetur adipisicing",
@@ -27,4 +27,4 @@ const UpperNavBar = () => {
   );
 };
 
-export default UpperNavBar;
+

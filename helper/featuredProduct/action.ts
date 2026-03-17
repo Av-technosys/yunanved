@@ -1,5 +1,5 @@
 "use server";
-import { categoryTable, featuredItemsTable, productTable } from "@/db/schema";
+import { featuredProductVarient, productVariant } from "@/db";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -8,24 +8,23 @@ export async function getFeaturedProducts() {
   try {
     return await db
       .select({
-        id: featuredItemsTable.id,
-        productId: featuredItemsTable.productId,
-        name: productTable.name,
-        sku: productTable.sku,
-        description: productTable.description,
-        basePrice: productTable.basePrice,
-        rating: productTable.rating,
-        reviewCount: productTable.reviewCount,
-        slug: productTable.slug,
-        bannerImage: productTable.bannerImage,
-        strikethroughPrice: productTable.strikethroughPrice,
+        id: featuredProductVarient.id,
+        productId: featuredProductVarient.productVarientId,
+        name: productVariant.name,
+        sku: productVariant.sku,
+        description: productVariant.description,
+        basePrice: productVariant.basePrice,
+        rating: productVariant.rating,
+        reviewCount: productVariant.reviewCount,
+        slug: productVariant.slug,
+        bannerImage: productVariant.bannerImage,
+        strikethroughPrice: productVariant.strikethroughPrice,
       })
-      .from(featuredItemsTable)
+      .from(featuredProductVarient)
       .innerJoin(
-        productTable,
-        eq(featuredItemsTable.productId, productTable.id),
+        productVariant,
+        eq(featuredProductVarient.productVarientId, productVariant.id),
       )
-      .where(eq(featuredItemsTable.isFeaturedProduct, true));
   } catch (error) {
     throw error;
   }
@@ -33,7 +32,7 @@ export async function getFeaturedProducts() {
 
 export async function deleteFeaturedProduct(id: string) {
   try {
-    await db.delete(featuredItemsTable).where(eq(featuredItemsTable.id, id));
+    await db.delete(featuredProductVarient).where(eq(featuredProductVarient.id, id));
 
     revalidatePath("/admin/featured-products");
 
@@ -49,9 +48,8 @@ export async function deleteFeaturedProduct(id: string) {
 
 export async function addFeaturedProduct(productId: string) {
   try {
-    await db.insert(featuredItemsTable).values({
-      productId,
-      isFeaturedProduct: true,
+    await db.insert(featuredProductVarient).values({
+      productVarientId: productId,
     });
     revalidatePath("/admin/featured-products");
     return { success: true, message: "Featured product added successfully" };

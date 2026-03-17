@@ -3,13 +3,13 @@
 
 import { toggleApproveReview, deleteReview } from "@/helper/index";
 import { useTransition, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/ui";
 
 import {
   Table,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import { pageSize } from "@/const/globalconst";
 
 import {
@@ -103,7 +103,7 @@ async function handleDelete() {
       <Table>
         <TableHeader>
           <TableRow className="text-muted-foreground">
-            <TableHead className="w-[70px] pl-4">#</TableHead>
+            <TableHead className="w-[70px] ">S.No</TableHead>
             <TableHead>User</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead className="w-[160px]">Rating</TableHead>

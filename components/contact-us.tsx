@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useTransition } from "react";
 import { contactUsSchema } from "@/validation/contactUsSchema";
 
-const ContactUs = () => {
+export const ContactUs = () => {
   const [isPending, startTransition] = useTransition();
   const submitHandler = async (e: any) => {
     e.preventDefault();
@@ -60,7 +60,7 @@ const ContactUs = () => {
                 <Label htmlFor="name-1">Full Name</Label>
                 <Input
                   name="name"
-                  className="text-black bg-[#F8FAFC]"
+                  className="text-black bg-[var(--background)]"
                   placeholder="John Doe"
                 />
               </div>
@@ -68,7 +68,7 @@ const ContactUs = () => {
                 <Label htmlFor="email-1">Email Address</Label>
                 <Input
                   name="email"
-                  className="text-black bg-[#F8FAFC]"
+                  className="text-black bg-[var(--background)]"
                   placeholder="john.doe@example.com"
                 />
               </div>
@@ -77,7 +77,7 @@ const ContactUs = () => {
                 <Input
                   name="phone"
                   type="number"
-                  className="text-black bg-[#F8FAFC]"
+                  className="text-black bg-[var(--background)]"
                   placeholder="Enter your contact number"
                 />
               </div>
@@ -85,7 +85,7 @@ const ContactUs = () => {
                 <Label htmlFor="phone-1">Message</Label>
                 <Textarea
                   name="message"
-                  className="text-black h-32 overflow-y-auto bg-[#F8FAFC]"
+                  className="text-black h-32 overflow-y-auto bg-[var(--background)]"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
@@ -152,4 +152,4 @@ const ContactUs = () => {
   );
 };
 
-export default ContactUs;
+

@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { createOrder } from "@/helper/index"; // adjust path
+import { createOrder, recordCouponUsage } from "@/helper"; // adjust path
+import { RAZORPAY_KEY_SECRET } from "@/env";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -13,11 +14,13 @@ export async function POST(req: Request) {
     userId,
     address,
     amount,
+    couponId,
+    couponCode
   } = body;
 
   // 1️⃣ Verify signature
   const generated_signature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+    .createHmac("sha256", RAZORPAY_KEY_SECRET!)
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
     .digest("hex");
 
@@ -33,6 +36,15 @@ export async function POST(req: Request) {
     razorpayPaymentId: razorpay_payment_id,
     razorpayOrderId: razorpay_order_id,
   });
+
+  // Record coupon usage only if a coupon exists
+  if (couponId) {
+    await recordCouponUsage({
+      userId,
+      couponId,
+      code: couponCode,
+    });
+  }
 
   return NextResponse.json(result);
 }

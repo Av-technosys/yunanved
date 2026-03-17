@@ -8,37 +8,45 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Textarea } from "@/components/ui";
+import { Switch } from "@/components/ui";
+import { Label } from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updateCategory } from "@/helper/index";
 import { getAllCategoriesMeta } from "@/helper/category/action";
+import { useFileUpload } from "@/helper/useFileUpload";
+import { toast } from "sonner";
 
 export default function EditCategory({ categoryInfo }: any) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { upload, uploading } = useFileUpload();
+
+
 
   const [form, setForm] = useState({
     name: categoryInfo.name,
     parent: categoryInfo.parentId ?? "",
-    description: categoryInfo.description ?? "",
-    isActive: categoryInfo.isActive ?? false,
+    description: categoryInfo.description ?? ""
   });
 
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
-  const [selectedParent, setSelectedParent] = useState<string>(categoryInfo.parrentId ?? "");
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+  const [selectedParent, setSelectedParent] = useState<string>(
+    categoryInfo.parrentId ?? "",
+  );
   useEffect(() => {
     const fetchCategories = async () => {
       const categories = await getAllCategoriesMeta();
@@ -51,14 +59,38 @@ export default function EditCategory({ categoryInfo }: any) {
     categoryInfo.bannerImage ?? null,
   );
 
-  const handleFileChange = (file?: File) => {
+  const handleFileChange = async (file?: File) => {
     if (!file || !file.type.startsWith("image/")) return;
-    setPreview(URL.createObjectURL(file));
+    if (file) {
+      const folder = "category";
+      const { preview, fileKey } = await upload(file, folder);
+
+      setPreview(fileKey);
+    }
+  };
+
+  const submitHandler = async (e: any) => {
+    e.preventDefault();
+    const categoryData = {
+      id: categoryInfo.id,
+      name: form.name,
+      parentId: selectedParent,
+      description: form.description,
+      bannerImage: preview,
+    };
+
+    const response = await updateCategory(categoryData);
+    if (response?.success == true) {
+      toast.success(response.message ?? "Category updated successfully");
+      router.push("/admin/category");
+    } else {
+      toast.error(response?.message ?? "Failed to update category");
+    }
   };
 
   return (
     <div className="w-full p-1">
-      <Card className="border-none shadow-none">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-slate-900">
             Manage Category
@@ -69,18 +101,15 @@ export default function EditCategory({ categoryInfo }: any) {
         </CardHeader>
 
         <CardContent>
-          <form action={updateCategory}>
-
+          <form onSubmit={(e) => submitHandler(e)}>
             {/* CRITICAL: send required values to server action */}
             <input type="hidden" name="id" value={categoryInfo.id} />
             <input type="hidden" name="parentId" value={selectedParent} />
-            <input type="hidden" name="isActive" value={form.isActive ? "true" : "false"} />
+           
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-
               {/* Left column */}
               <div className="space-y-6">
-
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Category Name
@@ -99,14 +128,12 @@ export default function EditCategory({ categoryInfo }: any) {
                   </Label>
                   <Select
                     value={selectedParent}
-                    onValueChange={(value) =>
-                      setSelectedParent(value)
-                    }
+                    onValueChange={(value) => setSelectedParent(value)}
                   >
-                    <SelectTrigger className="h-11">
+                    <SelectTrigger className="h-11 w-full">
                       <SelectValue placeholder="Select parent" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="w-full">
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
@@ -133,7 +160,6 @@ export default function EditCategory({ categoryInfo }: any) {
 
               {/* Right column */}
               <div className="space-y-6">
-
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 font-medium">
                     Category Image
@@ -150,7 +176,7 @@ export default function EditCategory({ categoryInfo }: any) {
                   >
                     {preview ? (
                       <img
-                        src={preview}
+                        src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${preview}`}
                         alt="Category"
                         className="max-h-40 object-contain"
                       />
@@ -168,31 +194,11 @@ export default function EditCategory({ categoryInfo }: any) {
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">
-                    Visibility Status
-                  </Label>
-                  <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-700">
-                        Active
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        Category is visible to customers
-                      </p>
-                    </div>
-                    <Switch
-                      checked={form.isActive}
-                      onCheckedChange={(v) => setForm({ ...form, isActive: v })}
-                      className="data-[state=checked]:bg-emerald-500"
-                    />
-                  </div>
-                </div>
-
+               
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 px-0 pt-10">
+            <div className="flex justify-center sm:justify-end gap-4 px-0 pt-10">
               <Button
                 type="button"
                 onClick={() => router.push("/admin/category")}
@@ -209,7 +215,6 @@ export default function EditCategory({ categoryInfo }: any) {
                 Update
               </Button>
             </div>
-
           </form>
         </CardContent>
       </Card>

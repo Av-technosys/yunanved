@@ -1,21 +1,21 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
+import { Label } from "@/components/ui";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui";
 
 export default function ProfilePage() {
   return (
-    <div className="max-w-full space-y-4">
+    <div className="max-w-full space-y-4 md:p-8 p-4">
       {/* Header */}
       <Card>
         <CardContent className="flex items-center justify-between p-4">
@@ -83,10 +83,10 @@ export default function ProfilePage() {
               </Select>
             </div>
 
-            <div className="space-y-1.5">
+            {/* <div className="space-y-1.5">
               <Label>Password</Label>
               <Input placeholder="Enter Password" type="password" />
-            </div>
+            </div> */}
           </div>
 
           <div className="flex justify-end gap-3 pt-2">

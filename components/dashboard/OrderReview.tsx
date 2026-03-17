@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Calendar, ChevronRight, Loader2, Star, Upload } from "lucide-react";
 import React, { useState } from "react";
@@ -17,57 +18,98 @@ import { useFileUpload } from "@/helper/useFileUpload";
 import { createReview } from "@/helper";
 import { toast } from "sonner";
 import { on } from "events";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
-const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any) => {
+export const OrderReview = ({
+  orderDetails,
+  setorderDetailsReview,
+  onBack,
+}: any) => {
   const { upload, uploading } = useFileUpload();
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
-  const [previews, setPreviews] = useState<{ [key: string]: string }>({});
-  const [fileKey, setFileKey] = useState<{ [key: string]: string }>({});
+  // const [previews, setPreviews] = useState<{ [key: string]: string }>({});
+  // const [previews, setPreviews] = useState<
+  //   { productId: string; preview: string; index: number }[]
+  // >([]);
+  // const [fileKey, setFileKey] = useState<
+  //   { productId: string; fileKey: string; index: number }[]
+  // >([]);
+
+  const [previews, setPreviews] = useState<
+    { variantId: string; preview: string; index: number }[]
+  >([]);
+
+  const [fileKey, setFileKey] = useState<
+    { variantId: string; fileKey: string; index: number }[]
+  >([]);
+
   const [comments, setComments] = useState<{ [key: string]: string }>({});
   const [loadingProduct, setLoadingProduct] = useState<string | null>(null);
 
-  const handleImageChange = async (e: any, productId: string) => {
-    const file = e.target.files[0];
-    if (file) {
-      const folder = "review";
-      const { preview, fileKey } = await upload(file, folder);
-      console.log("Uploaded file key:", fileKey);
-      setFileKey((prev) => ({
-        ...prev,
-        [productId]: fileKey,
-      }));
 
-      setPreviews((prev) => ({
-        ...prev,
-        [productId]: preview,
-      }));
-    }
+  const handleImageChange = async (
+    e: any,
+    variantId: string,
+    index: number,
+  ) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const folder = "review";
+    const { preview, fileKey } = await upload(file, folder);
+
+    setPreviews((prev) => {
+      const filtered = prev.filter(
+        (p) => !(p.variantId === variantId && p.index === index),
+      );
+
+      return [...filtered, { variantId, preview, index }];
+    });
+
+    setFileKey((prev) => {
+      const filtered = prev.filter(
+        (p) => !(p.variantId === variantId && p.index === index),
+      );
+
+      return [...filtered, { variantId, fileKey, index }];
+    });
   };
 
-  const handleSubmitReview = async (productId: string) => {
+  const handleSubmitReview = async (productVarientId: string) => {
+
+    const productMedia = fileKey
+      .filter((f) => f.variantId === productVarientId)
+      .map((f) => f.fileKey);
+
     const reviewData = {
       userId: orderDetails.userId,
-      productId,
-      rating: ratings[productId] || 0,
-      message: comments[productId] || "",
-      image: fileKey[productId] || null,
+      productVarientId,
+      rating: ratings[productVarientId] || 0,
+      message: comments[productVarientId] || "",
+      media: productMedia,
     };
 
+   
+
     try {
-      setLoadingProduct(productId);
+     if(reviewData.rating > 0 && reviewData.message !== ""){
+       setLoadingProduct(productVarientId);
 
       const response = await createReview(reviewData);
 
       if (response.success) {
         toast.success("Review submitted successfully!");
 
-        setRatings((prev) => ({ ...prev, [productId]: 0 }));
-        setComments((prev) => ({ ...prev, [productId]: "" }));
-        setFileKey((prev) => ({ ...prev, [productId]: "" }));
-        setPreviews((prev) => ({ ...prev, [productId]: "" }));
+        setRatings((prev) => ({ ...prev, [productVarientId]: 0 }));
+        setComments((prev) => ({ ...prev, [productVarientId]: "" }));
+        setFileKey([]);
+        setPreviews([]);
       } else {
         toast.error("Failed to submit review");
       }
+     }else{
+      toast.error("Please give rating and write a review to the product");
+     }
     } finally {
       setLoadingProduct(null);
     }
@@ -77,7 +119,7 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
       <div>
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
-          onClick={() =>onBack()}
+          onClick={() => onBack()}
         >
           <span>Home</span> <ChevronRight size={12} />
           <span>My orders</span> <ChevronRight size={12} />
@@ -165,8 +207,13 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
               Rate Specific Product
             </CardTitle>
             <CardDescription className="my-4">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {orderDetails.items.map((item: any, index: number) => {
+                  const variantId =
+                    item.productVarientId ||
+                    item.productId ||
+                    item.productVariant?.id;
+
                   return (
                     <Card
                       key={index}
@@ -177,7 +224,7 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
                           <div className="flex gap-3 items-center ">
                             <div className="w-12 h-12  overflow-hidden  relative rounded-md">
                               <Image
-                                src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`}
+                                src={`${NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`}
                                 alt={item.productName}
                                 fill
                                 className="object-cover"
@@ -203,64 +250,82 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
                               key={star}
                               size={28}
                               className={`cursor-pointer transition-colors ${
-                                star <= (ratings[item.productId] || 0)
+                                star <= (ratings[variantId] || 0)
                                   ? "fill-yellow-400 text-yellow-400"
                                   : "text-gray-300"
                               }`}
                               onClick={() =>
                                 setRatings((prev) => ({
                                   ...prev,
-                                  [item.productId]: star,
+                                  [variantId]: star,
                                 }))
                               }
                             />
                           ))}
                         </div>
 
-                        <div className="border-2 border-dashed rounded-xl p-4 text-center relative">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) =>
-                              handleImageChange(e, item.productId)
-                            }
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                          />
-                          {previews[item.productId] ? (
-                            <img
-                              src={previews[item.productId]}
-                              alt="Preview"
-                              className="mx-auto max-h-40 rounded-lg object-contain"
-                            />
-                          ) : (
-                            <div className="flex flex-col items-center justify-center text-muted-foreground">
-                              <Upload className="mb-2" />
-                              <p>Upload Image</p>
-                              <span className="text-xs">
-                                (Max 1 Video & 4 Pic)
-                              </span>
-                            </div>
-                          )}
+                        <div className="grid grid-cols-3 gap-2">
+                          {[1, 2, 3, 4, 5].map((index: number) => {
+                            const currentPreview = previews.find(
+                              (p) =>
+                                p.variantId === variantId && p.index === index,
+                            );
+
+                            return (
+                              <div
+                                key={index}
+                                className="border-2 border-dashed rounded-xl p-4 text-center relative overflow-hidden"
+                              >
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    handleImageChange(e, variantId, index)
+                                  }
+                                  className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                />
+
+                                {currentPreview ? (
+                                  <Image
+                                    src={currentPreview.preview}
+                                    alt={`Preview ${index}`}
+                                    width={100}
+                                    height={100}
+                                    className="object-cover mx-auto rounded-md"
+                                  />
+                                ) : (
+                                  <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                    <Upload className="mb-2" />
+                                    <p className="text-sm">Upload Image</p>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
 
                         <Textarea
                           placeholder="Your comment"
                           className="min-h-[120px]"
-                          value={comments[item.productId] || ""}
+                          value={comments[variantId] || ""}
                           onChange={(e) =>
                             setComments((prev) => ({
                               ...prev,
-                              [item.productId]: e.target.value,
+                              [variantId]: e.target.value,
                             }))
                           }
                         />
 
                         <Button
                           className="w-full"
-                          disabled={loadingProduct === item.productId}
-                          onClick={() => handleSubmitReview(item.productId)}
+                          disabled={
+                            loadingProduct === variantId &&
+                            loadingProduct !== null
+                          }
+                          onClick={() => handleSubmitReview(variantId)}
                         >
-                          {loadingProduct === item.productId
+                          {loadingProduct === variantId &&
+                          loadingProduct !== null
                             ? "Submitting..."
                             : "Submit Review"}
                         </Button>
@@ -276,5 +341,3 @@ const orderDetailsReview = ({ orderDetails, setorderDetailsReview,onBack }: any)
     </>
   );
 };
-
-export default orderDetailsReview;

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import { Select } from "@/components/select";
 import {
   AlertDialog,
@@ -11,12 +12,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import {
   Table,
   TableBody,
@@ -24,10 +25,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { addFeaturedProduct, getCategories } from "@/helper";
+} from "@/components/ui";
+import { addFeaturedProduct } from "@/helper";
 import { Loader2, Search } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -39,7 +39,6 @@ const AddFeaturedProductDialog = ({
   currentPage,
 }: any) => {
   const updateQuery = useUpdateQuery();
-
   const [isPending, startTransition] = useTransition();
 
   const [searchText, setSearchText] = useState("");
@@ -68,86 +67,102 @@ const AddFeaturedProductDialog = ({
 
   return (
     <>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent className="data-[size=default]:sm:max-w-xl overflow-x-auto">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Add Featured Product</AlertDialogTitle>
+<AlertDialog open={open} onOpenChange={setOpen}>
+  {/* Added overflow-hidden to prevent the 'flocky' x-scroll on the modal itself */}
+  <AlertDialogContent className="w-[95vw] sm:max-w-xl overflow-hidden flex flex-col">
+    <AlertDialogHeader className="overflow-hidden">
+      <AlertDialogTitle>Add Featured Product</AlertDialogTitle>
 
-            <div className="w-full my-3">
-              <div className="w-full flex gap-3 mb-2">
-                <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none">
-                  <InputGroupAddon>
-                    <Search className="text-gray-500" />
-                  </InputGroupAddon>
+      <div className="w-full my-3 flex flex-col min-w-0">
+        <div className="w-full flex gap-3 mb-2">
+          <InputGroup className="flex items-center bg-white rounded-full py-2 shadow-none border w-full">
+            <InputGroupAddon className="pl-3">
+              <Search className="text-gray-500 w-4 h-4" />
+            </InputGroupAddon>
 
-                  <InputGroupInput
-                    onChange={handleInputChange}
-                    value={searchText}
-                    type="text"
-                    placeholder="Search By Product Name"
-                    className="bg-transparent focus:outline-none w-32 focus:w-56 transition-all duration-200"
-                  />
-                </InputGroup>
-              </div>
-              <div className="relative h-60 overflow-y-auto">
-                {isPending && (
-                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
-                    <Loader2 className="animate-spin w-6 h-6 text-primary" />
-                  </div>
-                )}
+            <InputGroupInput
+              onChange={handleInputChange}
+              value={searchText}
+              type="text"
+              placeholder="Search..."
+              /* Removed the fixed w-32/w-56 which can cause jumping/overflow */
+              className="bg-transparent focus:outline-none flex-1 px-2 text-sm"
+            />
+          </InputGroup>
+        </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Product Name</TableHead>
-                      <TableHead>sku</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-
-                  <TableBody>
-                    {products.length > 0 ? (
-                      products.map((item: any) => (
-                        <TableRow key={item.id}>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{item.sku}</TableCell>
-
-                          <TableCell className="flex gap-2">
-                            <Button
-                              onClick={() => addFeaturedProductHandler(item.id)}
-                              variant="outline"
-                              className="text-black cursor-pointer"
-                              disabled={isPending}
-                            >
-                              Add
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          colSpan={7}
-                          className="h-24 text-center text-gray-600 font-semibold"
-                        >
-                          No Products found..
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-             <div className="max-w-lg overflow-x-auto"> 
-               <ProductPagination currentPage={currentPage} totalPages={total} />
-              </div>
+        {/* The Scroll Container - Added w-full and min-w-0 */}
+        <div className="relative h-60 w-full min-w-0 overflow-x-auto overflow-y-auto  rounded-md">
+          {isPending && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+              <Loader2 className="animate-spin w-6 h-6 text-primary" />
             </div>
-          </AlertDialogHeader>
+          )}
 
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+   <div className="relative h-60 w-full overflow-y-auto overflow-x-hidden  rounded-md">
+  {/* table-fixed is the most important class here to stop the x-scroll */}
+  <Table className="w-full table-fixed">
+    <TableHeader>
+      <TableRow>
+        {/* Set explicit widths so the table doesn't expand */}
+        <TableHead className="w-[55%] !text-left">Product Name</TableHead>
+        <TableHead className="w-[20%] !text-left">SKU</TableHead>
+        <TableHead className="w-[25%] !text-right">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+
+    <TableBody>
+      {products.length > 0 ? (
+        products.map((item: any) => (
+          <TableRow key={item.id}>
+            <TableCell 
+              className="w-[55%] !text-left truncate font-medium"
+              style={{ maxWidth: '0' }} 
+            >
+              {item.name}
+            </TableCell>
+            
+            <TableCell className="w-[20%] !text-left text-gray-500 overflow-hidden">
+              {item.slug}
+            </TableCell>
+
+            <TableCell className="w-[25%] !text-right">
+              <Button
+                onClick={() => addFeaturedProductHandler(item.id)}
+                variant="outline"
+                size="sm"
+                className="h-8 px-2"
+                disabled={isPending}
+              >
+                Add
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))
+      ) : (
+        <TableRow>
+          <TableCell colSpan={3} className="h-24 !text-center">
+            No Products found..
+          </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</div>
+        </div>
+
+        {/* Pagination Container */}
+        <div className="w-full overflow-hidden mt-3">
+          <ProductPagination currentPage={currentPage} totalPages={total} />
+        </div>
+      </div>
+    </AlertDialogHeader>
+
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
     </>
   );
 };

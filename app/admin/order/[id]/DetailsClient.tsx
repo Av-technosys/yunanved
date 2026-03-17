@@ -1,20 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { Badge } from "@/components/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
 import { CheckCircle2, Phone, Mail, ChevronDown } from "lucide-react";
 
 import { useEffect, useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { fetchOrderDetails } from "@/helper/index"; // server action
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import Link from "next/link";
 export default function Details({ id }: { id: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
 
-  const BASE = process.env.NEXT_PUBLIC_S3_BASE_URL!;
+  
+
+  const BASE = NEXT_PUBLIC_S3_BASE_URL!;
 
   const toPublic = (key: string | null) =>
     key ? `${BASE}/${key}` : "/placeholder.png";
@@ -32,7 +36,7 @@ export default function Details({ id }: { id: string }) {
   useEffect(() => {
     startTransition(async () => {
       const data = await fetchOrderDetails(id);
-      console.log(data)
+      console.error(data)
       setOrderInfo(data);
     });
   }, [id]);
@@ -65,9 +69,9 @@ export default function Details({ id }: { id: string }) {
             <CardTitle className="text-md font-bold text-slate-900 tracking-tight">
               OrderId : #{orderInfo?.order?.id}
             </CardTitle>
-            <p className="text-sm text-slate-500">          
-                  Placed on {formatDate(orderInfo?.order?.createdAt)}
-</p>
+            <p className="text-sm text-slate-500">
+              Placed on {formatDate(orderInfo?.order?.createdAt)}
+            </p>
           </CardHeader>
           <CardContent className="space-y-12">
             <div className="relative space-y-10 ml-1">
@@ -92,7 +96,7 @@ export default function Details({ id }: { id: string }) {
                 variant="outline"
                 className="flex-1 rounded-full border-slate-200 text-slate-600"
               >
-                Cancle
+                <Link href={`/admin/order`}>Cancel Order</Link>
               </Button>
               <Button className="flex-1 rounded-full bg-[#2D5A5D] hover:bg-[#234749]">
                 Track Order
@@ -110,18 +114,18 @@ export default function Details({ id }: { id: string }) {
             </CardHeader>
             <CardContent className="flex items-center gap-5">
               <Avatar className="h-24 w-24">
-                <AvatarImage/>
-                <AvatarFallback>    
-                   {orderInfo?.user.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarImage  src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${orderInfo?.user.profileImage}`} />
+                <AvatarFallback>
+                  {orderInfo?.user.first_name?.slice(0, 1).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <h3 className="font-bold text-lg">{orderInfo?.user?.name}</h3>
+                <h3 className="font-bold text-lg">{orderInfo?.user?.first_name} {orderInfo?.user?.last_name}</h3>
                 {/* <p className="text-md text-slate-400">12 previous orders</p> */}
                 <div className="flex flex-col gap-1 pt-1">
                   <span className="flex items-center gap-2 text-md text-slate-600">
                     <Phone className="w-4 h-4 text-slate-400" />{orderInfo?.user?.number}
                   </span>
-                  <span className="flex items-center gap-2 text-md text-slate-600">
+                  <span className="flex items-center gap-2 text-md break-all text-slate-600">
                     <Mail className="w-4 h-4 text-slate-400" />{" "}
                     {orderInfo?.user?.email}
                   </span>
@@ -156,7 +160,7 @@ export default function Details({ id }: { id: string }) {
       </div>
 
       {/* Bottom Table Card */}
-       <Card>
+      <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -170,17 +174,17 @@ export default function Details({ id }: { id: string }) {
               </thead>
 
               <tbody className="text-sm">
-               {orderInfo?.items.map((item: any) => {
-                    const total = item.productPrice * item.quantity;
-                    const product = item.product;
+                {orderInfo?.items.map((item: any) => {
+                  const total = item.productPrice * item.quantity;
+                  const product = item.product;
 
                   return (
                     <tr key={item.id} className="border-b last:border-0">
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-4">
-                          <Avatar className="h-12 w-14 border-2 border-slate-100">
-                            <AvatarImage src={toPublic(product?.bannerImage)} />
-                            <AvatarFallback>P</AvatarFallback>
+                          <Avatar className="h-20 w-20 border-2 border-slate-100">
+                            <AvatarImage src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`} className="object-contain"/>
+                            <AvatarFallback>{item.productName?.slice(0, 1).toUpperCase()}</AvatarFallback>
                           </Avatar>
 
                           <div>
@@ -204,7 +208,7 @@ export default function Details({ id }: { id: string }) {
                         {item.quantity}
                       </td>
 
-                      <td className="px-6 py-5 text-right font-bold text-slate-900">
+                      <td className="pr-3 py-5 text-right  font-bold text-slate-900">
                         ₹ {total}
                       </td>
                     </tr>

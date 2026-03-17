@@ -1,5 +1,5 @@
 "use server";
-import { categoryTable, featuredItemsTable, productTable } from "@/db/schema";
+import { category, featuredCategory } from "@/db";
 import { db } from "@/lib/db";
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -8,19 +8,18 @@ export async function getFeaturedCategories() {
   try {
     return await db
       .select({
-        id: featuredItemsTable.id,
-        categoryId: featuredItemsTable.categoryId,
-        name: categoryTable.name,
-        slug: categoryTable.slug,
-        description: categoryTable.description,
-        bannerImage: categoryTable.bannerImage,
+        id: featuredCategory.id,
+        categoryId: featuredCategory.categoryId,
+        name: category.name,
+        slug: category.slug,
+        description: category.description,
+        bannerImage: category.bannerImage,
       })
-      .from(featuredItemsTable)
+      .from(featuredCategory)
       .innerJoin(
-        categoryTable,
-        eq(featuredItemsTable.categoryId, categoryTable.id),
+        category,
+        eq(featuredCategory.categoryId, category.id),
       )
-      .where(eq(featuredItemsTable.isFeaturedProduct, false));
   } catch (error) {
     throw error;
   }
@@ -28,7 +27,7 @@ export async function getFeaturedCategories() {
 
 export async function deleteFeaturedCategory(id: string) {
   try {
-    await db.delete(featuredItemsTable).where(eq(featuredItemsTable.id, id));
+    await db.delete(featuredCategory).where(eq(featuredCategory.id, id));
 
     revalidatePath("/admin/featured-categories");
 
@@ -45,9 +44,8 @@ export async function deleteFeaturedCategory(id: string) {
 
 export async function addFeaturedCategory(categoryId: string) {
   try {
-    await db.insert(featuredItemsTable).values({
+    await db.insert(featuredCategory).values({
       categoryId,
-      isFeaturedProduct: false,
     });
     revalidatePath("/admin/featured-categories");
     return { success: true, message: "Featured category added successfully" };

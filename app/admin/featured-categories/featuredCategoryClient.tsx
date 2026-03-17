@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Loader2, Plus } from "lucide-react";
 import React, { useState, useTransition } from "react";
 import FeaturedCategoryTable from "./featuredCategoryTable";
@@ -25,8 +26,8 @@ const FeaturedCategoryClient = ({ featuredCategories ,categories,total ,currentP
     {
       openDialog &&  <AddFeaturedCategoryDialog categories={categories} total={total} currentPage={currentPage} open={openDialog} setOpen={setOpenDialog}  />
     }
-      <div className="w-full p-1">
-        <Card>
+      <div className="w-full p-1 ">
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Category Management</CardTitle>
             <CardDescription>Manage your categories here</CardDescription>

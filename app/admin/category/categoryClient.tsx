@@ -1,27 +1,23 @@
 "use client";
 
 import { Select } from "@/components/select";
-import { Button } from "@/components/ui/button";
+import { Button, InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Plus, Search, Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import CategoryTable from "./categoryTable";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+
 import { getCategories } from "@/helper";
 
 interface Props {
@@ -82,8 +78,8 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
   }, [searchParams]);
 
   return (
-    <div className="w-full min-h-screen">
-      <Card>
+    <div className="w-full min-h-screen ">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Category Management</CardTitle>
           <CardDescription>Manage your categories here</CardDescription>
@@ -102,7 +98,7 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
           </div>
 
           {/* FILTER BAR */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
 
             {/* SEARCH */}
             <div className="w-full max-w-xl">

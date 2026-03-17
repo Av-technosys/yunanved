@@ -2,30 +2,36 @@
 "use client"
 
 import { Menu } from "lucide-react"
-import { Sidebar } from "@/components/admin/sidebar"
-import { Button } from "@/components/ui/button"
+import { Sidebar } from "@/components/admin"
+import { Button } from "@/components/ui"
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { logoutHandler } from "@/helper/auth/action"
+import { useRouter } from "next/navigation"
 
 export function MobileSidebar() {
+const router = useRouter();
+  
+   const logout = async() => {
+     await logoutHandler();
+    router.push("/sign-in");
+      
+   }
+   
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden"
-        >
+        <Button variant="ghost" size="icon" className="lg:hidden">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="p-0 w-64">
-        <Sidebar />
+      <SheetContent side="left" className="p-0 md:w-[40vw] w-[70vw]">
+        <Sidebar mobile  logout={logout} />
       </SheetContent>
     </Sheet>
-  )
+  );
 }

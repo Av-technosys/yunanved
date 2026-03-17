@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Card } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAddToCart } from "@/helper/useAddToCart";
 import { useRef, useState } from "react";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
-const FeaturedProductCard = ({ product, key }: any) => {
+export const FeaturedProductCard = ({ product, key }: any) => {
   const { handleAddToCart, isPending } = useAddToCart();
 
   const [isAdding, setIsAdding] = useState(false);
@@ -51,7 +52,7 @@ const FeaturedProductCard = ({ product, key }: any) => {
         <Link href={`/product/${product.slug}`}>
           <div className="h-52 flex items-center justify-center p-4">
             <img
-              src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
+              src={`${NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`}
               alt={"Product Image"}
               className="object-contain h-full"
             />
@@ -59,7 +60,7 @@ const FeaturedProductCard = ({ product, key }: any) => {
         </Link>
 
         {/* Content */}
-        <div className="p-4 bg-white border-t border-gray-100">
+        <CardContent className="p-4 bg-white border-t border-gray-100">
           {/* Name + Category */}
           <div className="flex justify-between items-start mb-1">
             <h3 className="font-bold text-sm text-black line-clamp-1">
@@ -88,23 +89,22 @@ const FeaturedProductCard = ({ product, key }: any) => {
           </p>
 
           {/* Price + Button */}
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-lg text-black">
+          <div className="flex flex-col md:flex-row justify-between md:items-center">
+            <span className="font-bold text-lg mb-2 sm:mb-0 text-black">
               ₹{product.basePrice}
             </span>
 
-         <Button
-            onClick={addToCartHandler}
-            disabled={isAdding}
-            className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
-          >
-            {isAdding ? "Adding..." : "Add to Cart"}
-          </Button>
+            <Button
+              onClick={addToCartHandler}
+              disabled={isAdding}
+              className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
+            >
+              {isAdding ? "Adding..." : "Add to Cart"}
+            </Button>
           </div>
-        </div>
+        </CardContent>
       </Card>
     </div>
   );
 };
 
-export default FeaturedProductCard;

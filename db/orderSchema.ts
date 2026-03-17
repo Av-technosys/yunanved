@@ -4,11 +4,9 @@ import {
   varchar,
   timestamp,
   integer,
-  primaryKey,
 } from "drizzle-orm/pg-core";
-import { coupon, couponTransaction, user } from "./userSchema";
-import { product } from "./productSchema";
-import { relations } from "drizzle-orm";
+import { couponTransaction, user } from "./userSchema";
+import { productVariant } from "./productSchema";
 
 // ----------------------
 // Orders Table
@@ -43,7 +41,7 @@ export const orderItem = pgTable("order_item", {
   orderId: uuid("order_id")
     .notNull()
     .references(() => order.id),
-  productId: uuid("product_id").references(() => product.id),
+  productVarientId: uuid("product_varient_id").references(() => productVariant.id),
   quantity: integer("quantity"),
   productName: varchar("product_name").notNull(),
   productSlug: varchar("product_slug").notNull(),

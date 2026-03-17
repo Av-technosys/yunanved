@@ -10,10 +10,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui";
+import { Checkbox } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
 import { coupon } from "@/db/userSchema";
 import { createCoupon, updateCoupon } from "@/helper";
 

@@ -5,13 +5,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import CouponTable from "./couponTable";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import { Loader2, Plus, Search } from "lucide-react";
 import AddOrEditCouponDialog from "./addOrEditCouponDialog";
 import { useEffect, useState, useTransition } from "react";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
 
@@ -42,7 +42,7 @@ const CouponClient = ({ coupons }: any) => {
         couponDetails={""}
       />
       <div className="w-full px-1 min-h-screen">
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Coupon Management</CardTitle>
             <CardDescription>Manage your coupons here</CardDescription>

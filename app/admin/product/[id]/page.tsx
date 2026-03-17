@@ -11,16 +11,17 @@ const Page = async ({ params }: PageProps) => {
   const product = await getFullProduct(id);
 
   if (!product) {
-    return;
+    return <div className="p-10 text-center">Product not found</div>;
   }
 
-  const { media, attributes, reviews, ...productInfo } = product;
+  // const { media, attributes, reviewWithMedia, ...productInfo } = product;
 
   return (
     <EditProduct
-      productInfo={productInfo}
-      media={media}
-      attributes={attributes}
+      productId={product.id}
+      initialVariants={product.variants}
+      initialCategoryIds={product.categoryIds}
+      targetVariantId={product.targetVariant?.id}
     />
   );
 };

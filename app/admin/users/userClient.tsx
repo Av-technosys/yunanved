@@ -7,18 +7,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui";
+
 import { Search, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import UserTable from "./UserTable";
-import BadgeIcon from "@/components/BadgeIcon";
+import { BadgeIcon } from "@/components/BadgeIcon";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useUpdateQuery } from "@/components/filter";
 import { useDebounce } from "@/components/debouceSearch";
 
@@ -57,8 +57,8 @@ const UserClient = ({ users, total, currentPage }: Props) => {
   }
 
   return (
-    <div className="w-full p-2">
-      <Card>
+    <div className="w-full ">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Users Management</CardTitle>
           <CardDescription>Manage your users here</CardDescription>
@@ -66,7 +66,7 @@ const UserClient = ({ users, total, currentPage }: Props) => {
 
         <CardContent>
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Card key={index}>
                 <CardContent>
@@ -82,7 +82,7 @@ const UserClient = ({ users, total, currentPage }: Props) => {
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </div> */}
 
           <div className="mt-6 flex gap-3">
             <div className="w-full max-w-xl">

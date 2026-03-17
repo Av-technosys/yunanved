@@ -1,13 +1,14 @@
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
+import { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from "@/env";
 
 export async function POST(req: Request) {
   const body = await req.json();
   const { amount } = body;
 
   const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    key_id: RAZORPAY_KEY_ID!,
+    key_secret: RAZORPAY_KEY_SECRET!,
   });
 
   const order = await razorpay.orders.create({

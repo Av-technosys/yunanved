@@ -4,15 +4,19 @@
 import { db } from "@/lib/db";
 import {
   product,
-  productMedia,
-  productAttribute,
+  productVarientMedia,
+  productVarientAttribute,
   category,
   productCategory,
-} from "@/db/productSchema";
+  productVariant,
+  review,
+  reviewMedia,
+  user,
+} from "@/db";
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
-import { reviewMediaTable, reviewsTable } from "@/db/schema";
+
 import { isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
@@ -36,63 +40,135 @@ function parseMedia(fd: FormData) {
   return fd.getAll("media").filter((v) => typeof v === "string") as string[];
 }
 
+interface VariantInput {
+  name: string;
+  sku: string;
+  description?: string;
+  shortDescription?: string;
+  price: number;
+  strikethroughPrice?: number;
+  bannerImage?: string;
+  media?: string[];
+  isInStock: boolean;
+  isReturnable: boolean;
+  isCancelable: boolean;
+  isReplacement: boolean;
+  returnDays: number;
+  replacementDays: number;
+  attributes: { attribute: string; value: string }[];
+}
+
 export async function createProduct(formData: FormData) {
   try {
-    const name = str(formData, "name");
-    const description = str(formData, "description");
-    const price = num(formData, "price");
-    const isInStock = str(formData, "isInStock") === "true";
-    const strikethroughPrice = Number(formData.get("strikethroughPrice"));
-    const bannerImage = str(formData, "bannerImage");
-    const mediaUrls = parseMedia(formData);
-    const sku = str(formData, "sku");
-
     const categoryIds = [
       ...new Set(formData.getAll("category[]").filter(Boolean)),
     ] as string[];
-    const id = await db.transaction(async (tx) => {
-      console.log("Starting transaction to create product");
-      const slug = await generateUniqueSlug(tx, name, product.slug);
-      const [created] = await tx
+
+    const variantsData = str(formData, "variants");
+    if (!variantsData) throw new Error("No variants provided");
+
+    const variants: VariantInput[] = JSON.parse(variantsData);
+
+    const productId = await db.transaction(async (tx) => {
+      // 1. Create the parent product
+      const [createdProduct] = await tx
         .insert(product)
-        .values({
-          name,
-          slug,
-          sku,
-          description,
-          basePrice: price,
-          strikethroughPrice,
-          bannerImage: bannerImage || null,
-          isInStock,
-          isDeleted: false,
-          rating: 0,
-          reviewCount: 0,
-        })
+        .values({})
         .returning({ id: product.id });
-      const productId = created.id;
 
-      if (mediaUrls.length) {
-        await tx.insert(productMedia).values(
-          mediaUrls.map((url) => ({
-            productId,
-            mediaType: "image",
-            mediaURL: url,
-          })),
-        );
-      }
+      const pId = createdProduct.id;
 
+      // 2. Attach categories to the parent product
       if (categoryIds.length) {
         await tx.insert(productCategory).values(
           categoryIds.map((catId) => ({
-            productId,
+            productId: pId,
             categoryId: catId,
           })),
         );
       }
-      return productId;
+
+      const slugs = await Promise.all(
+        variants.map((v) =>
+          generateUniqueSlug(tx, v.name, productVariant.slug),
+        ),
+      );
+
+      const variantInsertData = variants.map((v, index) => ({
+        productId: pId,
+        name: v.name,
+        slug: slugs[index],
+        sku: v.sku,
+        description: v.description,
+        shortDescription: v.shortDescription,
+        basePrice: v.price,
+        strikethroughPrice: v.strikethroughPrice,
+        bannerImage: v.bannerImage || null,
+        isInStock: v.isInStock,
+        isReturnable: v.isReturnable,
+        isCancelable: v.isCancelable,
+        isReplacement: v.isReplacement,
+        returnDays: v.returnDays,
+        replacementDays: v.replacementDays,
+        rating: 0,
+        reviewCount: 0,
+      }));
+
+      const insertedVariants = await tx
+        .insert(productVariant)
+        .values(variantInsertData)
+        .returning({ id: productVariant.id });
+
+      const allMediaRows: {
+        productVarientId: string;
+        mediaType: string;
+        mediaURL: string;
+      }[] = [];
+
+      const allAttributeRows: {
+        productVarientId: string;
+        attribute: string;
+        value: string;
+      }[] = [];
+
+      for (let i = 0; i < variants.length; i++) {
+        const variantId = insertedVariants[i].id;
+        const v = variants[i];
+
+        // Media
+        if (v.media?.length) {
+          for (const url of v.media) {
+            allMediaRows.push({
+              productVarientId: variantId,
+              mediaType: "image",
+              mediaURL: url,
+            });
+          }
+        }
+
+        // Attributes
+        if (v.attributes?.length) {
+          for (const attr of v.attributes) {
+            allAttributeRows.push({
+              productVarientId: variantId,
+              attribute: attr.attribute,
+              value: attr.value,
+            });
+          }
+        }
+      }
+
+      if (allMediaRows.length) {
+        await tx.insert(productVarientMedia).values(allMediaRows);
+      }
+
+      if (allAttributeRows.length) {
+        await tx.insert(productVarientAttribute).values(allAttributeRows);
+      }
+      return pId;
     });
 
-    return { id };
+    return { id: productId };
   } catch (error) {
     console.error("createProduct failed:", error);
     throw new Error("Unable to create product");
@@ -101,110 +177,147 @@ export async function createProduct(formData: FormData) {
 
 export async function updateProduct(formData: FormData): Promise<void> {
   try {
-    const id = formData.get("id") as string;
-    if (!id) throw new Error("Product ID missing");
-
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const price = Number(formData.get("price"));
-    const strikethroughPrice = Number(formData.get("strikethroughPrice"));
-    const bannerImage = formData.get("bannerImage") as string | null;
-    const sku = (formData.get("sku") as string).trim();
-    const isInStock = formData.get("isInStock") === "true";
-
-    const submittedMedia = formData.getAll("media") as string[];
+    const productId = formData.get("id") as string;
+    if (!productId) throw new Error("Product ID missing");
 
     const categoryIds = [
       ...new Set(formData.getAll("category[]").filter(Boolean)),
     ] as string[];
 
+    const variantsData = str(formData, "variants");
+    if (!variantsData) throw new Error("No variants provided");
+
+    const variants: (VariantInput & { id?: string })[] =
+      JSON.parse(variantsData);
+
     await db.transaction(async (tx) => {
-      const slug = await generateUniqueSlug(tx, name, product.slug);
-
+      // 1. Update categories for the parent product
       await tx
-        .update(product)
-        .set({
-          name,
-          sku,
-          slug,
-          description,
-          basePrice: price,
-          strikethroughPrice,
-          bannerImage: bannerImage || null,
-          isInStock,
-          updatedAt: new Date(),
-        })
-        .where(eq(product.id, id));
-
-      await tx.delete(productMedia).where(eq(productMedia.productId, id));
-
-      if (submittedMedia.length) {
-        await tx.insert(productMedia).values(
-          submittedMedia.map((key) => ({
-            productId: id,
-            mediaType: "image",
-            mediaURL: key,
-          })),
-        );
-      }
-
-      await tx.delete(productCategory).where(eq(productCategory.productId, id));
-
+        .delete(productCategory)
+        .where(eq(productCategory.productId, productId));
       if (categoryIds.length) {
         await tx.insert(productCategory).values(
           categoryIds.map((catId) => ({
-            productId: id,
+            productId,
             categoryId: catId,
           })),
         );
       }
-    });
-  } catch (error) {
-    console.error("updateProduct failed:", error);
-    throw new Error("Unable to update product");
-  }
-}
 
-export async function saveProductAttributes(
-  productId: string,
-  payload: { attribute: string; value: string }[],
-) {
-  try {
-    if (!productId) throw new Error("Missing product id");
+      // 2. Identify existing variants to keep/update and new ones to insert
+      const incomingVariantIds = variants
+        .map((v) => v.id)
+        .filter(Boolean) as string[];
 
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(productAttribute)
-        .where(eq(productAttribute.productId, productId));
+      // Delete variants not in the incoming list
+      const existingVariants = await tx
+        .select({ id: productVariant.id })
+        .from(productVariant)
+        .where(eq(productVariant.productId, productId));
+      const variantsToDelete = existingVariants.filter(
+        (ev) => !incomingVariantIds.includes(ev.id),
+      );
 
-      if (payload.length) {
-        await tx.insert(productAttribute).values(
-          payload.map((a) => ({
-            productId,
-            attribute: a.attribute,
-            value: a.value,
-          })),
-        );
+      for (const v of variantsToDelete) {
+        await tx
+          .delete(productVarientMedia)
+          .where(eq(productVarientMedia.productVarientId, v.id));
+        await tx
+          .delete(productVarientAttribute)
+          .where(eq(productVarientAttribute.productVarientId, v.id));
+        await tx.delete(productVariant).where(eq(productVariant.id, v.id));
+      }
+      // Update or Insert variants
+      for (const v of variants) {
+        let vId = v.id;
+
+        if (vId) {
+          // Update existing
+          await tx
+            .update(productVariant)
+            .set({
+              name: v.name,
+              sku: v.sku,
+              description: v.description,
+              shortDescription: v.shortDescription,
+              basePrice: v.price,
+              strikethroughPrice: v.strikethroughPrice,
+              bannerImage: v.bannerImage || null,
+              isInStock: v.isInStock,
+              isReturnable: v.isReturnable,
+              isCancelable: v.isCancelable,
+              isReplacement: v.isReplacement,
+              returnDays: v.returnDays,
+              replacementDays: v.replacementDays,
+              updatedAt: new Date(),
+            })
+            .where(eq(productVariant.id, vId));
+        } else {
+          // Insert new
+          const slug = await generateUniqueSlug(
+            tx,
+            v.name,
+            productVariant.slug,
+          );
+          const [created] = await tx
+            .insert(productVariant)
+            .values({
+              productId,
+              name: v.name,
+              slug,
+              sku: v.sku,
+              description: v.description,
+              shortDescription: v.shortDescription,
+              basePrice: v.price,
+              strikethroughPrice: v.strikethroughPrice,
+              bannerImage: v.bannerImage || null,
+              isInStock: v.isInStock,
+              isReturnable: v.isReturnable,
+              isCancelable: v.isCancelable,
+              isReplacement: v.isReplacement,
+              returnDays: v.returnDays,
+              replacementDays: v.replacementDays,
+              rating: 0,
+              reviewCount: 0,
+            })
+            .returning({ id: productVariant.id });
+          vId = created.id;
+        }
+
+        // Update Media
+        await tx
+          .delete(productVarientMedia)
+          .where(eq(productVarientMedia.productVarientId, vId!));
+        if (v.media?.length) {
+          await tx.insert(productVarientMedia).values(
+            v.media.map((url) => ({
+              productVarientId: vId!,
+              mediaType: "image",
+              mediaURL: url,
+            })),
+          );
+        }
+
+        // Update Attributes
+        await tx
+          .delete(productVarientAttribute)
+          .where(eq(productVarientAttribute.productVarientId, vId!));
+        if (v.attributes?.length) {
+          await tx.insert(productVarientAttribute).values(
+            v.attributes.map((attr) => ({
+              productVarientId: vId!,
+              attribute: attr.attribute,
+              value: attr.value,
+            })),
+          );
+        }
       }
     });
 
-    revalidatePath(`/admin/product/${productId}`);
-    return { success: true };
+    revalidatePath("/admin/product");
   } catch (error) {
-    console.error("saveProductAttributes failed:", error);
-    throw new Error("Unable to save product attributes");
-  }
-}
-
-export async function getProductAttributes(productId: string) {
-  try {
-    return await db
-      .select()
-      .from(productAttribute)
-      .where(eq(productAttribute.productId, productId));
-  } catch (error) {
-    console.error("getProductAttributes failed:", error);
-    throw new Error("Unable to fetch attributes");
+    console.error("updateProduct failed:", error);
+    throw new Error("Unable to update product");
   }
 }
 
@@ -213,53 +326,95 @@ export async function getFullProduct(identifier: string) {
     if (!identifier) throw new Error("Missing product identifier");
 
     const isThroughId = isUUID(identifier);
+    let productGroupId: string | null = null;
+    let targetVariantId: string | null = null;
 
-    const productInfo = await db.query.productTable.findFirst({
-      where: isThroughId
-        ? eq(product.id, identifier)
-        : eq(product.slug, identifier),
-    });
+    if (isThroughId) {
+      const pg = await db.query.product.findFirst({
+        where: eq(product.id, identifier),
+      });
+      if (pg) {
+        productGroupId = pg.id;
+      } else {
+        const v = await db.query.productVariant.findFirst({
+          where: eq(productVariant.id, identifier),
+        });
+        if (v) {
+          productGroupId = v.productId;
+          targetVariantId = v.id;
+        }
+      }
+    } else {
+      const v = await db.query.productVariant.findFirst({
+        where: eq(productVariant.slug, identifier),
+      });
+      if (v) {
+        productGroupId = v.productId;
+        targetVariantId = v.id;
+      }
+    }
 
-    if (!productInfo) return null;
+    if (!productGroupId) return null;
 
-    const productId = productInfo.id;
-
-    const [media, attributes, reviews] = await Promise.all([
+    const [variants, categoryLinks] = await Promise.all([
       db
         .select()
-        .from(productMedia)
-        .where(eq(productMedia.productId, productId)),
-
+        .from(productVariant)
+        .where(eq(productVariant.productId, productGroupId)),
       db
         .select()
-        .from(productAttribute)
-        .where(eq(productAttribute.productId, productId)),
-
-      db
-        .select({
-          id: reviewsTable.id,
-          userId: reviewsTable.userId,
-          productId: reviewsTable.productId,
-          name: reviewsTable.name,
-          email: reviewsTable.email,
-          rating: reviewsTable.rating,
-          message: reviewsTable.message,
-          createdAt: reviewsTable.createdAt,
-          image: reviewMediaTable.mediaURL,
-        })
-        .from(reviewsTable)
-        .innerJoin(
-          reviewMediaTable,
-          eq(reviewsTable.id, reviewMediaTable.reviewId),
-        )
-        .where(eq(reviewsTable.productId, productId)),
+        .from(productCategory)
+        .where(eq(productCategory.productId, productGroupId)),
     ]);
 
+    const variantIds = variants.map((v) => v.id);
+
+    let allMedia: any[] = [];
+    let allAttributes: any[] = [];
+
+    if (variantIds.length > 0) {
+      [allMedia, allAttributes] = await Promise.all([
+        db
+          .select()
+          .from(productVarientMedia)
+          .where(inArray(productVarientMedia.productVarientId, variantIds)),
+
+        db
+          .select()
+          .from(productVarientAttribute)
+          .where(inArray(productVarientAttribute.productVarientId, variantIds)),
+      ]);
+    }
+
+    const attributeMap = new Map<string, any[]>();
+    const mediaMap = new Map<string, any[]>();
+
+    for (const a of allAttributes) {
+      if (!attributeMap.has(a.productVarientId)) {
+        attributeMap.set(a.productVarientId, []);
+      }
+      attributeMap.get(a.productVarientId)!.push(a);
+    }
+
+    for (const m of allMedia) {
+      if (!mediaMap.has(m.productVarientId)) {
+        mediaMap.set(m.productVarientId, []);
+      }
+      mediaMap.get(m.productVarientId)!.push(m);
+    }
+
+    const variantsWithDetails = variants.map((v) => ({
+      ...v,
+      media: mediaMap.get(v.id) || [],
+      attributes: attributeMap.get(v.id) || [],
+    }));
     return {
-      ...productInfo,
-      media,
-      attributes,
-      reviews,
+      id: productGroupId,
+      categoryIds: categoryLinks.map((c) => c.categoryId),
+      variants: variantsWithDetails,
+      targetVariant: targetVariantId
+        ? variantsWithDetails.find((v) => v.id === targetVariantId)
+        : variantsWithDetails[0],
     };
   } catch (error) {
     console.error("getFullProduct failed:", error);
@@ -270,28 +425,31 @@ export async function getFullProduct(identifier: string) {
 export async function deleteProduct(id: string) {
   try {
     await db.transaction(async (tx) => {
-      await tx.delete(productMedia).where(eq(productMedia.productId, id));
+      const variants = await tx
+        .select({ id: productVariant.id })
+        .from(productVariant)
+        .where(eq(productVariant.productId, id));
+
+      for (const v of variants) {
+        await tx
+          .delete(productVarientMedia)
+          .where(eq(productVarientMedia.productVarientId, v.id));
+        await tx
+          .delete(productVarientAttribute)
+          .where(eq(productVarientAttribute.productVarientId, v.id));
+      }
+
+      await tx.delete(productVariant).where(eq(productVariant.productId, id));
+      await tx.delete(productCategory).where(eq(productCategory.productId, id));
       await tx.delete(product).where(eq(product.id, id));
     });
 
     revalidatePath("/admin/product");
-
     return {
       success: true,
-      message: "This product has deleted ",
+      message: "Product and all variants deleted successfully",
     };
   } catch (error: any) {
-    const pgCode =
-      error?.code || error?.cause?.code || error?.cause?.cause?.code;
-
-    if (pgCode === "23503") {
-      return {
-        success: false,
-        message:
-          "This product cannot be deleted because other data depends on it.",
-      };
-    }
-
     console.error("delete product failed:", error);
     throw new Error("Failed to delete product");
   }
@@ -306,7 +464,7 @@ export async function getProducts({
   const filters = [];
 
   if (search.trim() !== "") {
-    filters.push(ilike(product.name, `%${search}%`));
+    filters.push(ilike(productVariant.name, `%${search}%`));
   }
 
   if (categorySlug) {
@@ -315,26 +473,39 @@ export async function getProducts({
 
   const whereClause = filters.length ? and(...filters) : undefined;
   const offset = (page - 1) * pageSize;
-  const [rawItems, total] = await Promise.all([
+
+  // We query product variants because they hold the name and info.
+  // We effectively show variants in the main list, or distinct product variants.
+  const [items, total] = await Promise.all([
     db
-      .select()
-      .from(product)
+      .select({
+        id: productVariant.id,
+        name: productVariant.name,
+        slug: productVariant.slug,
+        basePrice: productVariant.basePrice,
+        strikethroughPrice: productVariant.strikethroughPrice,
+        bannerImage: productVariant.bannerImage,
+        createdAt: productVariant.createdAt,
+        productId: productVariant.productId,
+      })
+      .from(productVariant)
+      .leftJoin(product, eq(product.id, productVariant.productId))
       .leftJoin(productCategory, eq(productCategory.productId, product.id))
       .leftJoin(category, eq(category.id, productCategory.categoryId))
       .where(whereClause)
-      .orderBy(desc(product.createdAt))
+      .groupBy(productVariant.id)
+      .orderBy(desc(productVariant.createdAt))
       .limit(pageSize)
       .offset(offset),
 
     db
-      .select({ count: sql<number>`count(distinct ${product.id})` })
-      .from(product)
+      .select({ count: sql<number>`count(distinct ${productVariant.id})` })
+      .from(productVariant)
+      .leftJoin(product, eq(product.id, productVariant.productId))
       .leftJoin(productCategory, eq(productCategory.productId, product.id))
       .leftJoin(category, eq(category.id, productCategory.categoryId))
       .where(whereClause),
   ]);
-
-  const items = rawItems.map((row) => row.products);
 
   const totalPages = Math.ceil(total[0].count / pageSize);
 
@@ -347,70 +518,114 @@ export async function getProducts({
 
 export async function getProductSimilarProducts(slug: string | any) {
   try {
+    const v = await db.query.productVariant.findFirst({
+      where: eq(productVariant.slug, slug),
+    });
+    if (!v || !v.productId) return [];
+
     const productWithCategory = await db
-      .select({
-        productId: product.id,
-        categoryId: productCategory.categoryId,
-      })
-      .from(product)
-      .innerJoin(productCategory, eq(product.id, productCategory.productId))
-      .where(eq(product.slug, slug));
+      .select({ categoryId: productCategory.categoryId })
+      .from(productCategory)
+      .where(eq(productCategory.productId, v.productId));
 
     if (!productWithCategory.length) return [];
 
-    const { productId, categoryId } = productWithCategory[0];
+    const categoryId = productWithCategory[0].categoryId;
 
-    const similarProducts = await db
+    const similarVariants = await db
       .select({
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        basePrice: product.basePrice,
-        bannerImage: product.bannerImage,
-        rating: product.rating,
+        id: productVariant.id,
+        name: productVariant.name,
+        slug: productVariant.slug,
+        basePrice: productVariant.basePrice,
+        bannerImage: productVariant.bannerImage,
+        rating: productVariant.rating,
       })
-      .from(productCategory)
-      .innerJoin(product, eq(product.id, productCategory.productId))
+      .from(productVariant)
+      .innerJoin(
+        productCategory,
+        eq(productCategory.productId, productVariant.productId),
+      )
       .where(
         and(
           eq(productCategory.categoryId, categoryId),
-          ne(product.id, productId),
+          ne(productVariant.productId, v.productId),
         ),
-      );
+      )
+      .limit(10);
 
-    return similarProducts;
+    return similarVariants;
   } catch (error) {
     console.error("getProductSimilarProducts failed:", error);
   }
 }
 
+export async function getProductReviews(slug: string | any) {
+  try {
+    const v = await db.query.productVariant.findFirst({
+      where: eq(productVariant.slug, slug),
+    });
+    if (!v || !v.productId) return [];
+    const reviews = await db
+      .select({
+        id: review.id,
+        rating: review.rating,
+        userId: review.userId,
+        name: review.name,
+        email: review.email,
+        message: review.message,
+        productVarientId: review.productVarientId,
+        image: user.profileImage,
+        createdAt: review.createdAt,
+      })
+      .from(review)
+      .innerJoin(user, eq(review.userId, user.id))
+      .where(
+        and(
+          eq(review.productVarientId, v.id),
+          eq(review.isAdminApproved, true),
+        ),
+      );
+
+    const reviewsWithMedia = await Promise.all(
+      reviews.map(async (r) => ({
+        ...r,
+        media: await db
+          .select()
+          .from(reviewMedia)
+          .where(eq(reviewMedia.reviewId, r.id)),
+      })),
+    );
+
+    return reviewsWithMedia;
+  } catch (error) {
+    return [];
+  }
+}
 
 export async function getProductsForCart(productIds: string[]) {
   try {
     if (!productIds || !productIds.length) return [];
-
     const safeIds = productIds.filter(Boolean);
     if (!safeIds.length) return [];
 
     const products = await db
       .select()
-      .from(product)
-      .where(inArray(product.id, safeIds));
+      .from(productVariant)
+      .where(inArray(productVariant.id, safeIds));
 
     if (!products.length) return [];
 
     const media = await db
       .select()
-      .from(productMedia)
-      .where(inArray(productMedia.productId, safeIds));
+      .from(productVarientMedia)
+      .where(inArray(productVarientMedia.productVarientId, safeIds));
 
     const mediaMap = new Map<string, typeof media>();
-
     for (const m of media) {
-      if (!mediaMap.has(m.productId)) {
-        mediaMap.set(m.productId, []);
-      }
-      mediaMap.get(m.productId)!.push(m);
+      if (!mediaMap.has(m.productVarientId))
+        mediaMap.set(m.productVarientId, []);
+      mediaMap.get(m.productVarientId)!.push(m);
     }
 
     return products.map((p) => ({
@@ -421,4 +636,9 @@ export async function getProductsForCart(productIds: string[]) {
     console.error("getProductsForCart failed:", error);
     return [];
   }
+}
+
+export async function saveProductAttributes(productId: string, payload: any) {
+  // Deprecated in favor of nested variant handling in updateProduct
+  return { success: true };
 }

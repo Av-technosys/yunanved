@@ -9,12 +9,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import { Eye } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Select } from "@/components/select";
 import { updateOrderStatus } from "@/helper/index";
+import { ORDER_STATUS } from "@/const/globalconst";
 
 interface OrderTableProps {
   page: number;
@@ -22,14 +23,11 @@ interface OrderTableProps {
   pageSize: number;
 }
 
-const ORDER_STATUS = [
-  { value: "pending", label: "Pending" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
-  { value: "failed", label: "Failed" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
-];
+/* convert constant → select items */
+const ORDER_STATUS_OPTIONS = Object.values(ORDER_STATUS).map((status) => ({
+  value: status,
+  label: status.charAt(0).toUpperCase() + status.slice(1),
+}));
 
 const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
   const startIndex = (page - 1) * pageSize;
@@ -37,6 +35,8 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
 
   const router = useRouter();
   const pathname = usePathname();
+
+
 
   return (
     <div className="mt-8">
@@ -77,7 +77,7 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
                         placeholder="Status"
                         label="Status"
                         value={order.status}
-                        selectItems={ORDER_STATUS}
+                        selectItems={ORDER_STATUS_OPTIONS}
                         onValueChange={(value) => {
                           startTransition(() => {
                             updateOrderStatus(order.id, value);

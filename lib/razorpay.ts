@@ -32,6 +32,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   items,
   userId,
   address,
+  couponId,
+  couponCode,
+
 }: {
   amount: number;
   name: string;
@@ -39,6 +42,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   items: any[];
   userId: string;
   address: any;
+  couponId?: string | null;  
+  couponCode? : string | null;
+
 }) => {
   const scriptLoaded = await loadRazorpayScript();
 
@@ -54,7 +60,6 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   });
 
   const order = await res.json();
-
   if (!order?.id) {
     throw new Error("Order creation failed");
   }
@@ -81,13 +86,15 @@ export const loadRazorpayScript = (): Promise<boolean> => {
               userId,
               address,
               amount,
+              couponId,
+              couponCode
             }),
           });
 
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
-            resolve(response);
+            resolve(verifyData);
             
           } else {
             reject("Payment verification failed");

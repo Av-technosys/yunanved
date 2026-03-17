@@ -5,7 +5,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/components/ui"
 
 interface SectionProps {
   title: string;
@@ -14,10 +14,10 @@ interface SectionProps {
 
 const ProductCarousel = ({ title, items }: SectionProps) => {
   return (
-    <section className="py-2 max-w-7xl mx-auto overflow-visible">
+    <section className=" mt-12 max-w-7xl mx-auto overflow-visible">
 
       {/* Section Header */}
-      <div className="text-center mb-10 px-4">
+      <div className="text-center mb-6 md:mb-10 md:px-4">
         <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
         <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto">
           Discover our newest arrivals, thoughtfully designed to elevate everyday style with purpose and quality.
@@ -31,19 +31,19 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
             align: "start",
             loop: true,
           }}
-          className="w-full overflow-visible"
+          className="w-full overflow-visible py-2 md:px-6 lg:px-10"
         >
 
-        <CarouselContent className="py-2 px-4 md:px-6 lg:px-10">
+          <CarouselContent className="">
 
-         
+
 
             {items.map((item) => (
               <CarouselItem
                 key={item.id}
-                 className="pr-4 md:pr-6 lg:pr-8 basis-1/2 md:basis-1/3 lg:basis-1/5"
+                className="basis-[132px] md:basis-1/3 lg:basis-1/6"
               >
-                <div className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="group relative aspect-3/4 w-full overflow-hidden rounded-2xl shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-xl">
 
                   {/* background fallback */}
                   <div
@@ -64,8 +64,8 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
 
           {/* NAV BUTTONS */}
           <div className="hidden md:block ">
-            <CarouselPrevious className="-left-12 h-10 w-10" />
-            <CarouselNext className="-right-12 h-10 w-10 " />
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
           </div>
 
         </Carousel>
@@ -76,8 +76,8 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
 
 
 // Example usage
-export default function Collections() {
-  const dummyData = [
+export  function Collections() {
+  const DUMMY_DATA = [
     { id: 1, image: "/ProductCarousel1.jpg", bgColor: "#000000" },
     { id: 2, image: "/ProductCarousel2.jpg", bgColor: "#800000" },
     { id: 3, image: "/ProductCarousel3.png", bgColor: "#D2B48C" },
@@ -89,9 +89,9 @@ export default function Collections() {
   ];
 
   return (
-    <div className="bg-white">
-      <ProductCarousel title="New Arrival" items={dummyData} />
-      <ProductCarousel title="Best Seller" items={dummyData} />
+    <div className="bg-white  mt-8">
+      <ProductCarousel title="New Arrival" items={DUMMY_DATA} />
+      <ProductCarousel title="Best Seller" items={DUMMY_DATA} />
     </div>
   )
 }

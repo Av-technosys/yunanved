@@ -1,5 +1,5 @@
 "use server";
-import { contactTable } from "@/db/schema";
+import { contact } from "@/db";
 import { db } from "@/lib/db";
 
 export async function sendContactMessage(data: {
@@ -9,7 +9,7 @@ export async function sendContactMessage(data: {
   message: string;
 }) {
   try {
-    await db.insert(contactTable).values({
+    await db.insert(contact).values({
       name: data.name,
       email: data.email,
       phone: data.phone,

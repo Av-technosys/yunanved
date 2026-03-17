@@ -1,3 +1,4 @@
+
 // category
 export {
   createCategory,
@@ -15,7 +16,6 @@ export {
   createProduct,
   updateProduct,
   saveProductAttributes,
-  getProductAttributes,
   getFullProduct,
   deleteProduct,
   getProducts,
@@ -39,25 +39,37 @@ export {
   createCoupon,
   updateCoupon,
   deleteCoupon,
+  validateCoupon,
+  recordCouponUsage
 } from "./coupon/action";
 
 
 //reviews
-export {toggleApproveReview ,  deleteReview, getReviewStats ,createReview} from "./review/action"
+export { toggleApproveReview, deleteReview, getReviewStats, createReview } from "./review/action"
 
-//auth
-export { signUp , signIn} from "./authentication/action";
 
 //cart
 
-export {addProductToUserCart , increaseCartItem, decreaseCartItem, removeCartItem} from "./cart/action"
+export { addProductToUserCart, increaseCartItem, decreaseCartItem, removeCartItem } from "./cart/action"
 
 
 //featured products
-export {getFeaturedProducts, deleteFeaturedProduct , addFeaturedProduct} from "./featuredProduct/action"
+export { getFeaturedProducts, deleteFeaturedProduct, addFeaturedProduct } from "./featuredProduct/action"
 
 //featured categories
-export {getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory} from "./featuredCategory/action"
+export { getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory } from "./featuredCategory/action"
 //user
 
-export {getProfile , updateProfile, getAddresses, saveAddress, deleteAddress} from "./user/action"
+export { getProfile, updateProfile, getAddresses, saveAddress, deleteAddress } from "./user/action"
+
+//payment
+
+export { getPayments } from "./payment/action"
+
+
+
+//auth
+
+export { signup, confirmSignup, resendOtp, resetPasswordUsingEmail, resetPasswordUsingOTP, logoutHandler } from "./auth/action";
+
+export {getOrderDetailsById} from "./order-confirmation/action"

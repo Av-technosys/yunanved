@@ -8,16 +8,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui";
 import { Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import ProductPagination from "@/components/pagination";
+import { ProductPagination } from "@/components/pagination";
 import OrderTable from "./OrderTable";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from "@/components/ui";
 import { useDebounce } from "@/components/debouceSearch";
 import { useUpdateQuery } from "@/components/filter";
 import { useTransition } from "react";
@@ -81,8 +81,8 @@ const ORDER_STATUS = [
   }
 
   return (
-    <div className="w-full p-1">
-      <Card>
+    <div className="w-full ">
+      <Card className="border-none shadow-none rounded-none">
         <CardHeader>
           <CardTitle>Order Management</CardTitle>
           <CardDescription>Manage your orders here</CardDescription>

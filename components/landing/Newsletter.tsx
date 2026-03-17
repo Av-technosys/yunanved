@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui"
+import { Input } from "@/components/ui"
 
 export function Newsletter() {
   return (
-    <section className="relative w-full h-[300px] flex items-center justify-center overflow-hidden rounded-2xl">
+    <section className="relative max-w-7xl mt-8 mx-auto w-full h-[300px] flex items-center justify-center overflow-hidden rounded-2xl">
       
       {/* Background */}
       <div

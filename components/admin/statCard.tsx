@@ -1,9 +1,10 @@
-import { Card, CardContent } from "@/components/ui/card"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Card, CardContent } from "@/components/ui"
 import { cn } from "@/lib/utils"
 
 interface StatCardProps {
   title: string
-  value: string
+  value: any;
   subtitle: string
   icon: React.ReactNode
   iconBg?: string

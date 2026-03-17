@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui";
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui";
 import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import AddOrEditCouponDialog from "./addOrEditCouponDialog";
