@@ -60,7 +60,6 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   });
 
   const order = await res.json();
-
   if (!order?.id) {
     throw new Error("Order creation failed");
   }
@@ -95,7 +94,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
-            resolve(response);
+            resolve(verifyData);
             
           } else {
             reject("Payment verification failed");

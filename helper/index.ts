@@ -71,3 +71,5 @@ export { getPayments } from "./payment/action"
 //auth
 
 export { signup, confirmSignup, resendOtp, resetPasswordUsingEmail, resetPasswordUsingOTP, logoutHandler } from "./auth/action";
+
+export {getOrderDetailsById} from "./order-confirmation/action"
