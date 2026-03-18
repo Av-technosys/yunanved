@@ -11,10 +11,12 @@ import StarRatings from "react-star-ratings";
 
 import { useAddToCart } from "@/helper/useAddToCart";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import { getServerSideUser } from "@/hooks/getServerSideUser";
 
 export const ProductCard = ({ product, index, className = "", slug = "" }: any) => {
+    const userDetails:any  = getServerSideUser()
 
-  const { handleAddToCart, isPending } = useAddToCart();
+  const { handleAddToCart, isPending } = useAddToCart(userDetails?.id);
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
 

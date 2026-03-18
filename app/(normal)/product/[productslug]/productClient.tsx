@@ -11,6 +11,7 @@ import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { cn } from "@/lib/utils";
 import ReviewCard from "../reviewCard";
 import { useRouter } from "next/navigation";
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 const ProductClient = ({
   productInfo: initialProduct,
@@ -19,11 +20,12 @@ const ProductClient = ({
   reviewWithMedia = [],
 }: any) => {
   const router = useRouter();
+  const { userDetails } = useClientSideUser()
   const [activeVariant, setActiveVariant] = useState(initialProduct);
   const [bannerImage, setBannerImage] = useState<any>(activeVariant.bannerImage);
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
-  const { handleAddToCart } = useAddToCart();
+  const { handleAddToCart } = useAddToCart(userDetails?.id);
 
   const productDetailsForCart = {
     productId: activeVariant.id,
