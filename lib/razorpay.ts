@@ -34,7 +34,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   address,
   couponId,
   couponCode,
-
+  isDiscountPercentage,
+  discountPercentage,
+  discountFixedAmount,
 }: {
   amount: number;
   name: string;
@@ -44,6 +46,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   address: any;
   couponId?: string | null;  
   couponCode? : string | null;
+  isDiscountPercentage?: boolean;
+  discountPercentage?: number | null;
+  discountFixedAmount?: number | null;
 
 }) => {
   const scriptLoaded = await loadRazorpayScript();
@@ -87,10 +92,13 @@ export const loadRazorpayScript = (): Promise<boolean> => {
               address,
               amount,
               couponId,
-              couponCode
+              couponCode,
+              isDiscountPercentage,
+              discountPercentage,
+              discountFixedAmount
             }),
           });
-
+ 
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
@@ -109,7 +117,12 @@ export const loadRazorpayScript = (): Promise<boolean> => {
       },
     };
 
-    const razor = new window.Razorpay(options);
+  const razor = new window.Razorpay(options);
+
+    razor.on("payment.failed", function (response: any) {
+      reject(response.error);
+    });
+
     razor.open();
   });
 };

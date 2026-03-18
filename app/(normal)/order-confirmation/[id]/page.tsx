@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getOrderDetailsById } from "@/helper";
 import OrderClient from "./orderClient";
 

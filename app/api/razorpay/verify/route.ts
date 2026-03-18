@@ -15,7 +15,10 @@ export async function POST(req: Request) {
     address,
     amount,
     couponId,
-    couponCode
+    couponCode,
+  isDiscountPercentage,
+  discountPercentage,
+  discountFixedAmount
   } = body;
 
   // 1️⃣ Verify signature
@@ -27,6 +30,18 @@ export async function POST(req: Request) {
   if (generated_signature !== razorpay_signature) {
     return NextResponse.json({ success: false }, { status: 400 });
   }
+  let couponTransactionId = null;
+
+  if (couponId) {
+    couponTransactionId = await recordCouponUsage({
+      userId,
+      couponId,
+      code: couponCode,
+      isDiscountPercentage,
+      discountPercentage,
+      discountFixedAmount,
+    });
+  }
 
   const result = await createOrder({
     items,
@@ -35,16 +50,8 @@ export async function POST(req: Request) {
     address,
     razorpayPaymentId: razorpay_payment_id,
     razorpayOrderId: razorpay_order_id,
+    couponTransactionId,
   });
-
-  // Record coupon usage only if a coupon exists
-  if (couponId) {
-    await recordCouponUsage({
-      userId,
-      couponId,
-      code: couponCode,
-    });
-  }
 
   return NextResponse.json(result);
 }

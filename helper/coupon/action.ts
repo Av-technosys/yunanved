@@ -133,14 +133,28 @@ export async function recordCouponUsage({
   userId,
   couponId,
   code,
+  isDiscountPercentage,
+  discountPercentage,
+  discountFixedAmount,
 }: {
   userId: string;
   couponId: string;
   code: string;
+  isDiscountPercentage?: boolean;
+  discountPercentage?: number | null;
+  discountFixedAmount?: number | null;
 }) {
-  await db.insert(couponTransaction).values({
-    userId,
-    couponId,
-    code,
-  });
+  const result = await db
+    .insert(couponTransaction)
+    .values({
+      userId,
+      couponId,
+      code,
+      isDiscountPercentage,
+      discountPercentage,
+      discountFixedAmount,
+    })
+    .returning({ id: couponTransaction.id });
+
+  return result[0].id;
 }
