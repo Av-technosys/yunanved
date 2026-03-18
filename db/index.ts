@@ -4,3 +4,4 @@ export * from "./contactSchema";
 export * from "./orderSchema";
 export * from "./reviewSchema";
 export * from "./userSchema";
+export * from "./enum";
