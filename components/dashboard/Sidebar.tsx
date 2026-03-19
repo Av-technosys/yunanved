@@ -36,7 +36,7 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
   };
 
   return (
-    <aside className="w-72 h-full">
+    <aside className="w-72 h-h-[86vh]">
       <div className="bg-white  shadow-sm border border-gray-100 p-6 flex flex-col h-full min-h-0 overflow-hidden">
         {/* Header Section */}
         <div className="mb-8 px-2">
@@ -47,8 +47,8 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
         </div>
 
         {/* Navigation Section */}
-        <nav className="space-y-2 flex-1 overflow-y-auto">
-          {navItems.map(({ label, href, icon: Icon }) => {
+        <nav className="space-y-2 flex-1">
+            {navItems.map(({ label, href, icon: Icon }) => {
             const active = getActive(pathname, href);
 
             return (
@@ -72,7 +72,7 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
         </nav>
 
         {/* Bottom Logout Section */}
-        <div className="mt-auto">
+       <div className="pt-4 border-t">
           <button onClick={logout}  className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#B8860B]  font-semibold hover:bg-[#ffefd5] transition-colors">
             <LogOut size={20} />
             <span className="text-[15px]">Logout</span>

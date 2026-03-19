@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   IndianRupee,
   LogOut,
+  Package,
 } from "lucide-react";
 import { SheetClose } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
@@ -27,6 +28,8 @@ const navItems = [
   { label: "User", href: "/admin/users", icon: User },
   { label: "Review", href: "/admin/review", icon: MessageSquare },
   { label: "Payment", href: "/admin/payment", icon: IndianRupee },
+  { label: "Cancel Requests", href: "/admin/cancel-request", icon: FileText },
+  { label: "Return Requests", href: "/admin/return-request", icon: Package },
   {
     label: "Featured Products",
     href: "/admin/featured-products",

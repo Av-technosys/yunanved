@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -20,17 +21,14 @@ import { useRouter } from "next/navigation"
 
 import { ORDER_STATUS } from "@/const"
 
-type StatusData = {
-  status: string
-  count: number
-}
 
-export function OrderStatusBoxes({ status }: { status?: StatusData[] }) {
+
+export function OrderStatusBoxes({ status }: { status?: any}) {
   const router = useRouter()
 
   const statusMap: Record<string, number> = {}
 
-  status?.forEach((s) => {
+  status?.forEach((s: { status: string; count: number }) => {
     statusMap[s.status.trim().toLowerCase()] = s.count
   })
 

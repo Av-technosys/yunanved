@@ -48,7 +48,7 @@ const deliveryFee = subtotal > 0 ? 15 : 0;
               , your order is successfully placed
             </p>
 
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-green-500">
               We have sent confirmation mail to email id{" "}
               <span className="font-bold">{session?.user?.email}</span>
             </p>
