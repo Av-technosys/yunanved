@@ -27,20 +27,20 @@ export async function Categories() {
             align: "start",
             loop: true,
           }}
-          className="w-full md:px-8"
+          className="w-full md:px-8 "
         >
-          <CarouselContent className="overflow-visible py-2 px-3 sm:px-0">
+          <CarouselContent className="overflow-visible py-2 md:px-3 ">
             {categories?.map((cat, index) => (
               <CarouselItem
                 key={index}
-                className="basis-33 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/7"
+                className="basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
               >
                 <CategoryCard cat={cat} />
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="cursor-pointer hidden md:block top-16 md:top-20 left-0 " />
-          <CarouselNext className="cursor-pointer hidden md:block top-16 md:top-20 right-0 " />
+          <CarouselPrevious className="cursor-pointer hidden md:block top-20 md:top-24 left-0 " />
+          <CarouselNext className="cursor-pointer hidden md:block top-20 md:top-24 right-0 " />
         </Carousel>
       </div>
     </section>
@@ -55,7 +55,7 @@ const CategoryCard = ({ cat }: { cat: any }) => {
         {/* Gradient Ring */}
         <div className="relative p-[3px] rounded-full bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600 transition-transform duration-300 group-hover:scale-110">
           <div className="bg-white rounded-full">
-            <div className="relative size-28 sm:w-28 sm:h-28 lg:w-32 lg:h-32 overflow-hidden rounded-full border border-slate-100 shadow-inner">
+            <div className="relative w-[92px] h-[92px] sm:w-32 sm:h-32 lg:w-40 lg:h-40 overflow-hidden rounded-full border border-slate-100 shadow-inner">
               <Image
                 src={`${NEXT_PUBLIC_S3_BASE_URL}/${cat.bannerImage}`}
                 alt={cat.name}
@@ -68,7 +68,7 @@ const CategoryCard = ({ cat }: { cat: any }) => {
         </div>
 
         {/* Label */}
-        <span className="mt-5 font-bold text-sm md:text-base text-slate-900 text-center whitespace-nowrap">
+        <span className="mt-2 sm:mt-5 font-bold text-sm md:text-base text-slate-900 text-center ">
           {cat.name}
         </span>
       </div>

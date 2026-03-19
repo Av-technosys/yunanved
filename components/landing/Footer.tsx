@@ -101,7 +101,7 @@ export const Footer = () => {
             <ul className="space-y-4 text-sm text-slate-900">
 
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-slate-700 shrink-0 mt-1" />
+                <MapPin  className="w-5 h-5 text-slate-700 shrink-0 mt-1" />
                 <span>
                   456 Fashion Avenue, Fashion District,
                   <br />

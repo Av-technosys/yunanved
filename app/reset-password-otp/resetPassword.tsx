@@ -1,12 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui";
+import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import signup from "../../public/authpic.png";
@@ -20,14 +15,25 @@ import {
 import { Separator } from "@/components/ui";
 import { Input } from "@/components/ui";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { resetPasswordUsingOTP } from "@/helper";
+import { resendOtp, resetPasswordUsingOTP } from "@/helper";
 
 const ResetPassword = ({ email }: any) => {
   const [otp, setOtp] = useState("");
   const router = useRouter();
+  const [count, setCount] = useState(30);
+
+  useEffect(() => {
+    if (count === 0) return;
+
+    const interval = setInterval(() => {
+      setCount((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval); // cleanup
+  }, [count]);
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
@@ -46,6 +52,15 @@ const ResetPassword = ({ email }: any) => {
     toast.success(response.message);
     router.push(`/sign-in`);
   };
+
+  const resendOtpHandler= async()=>{
+    try {
+      const response = await resendOtp(email);
+      toast.success("OTP sent successfully.")
+    } catch (error:any) {
+      toast.error("Something went wrong")
+    }
+  }
   return (
     <>
       <div className="w-full h-screen flex ">
@@ -103,13 +118,20 @@ const ResetPassword = ({ email }: any) => {
                         placeholder="New Passoword"
                       />
                     </div>
-                    <div className="w-full flex items-center justify-end">
-                      <Button
+                    <div className="w-full flex items-center justify-between">
+                      <div className="text-[11px] mt-1 text-red-500">
+                        Resend OTP in {count} sec
+                      </div>
+                      {
+                        count == 0 && <Button
+                        onClick={()=>resendOtpHandler()}
+                        type="button"
                         className="p-0 shadow-none hover:bg-transparent cursor-pointer"
                         variant={"ghost"}
                       >
                         Resend OTP
                       </Button>
+                      }
                     </div>
                   </div>
                 </form>
@@ -119,7 +141,7 @@ const ResetPassword = ({ email }: any) => {
                 <Button
                   type="submit"
                   form="email-verification"
-                  className="w-full rounded-full bg-black text-white"
+                  className="w-full rounded-full bg-[#0F2A2E] text-white"
                 >
                   Confirm
                 </Button>
