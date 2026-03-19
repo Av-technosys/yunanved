@@ -13,7 +13,7 @@ import { and, eq } from "drizzle-orm";
 //     }
 // }
 
-export const getUserIdByEmailId = async (email: string) => {
+export const getUserIdByEmailId = async (email: any) => {
   try {
     const userDetails = await db
       .select({

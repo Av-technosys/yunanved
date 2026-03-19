@@ -28,8 +28,6 @@ type ApiAddress = {
   isDefault: boolean;
 };
 
-
-
 export default function Checkout() {
   const [selected, setSelected] = useState<string | null>(null);
   const [addresses, setAddresses] = useState<ApiAddress[]>([]);
@@ -51,23 +49,25 @@ export default function Checkout() {
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
+
  
-const handleRemoveCoupon = () => {
-  setDiscount(0);
-  setCouponId(null);
-  setAppliedCouponCode(null);
-  setCouponCode("");
+  
+  const handleRemoveCoupon = () => {
+    setDiscount(0);
+    setCouponId(null);
+    setAppliedCouponCode(null);
+    setCouponCode("");
 
-  toast.success("Coupon removed");
-};
+    toast.success("Coupon removed");
+  };
 
-const handleApplyCoupon = async () => {
-  try {
-    const data = await validateCoupon({
-      code: couponCode,
-      subtotal,
-      userId,
-    });
+  const handleApplyCoupon = async () => {
+    try {
+      const data = await validateCoupon({
+        code: couponCode,
+        subtotal,
+        userId,
+      });
 
     setDiscount(data.discount);
     setCouponId(data.couponId);
@@ -78,11 +78,11 @@ const handleApplyCoupon = async () => {
     setDiscountFixedAmount(data.discountFixedAmount);
 
 
-    toast.success("Coupon applied 🎉");
-  } catch (err: any) {
-    toast.error(err.message);
-  }
-};
+      toast.success("Coupon applied 🎉");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
   // const discount = subtotal * 0.2;
   const deliveryFee = subtotal > 0 ? 15 : 0;
   const finalTotal = subtotal - discount + deliveryFee;
@@ -126,7 +126,7 @@ const handleApplyCoupon = async () => {
       setLoading(true);
       setPaymentStatus("processing");
 
-    const res:any =  await initiateRazorpayPayment({
+      const res: any = await initiateRazorpayPayment({
         amount: finalTotal,
         name: "YUNANVED",
         description: "Order Payment",
@@ -139,7 +139,7 @@ const handleApplyCoupon = async () => {
         discountPercentage,
         discountFixedAmount
       });
-     
+
       setPaymentStatus("success");
       clearCheckout();
       clearCart();
@@ -153,42 +153,36 @@ const handleApplyCoupon = async () => {
     }
   };
 
-return (
-  <div className="min-h-screen flex flex-col">
+  return (
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1 max-sm:p-2">
+        <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto">
+          <CheckoutBreadcrumb />
+        </div>
 
-    <div className="flex-1 max-sm:p-2">
+        <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto grid grid-cols-3 gap-6 md:gap-3 lg:gap-6">
+          <AddressSelector
+            addresses={addresses}
+            selected={selected}
+            setSelected={setSelected}
+            loading={loading}
+          />
 
-      <div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto">
-        <CheckoutBreadcrumb />
+          <OrderSummary
+            subtotal={subtotal}
+            discount={discount}
+            deliveryFee={deliveryFee}
+            finalTotal={finalTotal}
+            appliedCouponCode={appliedCouponCode}
+            handleRemoveCoupon={handleRemoveCoupon}
+            handlePayment={handlePayment}
+            loading={loading}
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
+            handleApplyCoupon={handleApplyCoupon}
+          />
+        </div>
       </div>
-
-<div className="max-w-6xl px-2 md:px-4 lg:px-0 mx-auto grid grid-cols-3 gap-6 md:gap-3 lg:gap-6">
-        <AddressSelector
-          addresses={addresses}
-          selected={selected}
-          setSelected={setSelected}
-          loading={loading}
-        />
-
-        <OrderSummary
-          subtotal={subtotal}
-          discount={discount}
-          deliveryFee={deliveryFee}
-          finalTotal={finalTotal}
-          appliedCouponCode={appliedCouponCode}
-          handleRemoveCoupon={handleRemoveCoupon}
-          handlePayment={handlePayment}
-          loading={loading}
-          couponCode={couponCode}
-          setCouponCode={setCouponCode}
-          handleApplyCoupon={handleApplyCoupon}
-        />
-
-      </div>
-
     </div>
-
-  </div>
-);
+  );
 }
-

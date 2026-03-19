@@ -4,9 +4,11 @@ import React from "react";
 import { Button } from "@/components/ui";
 import { getFeaturedProducts } from "@/helper";
 import {FeaturedProductCard} from "./featuredProductCard";
+import { getServerSideUser } from "@/hooks/getServerSideUser";
 
 export async function FeaturedProducts() {
   const products = await getFeaturedProducts();
+  const userDetails = await getServerSideUser();
 
   return (
 // Cleaned up the section classes
@@ -26,7 +28,7 @@ export async function FeaturedProducts() {
         {/* Products Grid */}
         <div className="grid grid-cols-2  items-stretch sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
           {products.map((product) => (
-            <FeaturedProductCard key={product.id} product={product} />
+            <FeaturedProductCard key={product.id} product={product} userDetails={userDetails} />
           ))}
         </div>
 

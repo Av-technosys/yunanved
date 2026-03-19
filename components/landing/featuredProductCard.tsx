@@ -8,8 +8,8 @@ import { useAddToCart } from "@/helper/useAddToCart";
 import { useRef, useState } from "react";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 
-export const FeaturedProductCard = ({ product, key }: any) => {
-  const { handleAddToCart, isPending } = useAddToCart();
+export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
+  const { handleAddToCart } = useAddToCart(userDetails?.id);
 
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
