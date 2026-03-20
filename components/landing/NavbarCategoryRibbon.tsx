@@ -7,7 +7,7 @@ export const NavbarCategoryRibbon = () => {
             {NAVBAR_CATEGORY_RIBBON.map((item) => (
                 <Link
                     key={item}
-                    href="/category"
+                    href="/"
                     className="hover:text-black transition-colors"
                 >
                     {item}

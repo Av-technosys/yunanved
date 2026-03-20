@@ -4,12 +4,7 @@ import Image from "next/image";
 import signup from "../../public/authpic.png";
 import yunanved from "../../public/yunanvedLogo.png";
 import googleIcon from "../../public/Icon-Google.png";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui";
+import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Button } from "@/components/ui";
 
@@ -28,14 +23,19 @@ const Page = () => {
       email: e.target.email.value,
     };
 
-    const response = await resetPasswordUsingEmail(formData);
+    try {
+      const response = await resetPasswordUsingEmail(formData);
 
-    if (response.error) {
-      toast.error(response.error);
-      return;
+      if (response.error) {
+        toast.error("Please provide email id");
+        return;
+      } else {
+        toast.success(response.message || "Email sent successfully");
+        router.push(`/reset-password-otp?email=${formData.email}`);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
     }
-    toast.success(response.message);
-    router.push(`/reset-password-otp?email=${formData.email}`);
   };
   return (
     <>
@@ -74,7 +74,7 @@ const Page = () => {
                 <Button
                   type="submit"
                   form="reset-password-email"
-                  className="w-full rounded-full bg-black text-white"
+                  className="w-full rounded-full bg-[#0F2A2E] text-white"
                 >
                   Confirm
                 </Button>

@@ -1,14 +1,12 @@
-import {Footer} from "@/components/landing";
-import ClientLayoutWrapper from "@/components/landing/navbar/ClientNavbarLayout";
+import { getServerSideUser } from "@/hooks/getServerSideUser";
+import LayoutClientWrapper from "./LayoutClientWrapper";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-    return (
-        <>
-        <ClientLayoutWrapper>
-            {children}
-         </ClientLayoutWrapper>
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const userDetails = await getServerSideUser();
 
-            <Footer />
-        </>
-    )
+  return (
+    <LayoutClientWrapper userDetails={userDetails}>
+      {children}
+    </LayoutClientWrapper>
+  );
 }

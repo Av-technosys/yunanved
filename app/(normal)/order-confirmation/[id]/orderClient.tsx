@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Card, CardContent } from "@/components/ui";
@@ -11,7 +12,21 @@ import { useSession } from "next-auth/react";
 export default function OrderClient({ orderDetails }: any) {
     const { userDetails } = useClientSideUser();
     const { data: session } = useSession();
+    const subtotal =
+  orderDetails?.items?.reduce(
+    (acc: number, item: any) => acc + item.productPrice * item.quantity,
+    0
+  ) ?? 0;
 
+const couponDiscount =
+  orderDetails?.coupon?.discountFixedAmount ??
+  (orderDetails?.coupon?.isDiscountPercentage
+    ? Math.round(
+        (subtotal * orderDetails?.coupon?.discountPercentage) / 100
+      )
+    : 0);
+
+const deliveryFee = subtotal > 0 ? 15 : 0;
   return (
     <>
       <div className="max-w-4xl px-2 md:px-4 lg:px-0 mx-auto my-10 max-sm:my-0 space-y-6">
@@ -33,7 +48,7 @@ export default function OrderClient({ orderDetails }: any) {
               , your order is successfully placed
             </p>
 
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-green-500">
               We have sent confirmation mail to email id{" "}
               <span className="font-bold">{session?.user?.email}</span>
             </p>
@@ -108,21 +123,26 @@ export default function OrderClient({ orderDetails }: any) {
               </div>
             ))}
 
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-2 text-sm">
-                <p className="font-medium">Order Summary</p>
+        <div className="space-y-2 text-sm">
+  <p className="font-medium">Order Summary</p>
 
-                <div className="flex justify-between text-gray-600">
-                  <span>Shipping</span>
-                  <span>₹5.00</span>
-                </div>
+  <div className="flex justify-between text-gray-600">
+    <span>Subtotal</span>
+    <span>₹{subtotal}</span>
+  </div>
 
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax (8%)</span>
-                  <span>₹2.87</span>
-                </div>
-              </div>
-            </div>
+  {orderDetails?.coupon && (
+    <div className="flex justify-between text-green-600">
+      <span>Coupon ({orderDetails.coupon.code})</span>
+      <span>-₹{couponDiscount}</span>
+    </div>
+  )}
+
+  <div className="flex justify-between text-gray-600">
+    <span>Delivery</span>
+    <span>₹{deliveryFee}</span>
+  </div>
+</div>
 
             {/* TOTAL */}
             <div className="flex justify-between  font-semibold">

@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { email, code, newPassword } = body;
 
     if (!email || !code || !newPassword) {
-        return NextResponse.json({ message: 'email, code, and new password are required.' }, { status: 400 });
+        return NextResponse.json({ message: 'OTP and New password are required.' }, { status: 400 });
     }
     try {
         await cognitoConfirmForgotPassword({ email, code, newPassword });

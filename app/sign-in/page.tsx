@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import googleIcon from "@/public/Icon-Google.png";
 
 import { signinSchema } from "@/validation/signInSchema";
 
@@ -94,7 +95,7 @@ const Page = () => {
                     />
                   </div>
                   <div className="w-full flex items-center justify-end">
-                    <Button type="button" variant={"link"} onClick={()=> router.push("/reset-password-email")} className="text-gray-600 p-0 cursor-pointer">Forgot Password</Button>
+                    <Button type="button" variant={"link"} onClick={()=> router.push("/reset-password-email")} className="text-black p-0 cursor-pointer">Forgot Password ?</Button>
                   </div>
                 </form>
               </CardDescription>
@@ -103,7 +104,7 @@ const Page = () => {
                 <Button
                   type="submit"
                   form="signIn"
-                  className="w-full rounded-full bg-black text-white"
+                  className="w-full rounded-full bg-[#0F2A2E] text-white"
                 >
                   Login
                 </Button>
@@ -111,7 +112,7 @@ const Page = () => {
                   variant={"outline"}
                   className="w-full rounded-full border-black flex items-center justify-center "
                 >
-                  <Image src={"/googleIcon-Google.png"} alt="google" width={18} height={18} />
+                  <Image src={googleIcon} alt="google" width={18} height={18} />
                   <span>Sign in with Google</span>
                 </Button>
               </div>
@@ -119,7 +120,7 @@ const Page = () => {
               <CardFooter>
                 <div className="w-full flex items-center gap-2 justify-center">
                   <span>Don't have an account ?</span>
-                  <Button variant={"link"} className="p-0">
+                  <Button variant={"link"} className="p-0 text-gray-800">
                     <Link href="/sign-up">Sign up</Link>
                   </Button>
                 </div>

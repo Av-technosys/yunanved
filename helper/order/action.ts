@@ -4,10 +4,12 @@
 import { paginate } from "@/lib/pagination";
 import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { order, orderItem, payment } from "@/db/orderSchema";
+import { cancelRequest, order, orderItem, payment, returnRequest, returnRequestImage } from "@/db/orderSchema";
 import { user } from "@/db/userSchema";
 import { revalidatePath } from "next/cache";
 import { cart, cartItem, productVariant, product } from "@/db";
+import { getServerSideUser } from "@/hooks/getServerSideUser";
+type CancelStatus = "pending" | "approved" | "rejected" | "refunded";
 
 export const fetchOrders = async ({
   page = 1,
@@ -32,7 +34,7 @@ export const fetchOrders = async ({
     page,
     pageSize,
     where: whereClause,
-    orderBy: asc(order.createdAt),
+    orderBy: desc(order.createdAt),
   });
 };
 
@@ -108,6 +110,7 @@ export async function createOrder({
   address,
   razorpayPaymentId,
   razorpayOrderId,
+  couponTransactionId,
 }: {
   items: { productVarientId: string; quantity: number }[];
   userId: string;
@@ -115,6 +118,8 @@ export async function createOrder({
   address: any;
   razorpayPaymentId: string;
   razorpayOrderId: string;
+  couponTransactionId?: string | null;
+
 }) {
   try {
     if (!items || items.length === 0) {
@@ -145,6 +150,7 @@ export async function createOrder({
           userId,
           status: "paid",
           totalAmountPaid: safeAmount,
+          couponTransactionId: couponTransactionId ?? null,
           addressLine1: address.addressLine1,
           addressLine2: address.addressLine2,
           city: address.city,
@@ -238,6 +244,7 @@ export async function getOrderById(orderId: string) {
       error: "order ID not provided. Unable to fetch order details.",
     };
   }
+
   const rows = await db
     .select({
       order: order,
@@ -251,22 +258,314 @@ export async function getOrderById(orderId: string) {
     .leftJoin(payment, eq(order.id, payment.orderId))
     .where(eq(order.id, orderId));
 
+  const cancelReq = await db
+    .select()
+    .from(cancelRequest)
+    .where(eq(cancelRequest.orderId, orderId))
+    .limit(1);
+
+
   if (!rows.length) return null;
 
   const orderData = rows[0].order;
+  const cancelData = cancelReq[0] ?? null;
+  const orderItemIds = rows
+    .filter((r) => r.item)
+    .map((r) => r.item!.id);
+
+  const returnRequests = await db
+    .select()
+    .from(returnRequest)
+    .where(inArray(returnRequest.orderItemId, orderItemIds));
 
   const items = rows
     .filter((r) => r.item)
-    .map((r) => ({
-      ...r.item,
-      productVariant: r.productVariant ?? null,
-    }));
+    .map((r) => {
+      const variant = r.productVariant;
 
+      let canReturn = false;
+      let returnDaysLeft = 0;
+
+      if (variant?.isReturnable && orderData.status === "delivered") {
+        const deliveredAt = new Date(orderData.updatedAt);
+        const now = new Date();
+
+        const daysPassed =
+          (now.getTime() - deliveredAt.getTime()) /
+          (1000 * 60 * 60 * 24);
+
+        returnDaysLeft = Math.max(
+          0,
+          variant.returnDays - Math.floor(daysPassed)
+        );
+
+        canReturn = returnDaysLeft > 0;
+      }
+
+      const itemReturn = returnRequests.find(
+        (rr) => rr.orderItemId === r.item!.id
+      );
+
+      return {
+        ...r.item,
+        productVariant: variant ?? null,
+        canReturn,
+        returnDaysLeft,
+        returnRequest: itemReturn || null,
+      };
+    });
   const paymentData = rows[0].payment ?? null;
+
+  const canCancel = items.every((i) => i.productVariant?.isCancelable);
 
   return {
     ...orderData,
     items,
     payment: paymentData,
+    canCancel,
+    cancelRequest: cancelData,
+  };
+}
+
+
+
+
+export async function createCancelRequest(orderId: string, reason: string) {
+
+  const user = await getServerSideUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // check existing cancel request
+  const existingRequest = await db.query.cancelRequest.findFirst({
+    where: eq(cancelRequest.orderId, orderId),
+  });
+
+  if (existingRequest) {
+    return {
+      success: false,
+      error: "Cancellation request already submitted. Please wait for admin approval.",
+    };
+  }
+
+  await db.insert(cancelRequest).values({
+    orderId,
+    userId: user.id,
+    userReason: reason,
+  });
+
+  return {
+    success: true,
+  };
+}
+
+export const getCancelRequests = async ({
+  page = 1,
+  pageSize = 10,
+  search = "",
+  status = "",
+}) => {
+  const filters = [];
+
+  if (search) {
+    filters.push(
+      or(sql`${cancelRequest.orderId}::text ILIKE ${`%${search}%`}`)
+    );
+  }
+
+  if (status) {
+    filters.push(
+      eq(cancelRequest.status, status as CancelStatus)
+    );
+  }
+
+  const whereClause = filters.length ? and(...filters) : undefined;
+
+  const data = await db
+    .select({
+      cancel: cancelRequest,
+      order: order,
+      user: user,
+    })
+    .from(cancelRequest)
+    .leftJoin(order, eq(cancelRequest.orderId, order.id))
+    .leftJoin(user, eq(cancelRequest.userId, user.id))
+    .where(whereClause)
+    .orderBy(desc(cancelRequest.createdAt))
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
+
+  const total = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(cancelRequest)
+    .where(whereClause);
+
+  return {
+    data,
+    meta: {
+      page,
+      pageSize,
+      totalPages: Math.ceil(Number(total[0].count) / pageSize),
+    },
+  };
+};
+
+export async function updateCancelRequestStatus({
+  id,
+  status,
+  adminReason,
+}: {
+  id: string;
+  status: "approved" | "rejected" | "refunded";
+  adminReason?: string;
+}) {
+  await db
+    .update(cancelRequest)
+    .set({
+      status,
+      ...(adminReason && { adminReason }),
+    })
+    .where(eq(cancelRequest.id, id));
+}
+
+export async function createReturnRequest({
+  orderItemId,
+  reason,
+  images,
+}: {
+  orderItemId: string;
+  reason: string;
+  images: string[];
+}) {
+  const user = await getServerSideUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  const existing = await db.query.returnRequest.findFirst({
+    where: eq(returnRequest.orderItemId, orderItemId),
+  });
+
+  if (existing) {
+    return {
+      success: false,
+      error: "Return request already exists",
+    };
+  }
+
+  const [req] = await db
+    .insert(returnRequest)
+    .values({
+      orderItemId,
+      userId: user.id,
+      reason,
+    })
+    .returning();
+
+
+  if (images.length) {
+    await db.insert(returnRequestImage).values(
+      images.map((img) => ({
+        returnRequestId: req.id,
+        imageUrl: img,
+      }))
+    );
+  }
+
+  return { success: true };
+}
+export const fetchReturnRequests = async ({
+  page = 1,
+  pageSize = 10,
+  status = "",
+}) => {
+  const filters = [];
+
+  if (status) {
+    filters.push(eq(returnRequest.status, status as any));
+  }
+
+  const whereClause = filters.length ? and(...filters) : undefined;
+
+  const result = await paginate({
+    table: returnRequest,
+    page,
+    pageSize,
+    where: whereClause,
+    orderBy: desc(returnRequest.createdAt),
+  });
+
+  const orderItemIds = result.data.map((r: any) => r.orderItemId);
+  const userIds = result.data.map((r: any) => r.userId);
+
+  const items = await db
+    .select()
+    .from(orderItem)
+    .where(inArray(orderItem.id, orderItemIds));
+
+  const users = await db
+    .select()
+    .from(user)
+    .where(inArray(user.id, userIds));
+
+  const images = await db
+    .select()
+    .from(returnRequestImage)
+    .where(
+      inArray(
+        returnRequestImage.returnRequestId,
+        result.data.map((r: any) => r.id)
+      )
+    );
+
+  const data = result.data.map((req: any) => ({
+    return_request: req,
+    order_item: items.find((i) => i.id === req.orderItemId),
+    user: users.find((u) => u.id === req.userId),
+    images: images.filter(
+      (img) => img.returnRequestId === req.id
+    ),
+  }));
+
+  return {
+    ...result,
+    data,
+  };
+};
+
+export async function updateReturnRequestStatus({
+  id,
+  status,
+  adminReason,
+}: {
+  id: string;
+  status: "approved" | "rejected" | "refunded";
+  adminReason?: string;
+}) {
+  const updateData: any = {
+    status,
+    updatedAt: new Date(),
+  };
+
+
+  if (status === "rejected") {
+    if (!adminReason) {
+      return {
+        success: false,
+        error: "Reason is required for rejection",
+      };
+    }
+
+    updateData.adminReason = adminReason;
+  }
+
+  await db
+    .update(returnRequest)
+    .set(updateData)
+    .where(eq(returnRequest.id, id));
+
+  return {
+    success: true,
   };
 }

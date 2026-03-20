@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+"use client";
 import { Button, Input, Label, Separator } from "@/components/ui";
 import Link from "next/link";
 import { CircleUserRound, LogOut, Menu } from "lucide-react";
@@ -11,23 +11,21 @@ import { NAVBAR_CATEGORY_RIBBON } from "@/const";
 import { SearchWithIcon } from "./navbar/SearchBar";
 import { CartIcon } from "./navbar/Cart";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui";
-import { logoutHandler } from "@/helper";
-import { toast } from "sonner";
 import LogoutNavbar from "./logoutNavbar";
+import { useEffect, useState } from "react";
 
-export const Navbar = ({ userInfo, loading }: any) => {
- 
+export const Navbar = ({ userInfo }: any) => {
   return (
     <header className="max-w-7xl mx-auto sticky top-0 z-50 bg-white py-2 ">
       <div
         className={
-          "w-full mx-auto px-4 flex items-center justify-between gap-4 md:gap-12"
+          "w-full mx-auto md:px-4 flex items-center justify-between gap-4 md:gap-12"
         }
       >
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu style={{width:22 , height : 22}} />
+              <Menu style={{ width: 22, height: 22 }} />
             </Button>
           </SheetTrigger>
 
@@ -39,15 +37,13 @@ export const Navbar = ({ userInfo, loading }: any) => {
           </Link>
 
           <div className=" hidden md:flex w-full justify-between gap-4">
-            <UserLocation userInfo={userInfo} loading={loading} />
+            <UserLocation userInfo={userInfo} />
             {/* Search Bar Container */}
             <SearchWithIcon />
 
             {/* Actions (Sign Up, Login, Cart) */}
             <div className="flex items-center gap-3">
-              {loading ? (
-                <Skeleton className="h-9 w-30" />
-              ) : userInfo ? (
+              {userInfo ? (
                 <LogedInUserDetail userInfo={userInfo} />
               ) : (
                 <AuthBtns />
@@ -56,13 +52,16 @@ export const Navbar = ({ userInfo, loading }: any) => {
               {/* Cart Icon with Badge */}
             </div>
           </div>
-          <div className="flex  items-center">
-            <CartIcon  />
+          <div className=" flex   items-center justify-end">
+            <CartIcon />
 
             <Popover>
               <PopoverTrigger className=" block sm:hidden" asChild>
-                <Button className="flex items-center justify-center" variant="ghost">
-                  <CircleUserRound style={{width:22 , height : 22}} />
+                <Button
+                  className="flex items-center justify-center"
+                  variant="ghost"
+                >
+                  <CircleUserRound style={{ width: 22, height: 22 }} />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-40 mr-2  flex flex-col gap-1">
@@ -71,7 +70,7 @@ export const Navbar = ({ userInfo, loading }: any) => {
                     <LogedInUserDetail userInfo={userInfo} />
                     <div className=" sm:hidden  mt-3 flex flex-col items-start gap-2">
                       <Separator />
-                     <LogoutNavbar/>
+                      <LogoutNavbar />
                     </div>
                   </>
                 ) : (
@@ -114,9 +113,7 @@ export const Navbar = ({ userInfo, loading }: any) => {
 
             {/* Auth */}
             <div className="border-t pt-4 flex flex-col gap-3">
-              {loading ? (
-                <Skeleton className="h-10 w-full" />
-              ) : userInfo ? (
+              {userInfo ? (
                 <Link href="/dashboard" className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border">
                     <AvatarImage
@@ -133,7 +130,9 @@ export const Navbar = ({ userInfo, loading }: any) => {
 
                   <div className="flex flex-col">
                     <span className="text-sm text-gray-500">Welcome,</span>
-                    <span className="font-semibold">{userInfo.firstName} {userInfo.lastName}</span>
+                    <span className="font-semibold">
+                      {userInfo.firstName} {userInfo.lastName}
+                    </span>
                   </div>
                 </Link>
               ) : (
@@ -184,7 +183,7 @@ function LogedInUserDetail({ userInfo }: any) {
 
         {userInfo?.firstName ? (
           <span className="text-md font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
-            {userInfo.firstName} 
+            {userInfo.firstName}
           </span>
         ) : (
           <Skeleton className="h-4 w-[80px]" />
@@ -229,13 +228,7 @@ function MapPinSVG() {
   );
 }
 
-function UserLocation({
-  userInfo,
-  loading,
-}: {
-  userInfo: any;
-  loading: boolean;
-}) {
+function UserLocation({ userInfo }: { userInfo: any }) {
   return (
     <div className="flex items-center gap-2 shrink-0 cursor-pointer group">
       <MapPinSVG />
@@ -244,13 +237,12 @@ function UserLocation({
         <span className="text-[10px] text-gray-500 font-medium">
           Deliver to
         </span>
-        {loading ? (
-          <Skeleton className="h-4 w-[120px]" />
-        ) : userInfo?.city ? (
+        {userInfo?.city ? (
           <Link href={`${"/dashboard/address"}`}>
-          <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
-            {userInfo?.city}, {userInfo?.state}
-          </span></Link>
+            <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
+              {userInfo?.city}, {userInfo?.state}
+            </span>
+          </Link>
         ) : (
           <Link
             href={`${userInfo ? "/dashboard/address" : "/sign-in"}`}
