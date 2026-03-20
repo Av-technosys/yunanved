@@ -4,12 +4,7 @@ import Image from "next/image";
 import signupImg from "@/public/authpic.png";
 import yunanved from "@/public/yunanvedLogo.png";
 import googleIcon from "@/public/Icon-Google.png";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui";
+import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { signup } from "@/helper/index";
@@ -17,9 +12,13 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signupSchema } from "@/validation/signUpSchema";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const Page = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const submitHandler = async (e: any) => {
     e.preventDefault();
@@ -57,8 +56,8 @@ const Page = () => {
       } else {
         toast.error(response.message);
       }
-    } catch {
-      toast.error("Something went wrong");
+    } catch(error:any){
+      toast.error(error.message || "Something went wrong.");
     }
   };
 
@@ -113,25 +112,51 @@ const Page = () => {
                     <Input
                       name="phone"
                       type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]{10}"
+                      maxLength={10}
                       className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 "
                       placeholder="Phone Number"
                     />
                   </div>
-                  <div>
+                  <div className="relative">
                     <Input
                       name="password"
-                      type="password"
-                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 "
+                      type={showPassword ? "text" : "password"}
+                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 pr-8"
                       placeholder="Password"
                     />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
-                  <div>
+
+                  <div className="relative ">
                     <Input
                       name="confirmPassword"
-                      type="password"
-                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 "
+                      type={showConfirmPassword ? "text" : "password"}
+                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 pr-8"
                       placeholder="Confirm Password"
                     />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff size={18} />
+                      ) : (
+                        <Eye size={18} />
+                      )}
+                    </button>
                   </div>
                 </form>
               </CardDescription>
@@ -140,7 +165,7 @@ const Page = () => {
                 <Button
                   type="submit"
                   form="signUp"
-                  className="w-full rounded-full bg-black text-white"
+                  className="w-full rounded-full bg-[#0F2A2E] text-white"
                 >
                   Create Account
                 </Button>

@@ -19,7 +19,7 @@ export const Navbar = ({ userInfo }: any) => {
     <header className="max-w-7xl mx-auto sticky top-0 z-50 bg-white py-2 ">
       <div
         className={
-          "w-full mx-auto px-4 flex items-center justify-between gap-4 md:gap-12"
+          "w-full mx-auto md:px-4 flex items-center justify-between gap-4 md:gap-12"
         }
       >
         <Sheet>
@@ -52,7 +52,7 @@ export const Navbar = ({ userInfo }: any) => {
               {/* Cart Icon with Badge */}
             </div>
           </div>
-          <div className="flex  items-center">
+          <div className=" flex   items-center justify-end">
             <CartIcon />
 
             <Popover>

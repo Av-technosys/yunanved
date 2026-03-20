@@ -84,10 +84,10 @@ export async function resetPasswordUsingEmail(payload: any) {
   const data = await response.json();
 
   if (!response.ok) {
-    return { error: data.message };
-  }
+  return { error: data.message || "Something went wrong" };
+}
 
-  return { message: data.message };
+return { message: data.message || "Success" };
 }
 
 
