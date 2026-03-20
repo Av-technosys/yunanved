@@ -7,10 +7,9 @@ import { getOrderById } from "@/helper/index";
 import { useRouter } from "next/navigation";
 
 import {OrderReview} from "./OrderReview";
-import {OrderStatusCard} from "@/components/order";
+import {OrderItemsTable, OrderStatusCard} from "@/components/order";
 import {DeliveryDetailsCard} from "@/components/order";
 import {OrderSummaryCard} from "@/components/order";
-import {OrderItemsTable} from "@/components/order";
 import {OrderDetailsSkeleton} from "@/components/order";
 import { ChevronRight } from "lucide-react";
 

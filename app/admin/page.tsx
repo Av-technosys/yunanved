@@ -10,6 +10,11 @@ import { DashboardCards } from "@/components/admin"
 export default async function DashboardPage() {
 
   const data = await getDashboardData()
+
+  const safeData  = data.orderStatus.map((item) => ({
+  status: item.status as string,
+  count: item.count,
+}));
   return (
     <div className="space-y-6 p-3">
 
@@ -38,7 +43,7 @@ export default async function DashboardPage() {
           <RecentOrdersTable orders={data.recentOrders} />
         </div>
 
-        <OrderStatusChart data={data.orderStatus} />
+        <OrderStatusChart data={safeData} />
       </div>
 
     </div>
