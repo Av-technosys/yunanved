@@ -22,7 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ORDER_STATUS } from "@/const"
 
 type StatusData = {
-  status: string
+  status: string  
   count: number
 }
 
@@ -36,7 +36,6 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export function OrderStatusChart({ data }: { data?: StatusData[] }) {
-
   if (!data) {
     return (
       <Card>
