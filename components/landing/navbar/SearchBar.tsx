@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { Button, Input } from "@/components/ui";
 import { LayoutGrid, Search } from "lucide-react";
 import { searchProducts } from "@/helper";
@@ -17,16 +18,24 @@ export function SearchWithIcon() {
 
   const router = useRouter();
 
-  const handleSearch = () => {
-    if (!query.trim()) return;
+  useEffect(() => {
+    if (query.trim().length < 3) {
+      setResults([]);
+      setShowDropdown(false);
+      return;
+    }
 
     setShowDropdown(true);
 
-    startTransition(async () => {
-      const res = await searchProducts(query);
-      setResults(res);
-    });
-  };
+    const delayDebounce = setTimeout(() => {
+      startTransition(async () => {
+        const res = await searchProducts(query);
+        setResults(res);
+      });
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
 
   const handleNavigate = (item: any) => {
     setShowDropdown(false);
@@ -44,28 +53,19 @@ export function SearchWithIcon() {
 
   return (
     <div className="relative w-full max-w-2xl">
-      {/* 🔍 Input */}
       <div className="flex items-center gap-2">
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSearch();
-          }}
           placeholder="Search for Products, Brands & More"
           className="flex-1 h-11 rounded-full pl-6 text-sm shadow-sm"
         />
 
-        <Button
-          size="icon"
-          className="h-11 w-11 rounded-full"
-          onClick={handleSearch}
-        >
+        <Button size="icon" className="h-11 w-11 rounded-full">
           <Search size={18} />
         </Button>
       </div>
 
-      {/* 🔽 Dropdown */}
       {showDropdown && (
         <div className="absolute top-14 w-full bg-white border shadow-xl rounded-2xl mt-2 z-50 overflow-hidden">
           {isPending && (
@@ -78,7 +78,6 @@ export function SearchWithIcon() {
 
           {!isPending && results.length > 0 && (
             <div className="max-h-80 overflow-y-auto">
-              {/* PRODUCTS */}
               {products.length > 0 && (
                 <div>
                   <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase">
@@ -109,7 +108,6 @@ export function SearchWithIcon() {
                 </div>
               )}
 
-              {/* CATEGORIES */}
               {categories.length > 0 && (
                 <div>
                   <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase">
@@ -122,7 +120,7 @@ export function SearchWithIcon() {
                       onClick={() => handleNavigate(item)}
                       className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer transition"
                     >
-                      <div className="w-10 h-10 flex items-center justify-center rounded-md bg-gray-100 text-lg">
+                      <div className="w-10 h-10 flex items-center justify-center rounded-md bg-gray-100">
                         <LayoutGrid size={18} className="text-gray-500" />
                       </div>
 

@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { productVariant, category } from "@/db";
-import { ilike, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export async function searchProducts(query: string) {
   if (!query.trim()) return [];
@@ -16,7 +16,10 @@ export async function searchProducts(query: string) {
       type: sql<string>`'product'`,
     })
     .from(productVariant)
-    .where(ilike(productVariant.name, `%${query}%`))
+    .where(sql`
+    to_tsvector('simple', ${productVariant.name}) @@ plainto_tsquery(${query})
+    OR ${productVariant.name} ILIKE ${"%" + query + "%"}
+    `)
     .limit(10);
 
   const categories = await db
@@ -28,7 +31,10 @@ export async function searchProducts(query: string) {
       type: sql<string>`'category'`,
     })
     .from(category)
-    .where(ilike(category.name, `%${query}%`))
+    .where(sql`
+    to_tsvector('simple', ${category.name}) @@ plainto_tsquery(${query})
+    OR ${category.name} ILIKE ${"%" + query + "%"}
+    `)
     .limit(5);
 
   return [...products, ...categories];
