@@ -6,34 +6,22 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Checkbox,
+  Label,
 } from "@/components/ui";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui";
+
 import { Button } from "@/components/ui";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardTitle,
-} from "@/components/ui";
-import { Separator } from "@/components/ui";
+
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
+
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Slider } from "@/components/ui";
 import { Filter, Menu, X } from "lucide-react";
+import { FILTERS } from "@/const/category";
 
 export function FilterSidebar() {
   return (
@@ -60,30 +48,28 @@ export function FilterSidebar() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 ">
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="fashion">
-              <AccordionTrigger>Fashion</AccordionTrigger>
-              <AccordionContent>Content here</AccordionContent>
-            </AccordionItem>
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="fashion"
+            className="max-w-lg"
+          >
+            {FILTERS.map((filter) => (
+              <AccordionItem key={filter.key} value={filter.key}>
+                <AccordionTrigger>{filter.title}</AccordionTrigger>
 
-            <AccordionItem value="grocery">
-              <AccordionTrigger>Grocery</AccordionTrigger>
-              <AccordionContent>Content here</AccordionContent>
-            </AccordionItem>
+                <AccordionContent className="space-y-3">
+                  {filter.options.map((item) => (
+                    <div key={item} className="flex items-center space-x-2">
+                      <Checkbox id={`${filter.key}-${item}`} />
+                      <Label htmlFor={`${filter.key}-${item}`}>{item}</Label>
+                    </div>
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
 
-            <AccordionItem value="electronics">
-              <AccordionTrigger>Electronics</AccordionTrigger>
-              <AccordionContent>Content here</AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="beauty">
-              <AccordionTrigger>Beauty</AccordionTrigger>
-              <AccordionContent>
-                Reach us via email, live chat, or phone. We respond within 24
-                hours during business days.
-              </AccordionContent>
-            </AccordionItem>
-
+            {/* Price (separate because it's a slider) */}
             <AccordionItem value="price">
               <AccordionTrigger>Price</AccordionTrigger>
               <AccordionContent>
@@ -93,26 +79,23 @@ export function FilterSidebar() {
                   step={5}
                   className="w-full my-4"
                 />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="avaliablity">
-              <AccordionTrigger>Avaliablity</AccordionTrigger>
-              <AccordionContent>
-                <span>In Stock</span>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>₹50</span>
+                  <span>₹1000</span>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
 
         <div className="border-t p-4 space-y-3 ">
-          <Button className="w-full bg-[var(--bg-product-button)]">
+          <Button className="w-full bg-(--bg-product-button)]">
             Apply Filter
           </Button>
 
           <Button
             variant="outline"
-            className="w-full text-[var(--bg-product-button)] border-[var(--bg-product-button)]"
+            className="w-full text-(--bg-product-button) border-(--bg-product-button)"
           >
             Clear Filter
           </Button>
