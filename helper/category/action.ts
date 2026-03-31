@@ -6,9 +6,9 @@ import { db } from "@/lib/db";
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
-import { arrayContains, arrayOverlaps, desc, eq, inArray } from "drizzle-orm";
+import { arrayContains, arrayOverlaps, avg, count, desc, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { productCategory, category, product, productVariant } from "@/db";
+import { productCategory, category, product, productVariant, review } from "@/db";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
@@ -234,7 +234,8 @@ export async function getAllProductsByCategorySlug(
         strikethroughPrice: productVariant.strikethroughPrice,
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
-        rating: productVariant.rating,
+        rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
+        reviewCount: count(review.id),
         sku: productVariant.sku,
       })
       .from(productVariant)
@@ -246,10 +247,14 @@ export async function getAllProductsByCategorySlug(
         category,
         eq(category.id, productCategory.categoryId),
       )
+       .leftJoin(
+        review,
+        eq(review.productVarientId, productVariant.id)
+      )
       .where(
         conditions.length > 0 ? and(...conditions) : undefined // ✅ works with Drizzle
-      );
-
+      )
+      .groupBy(productVariant.id);
     return products;
   } catch (error) {
     console.error("fetch products by category failed:", error);

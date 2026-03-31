@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import { RefreshCw, Star, Truck, Undo2 } from "lucide-react";
-import {ProductCard} from "@/components/productCard";
+import { ProductCard } from "@/components/productCard";
 import { Button } from "@/components/ui";
 import { useRef, useState } from "react";
 import { useAddToCart } from "@/helper/useAddToCart";
@@ -12,7 +12,11 @@ import { cn } from "@/lib/utils";
 import ReviewCard from "../reviewCard";
 import { useRouter } from "next/navigation";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
-
+import { useCartStore } from "@/store/cartStore";
+import { removeCartItem } from "@/helper";
+import { toast } from "sonner";
+import { startTransition } from "react";
+import StarRatings from "react-star-ratings";
 const ProductClient = ({
   productInfo: initialProduct,
   variants = [],
@@ -20,13 +24,19 @@ const ProductClient = ({
   reviewWithMedia = [],
 }: any) => {
   const router = useRouter();
-  const { userDetails } = useClientSideUser()
+  const { userDetails } = useClientSideUser();
   const [activeVariant, setActiveVariant] = useState(initialProduct);
-  const [bannerImage, setBannerImage] = useState<any>(activeVariant.bannerImage);
+  const [bannerImage, setBannerImage] = useState<any>(
+    activeVariant.bannerImage,
+  );
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
   const { handleAddToCart } = useAddToCart(userDetails?.id);
+  const items = useCartStore((state) => state.items) || [];
+  const removeItem = useCartStore((state) => state.removeItem);
+  const userId = userDetails?.id;
 
+  const isInCart = items.some((i) => i.productId === activeVariant.id);
   const productDetailsForCart = {
     productId: activeVariant.id,
     sku: activeVariant.sku,
@@ -43,7 +53,27 @@ const ProductClient = ({
     attributes: [],
   };
 
+  const handleRemove = () => {
+    const item = {
+      productId: activeVariant.id,
+      slug: activeVariant.slug,
+      title: activeVariant.name,
+      image: activeVariant.bannerImage,
+      price: activeVariant.basePrice,
+      attributes: [],
+    };
 
+    removeItem(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        await removeCartItem(userId, item.productId);
+      } catch {
+        useCartStore.getState().addItem(item);
+        toast.error("Failed to remove item");
+      }
+    });
+  };
   const handleClick = async () => {
     if (clickLock.current) return;
     clickLock.current = true;
@@ -63,7 +93,7 @@ const ProductClient = ({
     setBannerImage(variant.bannerImage);
     // Optionally update the URL without a full reload
     // window.history.replaceState(null, "", `/product/${variant.slug}`);
-     router.push(`/product/${variant.slug}`);
+    router.push(`/product/${variant.slug}`);
   };
 
   return (
@@ -85,9 +115,13 @@ const ProductClient = ({
                          `}
                 >
                   <Image
-                    src={image.mediaURL && image.mediaURL !== "null" && image.mediaURL !== "[object Object]"
-                      ? `${NEXT_PUBLIC_S3_BASE_URL}/${image.mediaURL}`
-                      : "/fortune1.png"}
+                    src={
+                      image.mediaURL &&
+                      image.mediaURL !== "null" &&
+                      image.mediaURL !== "[object Object]"
+                        ? `${NEXT_PUBLIC_S3_BASE_URL}/${image.mediaURL}`
+                        : "/fortune1.png"
+                    }
                     alt="product thumbnail"
                     fill
                     className="object-cover rounded-md"
@@ -99,9 +133,13 @@ const ProductClient = ({
           <div className="w-full h-full md:w-3/4 order-1 md:order-2  flex  items-center justify-center bg-[#F5F5F5] rounded-lg">
             <div className="h-[80%] w-full relative flex items-center justify-center">
               <Image
-                src={bannerImage && bannerImage !== "null" && bannerImage !== "[object Object]"
-                  ? `${NEXT_PUBLIC_S3_BASE_URL}/${bannerImage}`
-                  : "/fortune1.png"}
+                src={
+                  bannerImage &&
+                  bannerImage !== "null" &&
+                  bannerImage !== "[object Object]"
+                    ? `${NEXT_PUBLIC_S3_BASE_URL}/${bannerImage}`
+                    : "/fortune1.png"
+                }
                 alt={"bannerImage"}
                 fill
                 className="object-contain rounded-md"
@@ -128,37 +166,56 @@ const ProductClient = ({
               )}
             </div>
 
-
             <ProductDescription description={activeVariant.description} />
             <hr />
 
-            <ProductVarient variants={variants} handleVariantChange={handleVariantChange} activeVariant={activeVariant} />
-
-
+            <ProductVarient
+              variants={variants}
+              handleVariantChange={handleVariantChange}
+              activeVariant={activeVariant}
+            />
 
             <div className="flex gap-4 mt-2">
-              <button
-                onClick={handleClick}
+              <Button
+                onClick={() => {
+                  if (isInCart) {
+                    handleRemove();
+                  } else {
+                    handleClick();
+                  }
+                }}
                 disabled={isAdding || !activeVariant.isInStock}
-                className={`flex-1 bg-teal-700 text-white py-2 rounded-full font-medium 
-              hover:bg-teal-800 transition
-              ${(isAdding || !activeVariant.isInStock) ? "opacity-70 pointer-events-none" : ""}`}
+                variant={isInCart ? "outline" : "default"}
+                className={`flex-1 rounded-full font-medium transition
+    ${isAdding || !activeVariant.isInStock ? "opacity-70 pointer-events-none" : ""}
+  `}
               >
-                {activeVariant.isInStock ? (isAdding ? "Adding..." : "Add to Cart") : "Out of Stock"}
-              </button>
-              <button
+                {activeVariant.isInStock
+                  ? isInCart
+                    ? "Remove"
+                    : isAdding
+                      ? "Adding..."
+                      : "Add to Cart"
+                  : "Out of Stock"}
+              </Button>
+              <Button
+                variant={"default"}
                 disabled={!activeVariant.isInStock}
                 className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600 disabled:opacity-50"
               >
                 Buy Now
-              </button>
+              </Button>
             </div>
 
             <div className="border rounded-lg mt-4 divide-y">
               {/* managing free delivery by isCancelable */}
               {activeVariant.isCancelable && <FreeDelivery />}
-              {activeVariant.isReturnable && <ReturnDelivery days={activeVariant.returnDays} />}
-              {activeVariant.isReplacement && <ReplacementDelivery days={activeVariant.replacementDays} />}
+              {activeVariant.isReturnable && (
+                <ReturnDelivery days={activeVariant.returnDays} />
+              )}
+              {activeVariant.isReplacement && (
+                <ReplacementDelivery days={activeVariant.replacementDays} />
+              )}
             </div>
           </div>
         </div>
@@ -169,7 +226,6 @@ const ProductClient = ({
       <div className="max-w-6xl px-2 md:px-4 mb-10 lg:px-0 mt-5 mx-auto">
         <div className="text-lg mb-5 font-bold">Customer Reviews</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-
           {(reviewWithMedia || []).length > 0 ? (
             reviewWithMedia?.map((review: any, index: number) => (
               <ReviewCard key={index} review={review} />
@@ -177,12 +233,9 @@ const ProductClient = ({
           ) : (
             <p className="text-sm text-gray-800">No Reviews Found.</p>
           )}
-
-
         </div>
         <SimilarProducts similarProducts={similarProducts} />
       </div>
-
     </>
   );
 };
@@ -190,22 +243,34 @@ const ProductClient = ({
 export default ProductClient;
 
 function ProductReview({ activeVariant }: { activeVariant: any }) {
-  return (
-    <div className="flex items-center gap-4 text-sm">
-      <div className="flex items-center gap-1">
-        {Array.from({ length: Math.floor(activeVariant.rating || 0) }).map(
-          (_, index) => (
-            <Star key={index} className=" stroke-yellow-300 fill-yellow-300" />
-          ),
-        )}
-        <span className="text-gray-400 ml-1">
-          ({activeVariant.reviewCount || 0} Reviews)
-        </span>
-      </div>
-    </div>
-  )
-}
+  const rating = Number(activeVariant.rating) || 0;
 
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      
+      {/* ⭐ Stars */}
+      <StarRatings
+        rating={rating}
+        starRatedColor="#facc15"   // yellow-400
+        starEmptyColor="#e5e7eb"   // gray-200
+        numberOfStars={5}
+        starDimension="18px"
+        starSpacing="2px"
+        name="rating"
+      />
+
+      {/* ⭐ Rating number */}
+      <span className="font-medium text-gray-800">
+        {rating.toFixed(1)}
+      </span>
+
+      {/* 📝 Review count */}
+      <span className="text-gray-400">
+        ({activeVariant.reviewCount || 0} reviews)
+      </span>
+    </div>
+  );
+}
 
 function ProductDescription({ description }: { description: string }) {
   const [showMore, setShowMore] = useState(false);
@@ -260,19 +325,25 @@ function ProductSpecification({ attributes }: { attributes: any }) {
             <div key={item.id}>
               <div className="grid-cols-2 grid  py-2">
                 <span className="text-gray-600">{item.attribute}</span>
-                <span className="font-medium">
-                  {item.value}
-                </span>
+                <span className="font-medium">{item.value}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
     </>
-  )
+  );
 }
 
-function ProductVarient({ variants, handleVariantChange, activeVariant }: { variants: any, handleVariantChange: any, activeVariant: any }) {
+function ProductVarient({
+  variants,
+  handleVariantChange,
+  activeVariant,
+}: {
+  variants: any;
+  handleVariantChange: any;
+  activeVariant: any;
+}) {
   return (
     <>
       {variants.length > 1 && (
@@ -281,12 +352,14 @@ function ProductVarient({ variants, handleVariantChange, activeVariant }: { vari
           <div className=" flex flex-wrap gap-2">
             {variants.map((v: any, index: number) => (
               <div key={index} className="">
-
                 <Button
                   variant={"outline"}
                   key={v.id}
                   onClick={() => handleVariantChange(v)}
-                  className={cn(`h-auto cursor-pointer  flex flex-col gap-2`, v.id === activeVariant.id && "bg-gray-100")}
+                  className={cn(
+                    `h-auto cursor-pointer  flex flex-col gap-2`,
+                    v.id === activeVariant.id && "bg-gray-100",
+                  )}
                 >
                   <div className="w-28 h-28 relative rounded-md overflow-hidden">
                     <Image
@@ -306,7 +379,7 @@ function ProductVarient({ variants, handleVariantChange, activeVariant }: { vari
         </div>
       )}
     </>
-  )
+  );
 }
 
 function SimilarProducts({ similarProducts }: { similarProducts: any }) {
@@ -317,9 +390,7 @@ function SimilarProducts({ similarProducts }: { similarProducts: any }) {
         <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-3">
           {similarProducts.length > 0 ? (
             similarProducts.map((product: any, index: number) => {
-              return (
-                <ProductCard product={product} key={index} />
-              );
+              return <ProductCard product={product} key={index} />;
             })
           ) : (
             <p className="text-sm text-gray-800">No Similar Products Found.</p>
@@ -327,7 +398,7 @@ function SimilarProducts({ similarProducts }: { similarProducts: any }) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 function ReturnDelivery({ days }: { days: number }) {
@@ -344,7 +415,7 @@ function ReturnDelivery({ days }: { days: number }) {
         </p>
       </div>
     </div>
-  )
+  );
 }
 function FreeDelivery() {
   return (
@@ -359,7 +430,7 @@ function FreeDelivery() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 function ReplacementDelivery({ days }: { days: number }) {
@@ -376,5 +447,5 @@ function ReplacementDelivery({ days }: { days: number }) {
         </p>
       </div>
     </div>
-  )
+  );
 }
