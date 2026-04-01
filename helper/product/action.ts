@@ -678,3 +678,31 @@ export async function saveProductAttributes(productId: string, payload: any) {
   // Deprecated in favor of nested variant handling in updateProduct
   return { success: true };
 }
+
+
+export async function getProductsByCategorySlug(slug: string) {
+  try {
+    const products = await db
+      .select({
+        id: productVariant.id,
+        name: productVariant.name,
+        basePrice: productVariant.basePrice,
+        strikethroughPrice: productVariant.strikethroughPrice,
+        bannerImage: productVariant.bannerImage,
+        slug: productVariant.slug,
+        sku: productVariant.sku,
+        rating: productVariant.rating,
+      })
+      .from(productVariant)
+      .innerJoin(product, eq(product.id, productVariant.productId))
+      .innerJoin(productCategory, eq(productCategory.productId, product.id))
+      .innerJoin(category, eq(category.id, productCategory.categoryId))
+      .where(eq(category.slug, slug))
+      .limit(10);
+
+    return products;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}

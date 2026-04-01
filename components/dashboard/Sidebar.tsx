@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { User, ShoppingBag, MapPin, LogOut } from "lucide-react";
 import { logoutHandler } from "@/helper";
+import { useCartStore } from "@/store/cartStore";
 
 const navItems = [
   { label: "Profile", href: "/dashboard", icon: User },
@@ -10,21 +11,20 @@ const navItems = [
   { label: "Address", href: "/dashboard/address", icon: MapPin },
 ];
 
-
 interface SidebarProps {
-  closeSidebar?: () => void
+  closeSidebar?: () => void;
 }
 
 export function Sidebar({ closeSidebar }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const clearCart = useCartStore((s) => s.clearCart);
 
-
- const logout = async() => {
-   await logoutHandler();
-  router.push("/sign-in");
-    localStorage.removeItem("token");
- }
+  const logout = async () => {
+    await logoutHandler();
+    router.push("/sign-in");
+    clearCart();
+  };
   const getActive = (pathname: string, href: string) => {
     // Profile → ONLY exact dashboard
     if (href === "/dashboard") {
@@ -48,11 +48,11 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
 
         {/* Navigation Section */}
         <nav className="space-y-2 flex-1">
-            {navItems.map(({ label, href, icon: Icon }) => {
+          {navItems.map(({ label, href, icon: Icon }) => {
             const active = getActive(pathname, href);
 
             return (
-              <Link key={href} href={ href} onClick={closeSidebar}>
+              <Link key={href} href={href} onClick={closeSidebar}>
                 <div
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all ${
                     active
@@ -72,8 +72,11 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
         </nav>
 
         {/* Bottom Logout Section */}
-       <div className="pt-4 border-t">
-          <button onClick={logout}  className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#B8860B]  font-semibold hover:bg-[#ffefd5] transition-colors">
+        <div className="pt-4 border-t">
+          <button
+            onClick={logout}
+            className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#B8860B]  font-semibold hover:bg-[#ffefd5] transition-colors"
+          >
             <LogOut size={20} />
             <span className="text-[15px]">Logout</span>
           </button>

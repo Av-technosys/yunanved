@@ -2,10 +2,10 @@ import { Hero } from "@/components/landing";
 import { Categories } from "@/components/landing";
 import { FeaturedProducts } from "@/components/landing";
 import { FAQ } from "@/components/landing";
-import { Collections } from "@/components/landing";
 import { BentoGallery } from "@/components/landing";
 import { Newsletter } from "@/components/landing";
 import { NavbarCategoryRibbon } from "@/components/landing";
+import Collections from "@/components/landing/Collections";
 
 export default function Home() {
   return (

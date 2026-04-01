@@ -1,97 +1,91 @@
-import * as React from "react"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import * as React from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui"
+} from "@/components/ui";
+import { ProductCard } from "../productCard";
 
 interface SectionProps {
   title: string;
-  items: { id: number; image: string; bgColor: string }[];
+  items: any[];
 }
 
 const ProductCarousel = ({ title, items }: SectionProps) => {
-  return (
-    <section className=" mt-12 max-w-7xl mx-auto overflow-visible">
+  const [api, setApi] = React.useState<any>();
+  const [current, setCurrent] = React.useState(0);
+  const [count, setCount] = React.useState(0);
 
-      {/* Section Header */}
+  // track carousel state
+  React.useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+  if (!items?.length) return null;
+
+  return (
+    <section className="mt-12 max-w-7xl mx-auto overflow-visible">
+      {/* Header */}
       <div className="text-center mb-6 md:mb-10 md:px-4">
         <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
         <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto">
-          Discover our newest arrivals, thoughtfully designed to elevate everyday style with purpose and quality.
+          Discover our newest arrivals, thoughtfully designed to elevate everyday style.
         </p>
       </div>
 
       {/* Carousel */}
       <div className="relative">
         <Carousel
+          setApi={setApi}
           opts={{
             align: "start",
             loop: true,
           }}
-          className="w-full overflow-visible py-2 md:px-6 lg:px-10"
+          className="w-full md:px-8 "
         >
-
-          <CarouselContent className="">
-
-
-
-            {items.map((item) => (
+          <CarouselContent className="overflow-visible py-2 md:px-3 ">
+            {items.map((product, index) => (
               <CarouselItem
-                key={item.id}
-                className="basis-[132px] md:basis-1/3 lg:basis-1/6"
+                key={product.id}
+                className="pl-2 basis-[70%] sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
               >
-                <div className="group relative aspect-3/4 w-full overflow-hidden rounded-2xl shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-
-                  {/* background fallback */}
-                  <div
-                    className="absolute inset-0"
-                    style={{ backgroundColor: item.bgColor }}
-                  />
-
-                  <img
-                    src={item.image}
-                    alt="Product"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
+                <ProductCard product={product} index={index} />
               </CarouselItem>
             ))}
-
           </CarouselContent>
 
-          {/* NAV BUTTONS */}
-          <div className="hidden md:block ">
-            <CarouselPrevious className="left-0" />
-            <CarouselNext className="right-0" />
-          </div>
-
+          {/* Nav Buttons */}
+         <CarouselPrevious className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 left-0 z-10" />
+<CarouselNext className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 right-0 z-10" />
         </Carousel>
+
+        {/* Dots Pagination */}
+        <div className="flex justify-center gap-2 mt-4">
+          {Array.from({ length: count }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => api?.scrollTo(i)}
+              className={`h-2 w-2 rounded-full transition ${
+                i === current - 1 ? "bg-black" : "bg-gray-300"
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-
-// Example usage
-export  function Collections() {
-  const DUMMY_DATA = [
-    { id: 1, image: "/ProductCarousel1.jpg", bgColor: "#000000" },
-    { id: 2, image: "/ProductCarousel2.jpg", bgColor: "#800000" },
-    { id: 3, image: "/ProductCarousel3.png", bgColor: "#D2B48C" },
-    { id: 4, image: "/ProductCarousel4.jpg", bgColor: "#2F4F4F" },
-    { id: 5, image: "/ProductCarousel1.jpg", bgColor: "#000000" },
-    { id: 6, image: "/ProductCarousel2.jpg", bgColor: "#800000" },
-    { id: 7, image: "/ProductCarousel3.png", bgColor: "#D2B48C" },
-    { id: 8, image: "/ProductCarousel4.jpg", bgColor: "#2F4F4F" },
-  ];
-
-  return (
-    <div className="bg-white  mt-8">
-      <ProductCarousel title="New Arrival" items={DUMMY_DATA} />
-      <ProductCarousel title="Best Seller" items={DUMMY_DATA} />
-    </div>
-  )
-}
+export default ProductCarousel;

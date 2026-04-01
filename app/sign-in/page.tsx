@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui";
+import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { toast } from "sonner";
@@ -14,19 +9,19 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import googleIcon from "@/public/Icon-Google.png";
-
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { signinSchema } from "@/validation/signInSchema";
 
 const Page = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const submitHandler = async (e: any) => {
     e.preventDefault();
     const formData = {
       email: e.target.email.value,
       password: e.target.password.value,
-      
     };
-
 
     const result = signinSchema.safeParse(formData);
 
@@ -42,11 +37,14 @@ const Page = () => {
       email: formData.email,
       password: formData.password,
       redirect: false,
-
     });
 
     if (response?.error) {
-      toast.error(response.error === "CredentialsSignin" ? "Invalid credentials" : response.error);
+      toast.error(
+        response.error === "CredentialsSignin"
+          ? "Invalid credentials"
+          : response.error,
+      );
     } else if (response?.ok) {
       router.push("/");
       toast.success("User login successfully");
@@ -57,21 +55,31 @@ const Page = () => {
     <>
       <div className="w-full h-screen max-sm:h-[80vh] flex ">
         <div className="w-1/2 hidden md:block relative border border-black">
-          <Image src={"/authpic.png"} alt="signup" fill className="object-cover" />
+          <Image
+            src={"/authpic.png"}
+            alt="signup"
+            fill
+            className="object-cover"
+          />
         </div>
         <div className="w-full md:w-1/2 bg-[#FFF6E3] flex items-center justify-center">
           <Card className="w-full max-w-lg ">
             <div className="w-full max-w-sm   mx-auto">
               <CardHeader>
                 <div className="w-full flex flex-col items-center">
-                  <Image src={"/yunanvedLogo.png"} alt="yunanved" width={70} height={70} />
+                  <Image
+                    src={"/yunanvedLogo.png"}
+                    alt="yunanved"
+                    width={70}
+                    height={70}
+                  />
                   <h1 className="text-xl font-bold mt-4">Login</h1>
                   <p className="text-gray-600 text-base">
                     Enter your details below
                   </p>
                 </div>
               </CardHeader>
-              <CardDescription >
+              <CardDescription>
                 <form
                   id="signIn"
                   onSubmit={submitHandler}
@@ -86,16 +94,31 @@ const Page = () => {
                     />
                   </div>
 
-                  <div>
+                  <div className="relative">
                     <Input
                       name="password"
-                      type="password"
-                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 "
+                      type={showPassword ? "text" : "password"}
+                      className="text-black border-t-0 border-l-0 focus-visible:ring-0 border-r-0 bg-white shadow-none border-b-[1px] border-gray-400 rounded-none p-0 pr-8"
                       placeholder="Password"
                     />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-500"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
                   <div className="w-full flex items-center justify-end">
-                    <Button type="button" variant={"link"} onClick={()=> router.push("/reset-password-email")} className="text-black p-0 cursor-pointer">Forgot Password ?</Button>
+                    <Button
+                      type="button"
+                      variant={"link"}
+                      onClick={() => router.push("/reset-password-email")}
+                      className="text-black p-0 cursor-pointer"
+                    >
+                      Forgot Password ?
+                    </Button>
                   </div>
                 </form>
               </CardDescription>

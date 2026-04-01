@@ -20,7 +20,8 @@ export {
   deleteProduct,
   getProducts,
   getProductSimilarProducts,
-  getProductsForCart
+  getProductsForCart,
+  getProductsByCategorySlug
 } from "./product/action";
 
 //order
