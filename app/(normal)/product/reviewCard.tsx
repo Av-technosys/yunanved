@@ -13,6 +13,7 @@ import Image from "next/image";
 import StarRatings from "react-star-ratings";
 
 export default function ReviewCard({ review }: any) {
+  
   return (
     <Card className="max-w-md rounded-2xl bg-white shadow-md border border-gray-200">
       <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">

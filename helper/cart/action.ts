@@ -12,7 +12,6 @@ export async function addProductToUserCart(
   quantity: number,
 ) {
   const userInfo = await getServerSideUser();
-
   if (!userInfo?.id) {
     console.log("User not logged in, skipping DB transaction");
     return { 

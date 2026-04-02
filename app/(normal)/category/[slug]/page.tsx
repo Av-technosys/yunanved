@@ -30,7 +30,6 @@ const Page = async (props: PageProps) => {
     getAllProductsByCategorySlug([slug && slug, ...catArray]),
     getCategoryBySlug(slug),
   ]);
-
   if (!categoryInfo) {
     return (
       <>

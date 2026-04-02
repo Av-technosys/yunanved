@@ -14,7 +14,7 @@ import {
   user,
 } from "@/db";
 import { revalidatePath } from "next/cache";
-import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
+import { and, avg, count, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
 import { isUUID } from "@/const/globalconst";
@@ -321,6 +321,8 @@ export async function updateProduct(formData: FormData): Promise<void> {
   }
 }
 
+
+// this need to be fix for getting correct rating and review count for similar products and featured products as well
 export async function getFullProduct(identifier: string) {
   try {
     if (!identifier) throw new Error("Missing product identifier");
@@ -358,9 +360,37 @@ export async function getFullProduct(identifier: string) {
 
     const [variants, categoryLinks] = await Promise.all([
       db
-        .select()
+        .select({
+          id: productVariant.id,
+          name: productVariant.name,
+          sku: productVariant.sku,
+          productId: productVariant.productId,
+          description: productVariant.description,
+          shortDescription: productVariant.shortDescription,
+          basePrice: productVariant.basePrice,
+          strikethroughPrice: productVariant.strikethroughPrice,
+          slug: productVariant.slug,
+          bannerImage: productVariant.bannerImage,
+          isInStock: productVariant.isInStock,
+          isReturnable: productVariant.isReturnable,
+          isCancelable: productVariant.isCancelable,
+          isReplacement: productVariant.isReplacement,
+          returnDays: productVariant.returnDays,
+          replacementDays: productVariant.replacementDays,
+          isFreeDelivery: productVariant.isFreeDelivery,
+          createdAt: productVariant.createdAt,
+          updatedAt: productVariant.updatedAt,
+          rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
+          reviewCount: count(review.id),
+        })
         .from(productVariant)
-        .where(eq(productVariant.productId, productGroupId)),
+        .leftJoin(
+          review,
+          eq(review.productVarientId, productVariant.id)
+        )
+        .where(eq(productVariant.productId, productGroupId))
+        .groupBy(productVariant.id),
+
       db
         .select()
         .from(productCategory)
@@ -539,19 +569,25 @@ export async function getProductSimilarProducts(slug: string | any) {
         slug: productVariant.slug,
         basePrice: productVariant.basePrice,
         bannerImage: productVariant.bannerImage,
-        rating: productVariant.rating,
+        rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
       })
       .from(productVariant)
       .innerJoin(
         productCategory,
         eq(productCategory.productId, productVariant.productId),
       )
+      .leftJoin(
+        review,
+        eq(review.productVarientId, productVariant.id)
+      )
+
       .where(
         and(
           eq(productCategory.categoryId, categoryId),
           ne(productVariant.productId, v.productId),
         ),
       )
+      .groupBy(productVariant.id)
       .limit(10);
 
     return similarVariants;
@@ -641,4 +677,32 @@ export async function getProductsForCart(productIds: string[]) {
 export async function saveProductAttributes(productId: string, payload: any) {
   // Deprecated in favor of nested variant handling in updateProduct
   return { success: true };
+}
+
+
+export async function getProductsByCategorySlug(slug: string) {
+  try {
+    const products = await db
+      .select({
+        id: productVariant.id,
+        name: productVariant.name,
+        basePrice: productVariant.basePrice,
+        strikethroughPrice: productVariant.strikethroughPrice,
+        bannerImage: productVariant.bannerImage,
+        slug: productVariant.slug,
+        sku: productVariant.sku,
+        rating: productVariant.rating,
+      })
+      .from(productVariant)
+      .innerJoin(product, eq(product.id, productVariant.productId))
+      .innerJoin(productCategory, eq(productCategory.productId, product.id))
+      .innerJoin(category, eq(category.id, productCategory.categoryId))
+      .where(eq(category.slug, slug))
+      .limit(10);
+
+    return products;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }

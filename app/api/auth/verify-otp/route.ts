@@ -4,6 +4,8 @@ import { user } from "../../../../db/userSchema";
 import { authSingIn, cognitoConfirmSignUp } from "@/helper/cognito";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { sendEmail } from '@/lib/email';
+import { getWelcomeTemplate } from "@/helper/emailTemplates/action";
 
 export async function POST(req: Request) {
     const body = await req.json();
@@ -19,7 +21,15 @@ export async function POST(req: Request) {
         if (!dbUser) {
             return NextResponse.json({ message: 'User not found.', result }, { status: 404 });
         }
+       
+        const name = `${dbUser.first_name || ''} ${dbUser.last_name || ''}`.trim();
+        const finalHtml = getWelcomeTemplate(name);
         // const data = await authSingIn({ email, password: dbUser.password });
+           sendEmail({
+                  to: email,
+                  subject: 'Welcome to Yunanved 🎉',
+                  html: finalHtml,
+                });
         return NextResponse.json({ message: 'Verification successful.' }, { status: 200 });
     } catch (err: any) {
         return NextResponse.json({ message: err.message }, { status: 500 })

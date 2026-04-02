@@ -20,7 +20,8 @@ export {
   deleteProduct,
   getProducts,
   getProductSimilarProducts,
-  getProductsForCart
+  getProductsForCart,
+  getProductsByCategorySlug
 } from "./product/action";
 
 //order
@@ -78,3 +79,6 @@ export { getPayments } from "./payment/action"
 export { signup, confirmSignup, resendOtp, resetPasswordUsingEmail, resetPasswordUsingOTP, logoutHandler } from "./auth/action";
 
 export {getOrderDetailsById} from "./order-confirmation/action"
+
+//search
+export { searchProducts } from "./search/action"

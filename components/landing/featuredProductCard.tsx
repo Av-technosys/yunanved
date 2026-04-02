@@ -2,19 +2,36 @@
 "use client";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { ShoppingCart, Star, Undo2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAddToCart } from "@/helper/useAddToCart";
-import { useRef, useState } from "react";
+import { startTransition, useRef, useState } from "react";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import { useCartStore } from "@/store/cartStore";
+import { removeCartItem } from "@/helper";
+import { toast } from "sonner";
 
 export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
   const { handleAddToCart } = useAddToCart(userDetails?.id);
 
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
+  const items = useCartStore((state) => state.items) || [];
+  const removeItem = useCartStore((state) => state.removeItem);
+  const userId = userDetails?.id;
 
+  const handleRemove = (item: any) => {
+    removeItem(item.productId, item.attributes);
 
+    startTransition(async () => {
+      try {
+        await removeCartItem(userId, item.productId);
+      } catch {
+        useCartStore.getState().addItem(item); // rollback
+        toast.error("Failed to remove item");
+      }
+    });
+  };
   const addToCartHandler = async () => {
     if (clickLock.current) return;
 
@@ -41,6 +58,10 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
       clickLock.current = false;
     }
   };
+
+  const isInCart =
+    Array.isArray(items) &&
+    items.some((i) => i.productId === product.productId);
 
   return (
     <div>
@@ -95,11 +116,25 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
             </span>
 
             <Button
-              onClick={addToCartHandler}
+              onClick={() => {
+                if (isInCart) {
+                  handleRemove({
+                    productId: product.productId,
+                    attributes: [],
+                  });
+                } else {
+                  addToCartHandler();
+                }
+              }}
               disabled={isAdding}
-              className="bg-[#414141] text-white hover:bg-black rounded-lg text-xs h-8 px-4 font-bold"
+              variant={isInCart ? "outline" : "default"}
             >
-              {isAdding ? "Adding..." : "Add to Cart"}
+              {isInCart ? "Remove" : isAdding ? "Adding..." : "Add to Cart"}
+              {isInCart ? (
+                <Undo2 className="h-4 w-4" />
+              ) : (
+                <ShoppingCart className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </CardContent>
@@ -107,4 +142,3 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
     </div>
   );
 };
-
