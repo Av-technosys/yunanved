@@ -6,8 +6,11 @@ import { NextResponse } from "next/server";
 
 
 export async function POST(req: Request) {
+
   const body = await req.json();
   const { email, password, first_name, last_name, user_type, number } = body;
+
+
 
   if (!email || !password) {
     return NextResponse.json(
@@ -59,6 +62,7 @@ export async function POST(req: Request) {
           isActive: true,
         }).returning();
 
+     
         return NextResponse.json(
           {
             message: "Signup successful. OTP sent to email.",
