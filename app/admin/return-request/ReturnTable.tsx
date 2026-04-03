@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { updateReturnRequestStatus } from "@/helper";
+import { sendRefundEmail, updateReturnRequestStatus } from "@/helper";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,6 +52,10 @@ export default function ReturnTable({ data }: any) {
     }
   };
 
+  const refundEmailHandler=async(email:any,amount:any,orderID:any)=>{
+    await sendRefundEmail(email, amount, orderID);
+  }
+
   return (
     <div className=" rounded-lg overflow-auto">
       <Table>
@@ -71,6 +75,8 @@ export default function ReturnTable({ data }: any) {
             const req = row.return_request;
             const item = row.order_item;
             const user = row.user;
+
+          
 
             return (
               <TableRow key={req.id} className="h-[60px]">
@@ -153,6 +159,7 @@ export default function ReturnTable({ data }: any) {
                                 toast.success("Approved");
                                 router.refresh();
                                 setLoadingId(null);
+                                refundEmailHandler(user.email, item.productPrice, item.orderId);
                               }}
                             >
                               Confirm

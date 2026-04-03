@@ -23,8 +23,8 @@ function getTransporter() {
 
 type SendEmailProps = {
   to: string | string[];
-  subject: string;
-  html: string;      
+  subject: string ;
+  html: any;      
   bcc?: string[];
   replyTo?: string;
   attachments?: any[];

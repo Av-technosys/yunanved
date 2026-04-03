@@ -3,10 +3,14 @@ import { NextResponse } from "next/server";
 import { createOrder, recordCouponUsage } from "@/helper"; // adjust path
 import { RAZORPAY_KEY_SECRET } from "@/env";
 import { sendEmail } from "@/lib/email";
-import { getOrderTemplate } from "@/helper/emailTemplates/action";
+import { getOrderTemplate, sendOrderConfirmationEmail, sendPaymentReceivedEmail } from "@/helper/emailTemplates/action";
+import { useSession } from "next-auth/react";
+import { getServerSideUser } from "@/hooks/getServerSideUser";
 
 export async function POST(req: Request) {
   const body = await req.json();
+
+   const user:any = await getServerSideUser();
 
   const {
     razorpay_order_id,
@@ -56,20 +60,23 @@ export async function POST(req: Request) {
 
   const baseUrl = process.env.BASE_URL!;
 
-  const finalHtml = getOrderTemplate({
-    orderId: result?.orderId || razorpay_order_id,
-    customerName: address?.name || 'Customer',
-    amount: amount.toString(),
-    email: address?.email || '',
-    baseUrl,
-    paymentMethod: 'Online Payment',
-  });
-  sendEmail({
-    to: address?.email,
-    subject: 'Order Confirmed 🎉',
-    html: finalHtml,
-  }).catch((err) => {
-    console.error('Order email failed:', err);
-  });
+  // const finalHtml = getOrderTemplate({
+  //   orderId: result?.orderId || razorpay_order_id,
+  //   customerName: address?.name || 'Customer',
+  //   amount: amount.toString(),
+  //   email: address?.email || '',
+  //   baseUrl,
+  //   paymentMethod: 'Online Payment',
+  // });
+  // sendEmail({
+  //   to: address?.email,
+  //   subject: 'Order Confirmed 🎉',
+  //   html: finalHtml,
+  // }).catch((err) => {
+  //   console.error('Order email failed:', err);
+  // });
+
+
+  await sendPaymentReceivedEmail(user?.email, `${user?.firstName} ${user?.lastName}`, result?.orderId || razorpay_order_id, amount.toString(), 'Online Payment', '7-8 days from order date');
   return NextResponse.json(result);
 }
