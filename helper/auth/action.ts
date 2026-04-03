@@ -29,10 +29,10 @@ export async function signup(payload: SignupPayload) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.message || "Signup failed");
+    return { success: false, message: data.message || "Signup failed" };
   }
 
-  return data;
+  return { success: true, message: data.message || "Signup successful" };
 }
 
 

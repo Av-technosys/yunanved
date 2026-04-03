@@ -54,7 +54,7 @@ const Page = () => {
       if (response.success) {
         toast.success(response.message);
       } else {
-        toast.success(response.message);
+        toast.error(response.message);
       }
     } catch(error:any){
       toast.error(error.message || "Something went wrong.");
