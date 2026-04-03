@@ -16,143 +16,145 @@ import { useEffect, useState } from "react";
 
 export const Navbar = ({ userInfo }: any) => {
   return (
-    <header className="max-w-7xl mx-auto sticky top-0 z-50 bg-white py-2 ">
-      <div
-        className={
-          "w-full mx-auto md:px-4 flex items-center justify-between gap-4 md:gap-12"
-        }
-      >
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu style={{ width: 22, height: 22 }} />
-            </Button>
-          </SheetTrigger>
+    <div className="sticky top-0 z-50 bg-white py-2 ">
+      <header className="max-w-7xl mx-auto ">
+        <div
+          className={
+            "w-full mx-auto md:px-4 flex items-center justify-between gap-4 md:gap-12"
+          }
+        >
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu style={{ width: 22, height: 22 }} />
+              </Button>
+            </SheetTrigger>
 
-          {/* Logo */}
-          <Link href={"/"} className="shrink-0">
-            <h1 className="text-2xl font-black tracking-tighter text-primary">
-              YUNANVED
-            </h1>
-          </Link>
+            {/* Logo */}
+            <Link href={"/"} className="shrink-0">
+              <h1 className="text-2xl font-black tracking-tighter text-primary">
+                YUNANVED
+              </h1>
+            </Link>
 
-          <div className=" hidden md:flex w-full justify-between gap-4">
-            <UserLocation userInfo={userInfo} />
-            {/* Search Bar Container */}
-            <SearchWithIcon />
+            <div className=" hidden md:flex w-full justify-between gap-4">
+              <UserLocation userInfo={userInfo} />
+              {/* Search Bar Container */}
+              <SearchWithIcon />
 
-            {/* Actions (Sign Up, Login, Cart) */}
-            <div className="flex items-center gap-3">
-              {userInfo ? (
-                <LogedInUserDetail userInfo={userInfo} />
-              ) : (
-                <AuthBtns />
-              )}
-
-              {/* Cart Icon with Badge */}
-            </div>
-          </div>
-          <div className=" flex   items-center justify-end">
-            <CartIcon />
-
-            <Popover>
-              <PopoverTrigger className=" block sm:hidden" asChild>
-                <Button
-                  className="flex items-center justify-center"
-                  variant="ghost"
-                >
-                  <CircleUserRound style={{ width: 22, height: 22 }} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-40 mr-2  flex flex-col gap-1">
+              {/* Actions (Sign Up, Login, Cart) */}
+              <div className="flex items-center gap-3">
                 {userInfo ? (
-                  <>
-                    <LogedInUserDetail userInfo={userInfo} />
-                    <div className=" sm:hidden  mt-3 flex flex-col items-start gap-2">
+                  <LogedInUserDetail userInfo={userInfo} />
+                ) : (
+                  <AuthBtns />
+                )}
+
+                {/* Cart Icon with Badge */}
+              </div>
+            </div>
+            <div className=" flex   items-center justify-end">
+              <CartIcon />
+
+              <Popover>
+                <PopoverTrigger className=" block sm:hidden" asChild>
+                  <Button
+                    className="flex items-center justify-center"
+                    variant="ghost"
+                  >
+                    <CircleUserRound style={{ width: 22, height: 22 }} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 mr-2  flex flex-col gap-1">
+                  {userInfo ? (
+                    <>
+                      <LogedInUserDetail userInfo={userInfo} />
+                      <div className=" sm:hidden  mt-3 flex flex-col items-start gap-2">
+                        <Separator />
+                        <LogoutNavbar />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <Link href="/sign-in">Login</Link>
+                      </div>
                       <Separator />
-                      <LogoutNavbar />
+                      <div>
+                        <Link href="/sign-up">Sign Up</Link>
+                      </div>
+                    </>
+                  )}
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <SheetContent
+              onOpenAutoFocus={(e) => e.preventDefault()}
+              side="left"
+              className="w-72 px-4 py-6 pt-12"
+            >
+              {/* Search */}
+              <div className="pb-2">
+                <SearchWithIcon />
+              </div>
+
+              {/* Categories */}
+              <div className="flex flex-col gap-3 border-t pt-4">
+                {NAVBAR_CATEGORY_RIBBON.map((item) => (
+                  <Link
+                    key={item}
+                    href="/category"
+                    className="text-sm font-medium text-slate-700 hover:text-black"
+                  >
+                    {item}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Auth */}
+              <div className="border-t pt-4 flex flex-col gap-3">
+                {userInfo ? (
+                  <Link href="/dashboard" className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border">
+                      <AvatarImage
+                        src={
+                          userInfo?.profileImage
+                            ? `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${userInfo.profileImage}`
+                            : undefined
+                        }
+                      />
+                      <AvatarFallback>
+                        {`${userInfo?.firstName?.[0] ?? ""}${userInfo?.lastName?.[0] ?? ""}`}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="flex flex-col">
+                      <span className="text-sm text-gray-500">Welcome,</span>
+                      <span className="font-semibold">
+                        {userInfo.firstName} {userInfo.lastName}
+                      </span>
                     </div>
-                  </>
+                  </Link>
                 ) : (
                   <>
-                    <div>
-                      <Link href="/sign-in">Login</Link>
-                    </div>
-                    <Separator />
-                    <div>
-                      <Link href="/sign-up">Sign Up</Link>
-                    </div>
+                    <Link href="/sign-in">
+                      <Button className="w-full">Login</Button>
+                    </Link>
+
+                    <Link href="/sign-up">
+                      <Button variant="outline" className="w-full">
+                        Sign Up
+                      </Button>
+                    </Link>
                   </>
                 )}
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <SheetContent
-            onOpenAutoFocus={(e) => e.preventDefault()}
-            side="left"
-            className="w-72 px-4 py-6 pt-12"
-          >
-            {/* Search */}
-            <div className="pb-2">
-              <SearchWithIcon />
-            </div>
-
-            {/* Categories */}
-            <div className="flex flex-col gap-3 border-t pt-4">
-              {NAVBAR_CATEGORY_RIBBON.map((item) => (
-                <Link
-                  key={item}
-                  href="/category"
-                  className="text-sm font-medium text-slate-700 hover:text-black"
-                >
-                  {item}
-                </Link>
-              ))}
-            </div>
-
-            {/* Auth */}
-            <div className="border-t pt-4 flex flex-col gap-3">
-              {userInfo ? (
-                <Link href="/dashboard" className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border">
-                    <AvatarImage
-                      src={
-                        userInfo?.profileImage
-                          ? `${process.env.NEXT_PUBLIC_S3_BASE_URL}/${userInfo.profileImage}`
-                          : undefined
-                      }
-                    />
-                    <AvatarFallback>
-                      {`${userInfo?.firstName?.[0] ?? ""}${userInfo?.lastName?.[0] ?? ""}`}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div className="flex flex-col">
-                    <span className="text-sm text-gray-500">Welcome,</span>
-                    <span className="font-semibold">
-                      {userInfo.firstName} {userInfo.lastName}
-                    </span>
-                  </div>
-                </Link>
-              ) : (
-                <>
-                  <Link href="/sign-in">
-                    <Button className="w-full">Login</Button>
-                  </Link>
-
-                  <Link href="/sign-up">
-                    <Button variant="outline" className="w-full">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-    </header>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </header>
+    </div>
   );
 };
 

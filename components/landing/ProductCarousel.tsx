@@ -57,9 +57,9 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
           }}
           className="w-full md:px-8 "
         >
-          <CarouselContent className="overflow-visible py-2 md:px-3 ">
+          <CarouselContent className="overflow-visible  py-2 md:px-3 ">
             {items.map((product, index) => (
-              <CarouselItem key={product.id}>
+              <CarouselItem key={product.id} className="basis-1/3">
                 <ProductCard
                   product={product}
                   index={index}
@@ -80,9 +80,8 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
             <button
               key={i}
               onClick={() => api?.scrollTo(i)}
-              className={`h-2 w-2 rounded-full transition ${
-                i === current - 1 ? "bg-black" : "bg-gray-300"
-              }`}
+              className={`h-2 w-2 rounded-full transition ${i === current - 1 ? "bg-black" : "bg-gray-300"
+                }`}
             />
           ))}
         </div>
