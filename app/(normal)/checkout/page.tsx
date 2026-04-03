@@ -2,7 +2,6 @@
 
 "use client";
 
-
 import { useEffect, useState } from "react";
 
 import { getAddresses } from "@/helper";
@@ -41,17 +40,21 @@ export default function Checkout() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponId, setCouponId] = useState<string | null>(null);
-  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(
+    null,
+  );
   const [isDiscountPercentage, setIsDiscountPercentage] = useState(false);
-  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
-  const [discountFixedAmount, setDiscountFixedAmount] = useState<number | null>(null);
+  const [discountPercentage, setDiscountPercentage] = useState<number | null>(
+    null,
+  );
+  const [discountFixedAmount, setDiscountFixedAmount] = useState<number | null>(
+    null,
+  );
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
 
- 
-  
   const handleRemoveCoupon = () => {
     setDiscount(0);
     setCouponId(null);
@@ -69,14 +72,13 @@ export default function Checkout() {
         userId,
       });
 
-    setDiscount(data.discount);
-    setCouponId(data.couponId);
-    setAppliedCouponCode(couponCode);
+      setDiscount(data.discount);
+      setCouponId(data.couponId);
+      setAppliedCouponCode(couponCode);
 
-    setIsDiscountPercentage(data.isDiscountPercentage);
-    setDiscountPercentage(data.discountPercentage);
-    setDiscountFixedAmount(data.discountFixedAmount);
-
+      setIsDiscountPercentage(data.isDiscountPercentage);
+      setDiscountPercentage(data.discountPercentage);
+      setDiscountFixedAmount(data.discountFixedAmount);
 
       toast.success("Coupon applied 🎉");
     } catch (err: any) {
@@ -137,7 +139,7 @@ export default function Checkout() {
         couponCode: appliedCouponCode,
         isDiscountPercentage,
         discountPercentage,
-        discountFixedAmount
+        discountFixedAmount,
       });
 
       setPaymentStatus("success");
@@ -145,9 +147,17 @@ export default function Checkout() {
       clearCart();
       toast.success("Payment Successful 🎉");
       router.push(`/order-confirmation/${res?.orderId}`);
-    } catch (err) {
-      setPaymentStatus("failed");
-      toast.error("Payment Failed ❌");
+    } catch (err: any) {
+      console.error("Payment error:", err);
+
+      if (err?.error?.reason === "payment_failed") {
+        setPaymentStatus("failed");
+        toast.error("Payment Failed ❌");
+      } else {
+        toast.error(
+          "Something went wrong. If your money was deducted, it will be refunded in 2–3 working days.",
+        );
+      }
     } finally {
       setLoading(false);
     }

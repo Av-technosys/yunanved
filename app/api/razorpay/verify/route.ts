@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     couponTransactionId,
   });
 
-  const baseUrl = process.env.BASE_URL!;
+  // const baseUrl = process.env.BASE_URL!;
 
   // const finalHtml = getOrderTemplate({
   //   orderId: result?.orderId || razorpay_order_id,
