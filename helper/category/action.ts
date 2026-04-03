@@ -6,9 +6,9 @@ import { db } from "@/lib/db";
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
-import { desc, eq } from "drizzle-orm";
+import { arrayContains, arrayOverlaps, avg, count, desc, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { productCategory, category, product, productVariant } from "@/db";
+import { productCategory, category, product, productVariant, review } from "@/db";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
@@ -194,7 +194,37 @@ export async function getCategories() {
   }
 }
 
-export async function getAllProductsByCategorySlug(slug: string) {
+export async function getAllProductsByCategorySlug(
+  searchCategories: string[],
+  filters?: {
+    isReturnable?: boolean;
+    isReplaceable?: boolean;
+    isFreeDelivery?: boolean;
+    isCancelable?: boolean;
+  }
+) {
+  const conditions = [];
+
+  if (searchCategories?.length) {
+    conditions.push(inArray(category.slug, searchCategories));
+  }
+
+  if (filters?.isReturnable !== undefined) {
+    conditions.push(eq(productVariant.isReturnable, filters.isReturnable));
+  }
+
+  if (filters?.isReplaceable !== undefined) {
+    conditions.push(eq(productVariant.isReplacement, filters.isReplaceable));
+  }
+
+  if (filters?.isFreeDelivery !== undefined) {
+    conditions.push(eq(productVariant.isFreeDelivery, filters.isFreeDelivery));
+  }
+
+  if (filters?.isCancelable !== undefined) {
+    conditions.push(eq(productVariant.isCancelable, filters.isCancelable));
+  }
+
   try {
     const products = await db
       .select({
@@ -204,7 +234,8 @@ export async function getAllProductsByCategorySlug(slug: string) {
         strikethroughPrice: productVariant.strikethroughPrice,
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
-        rating: productVariant.rating,
+        rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
+        reviewCount: count(review.id),
         sku: productVariant.sku,
       })
       .from(productVariant)
@@ -216,15 +247,20 @@ export async function getAllProductsByCategorySlug(slug: string) {
         category,
         eq(category.id, productCategory.categoryId),
       )
-      .where(eq(category.slug, slug));
-
+       .leftJoin(
+        review,
+        eq(review.productVarientId, productVariant.id)
+      )
+      .where(
+        conditions.length > 0 ? and(...conditions) : undefined // ✅ works with Drizzle
+      )
+      .groupBy(productVariant.id);
     return products;
   } catch (error) {
     console.error("fetch products by category failed:", error);
     return [];
   }
 }
-
 export async function getCategoryBySlug(slug: string) {
   try {
     const result = await db

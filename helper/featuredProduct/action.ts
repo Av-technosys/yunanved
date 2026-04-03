@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import { featuredProductVarient, productVariant } from "@/db";
+import { featuredProductVarient, productVariant, review } from "@/db";
 import { db } from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { avg, eq, sql,count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getFeaturedProducts() {
@@ -14,8 +15,8 @@ export async function getFeaturedProducts() {
         sku: productVariant.sku,
         description: productVariant.description,
         basePrice: productVariant.basePrice,
-        rating: productVariant.rating,
-        reviewCount: productVariant.reviewCount,
+        rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
+        reviewCount: count(review.id),
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
         strikethroughPrice: productVariant.strikethroughPrice,
@@ -24,7 +25,12 @@ export async function getFeaturedProducts() {
       .innerJoin(
         productVariant,
         eq(featuredProductVarient.productVarientId, productVariant.id),
+      ) .leftJoin(
+        review,
+        eq(review.productVarientId, productVariant.id)
       )
+
+      .groupBy(productVariant.id, featuredProductVarient.id);
   } catch (error) {
     throw error;
   }

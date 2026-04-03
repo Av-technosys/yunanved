@@ -70,6 +70,7 @@ const ORDER_STATUS = [
     { value: "pending", label: "Pending" },
     { value: "completed", label: "Completed" },
     { value: "cancelled", label: "Cancelled" },
+    { value: "processing", label: "Processing" },
     { value: "failed", label: "Failed" },
     { value: "shipped", label: "Shipped" },
     { value: "delivered", label: "Delivered" },

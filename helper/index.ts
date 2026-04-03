@@ -1,4 +1,3 @@
-
 // category
 export {
   createCategory,
@@ -20,7 +19,8 @@ export {
   deleteProduct,
   getProducts,
   getProductSimilarProducts,
-  getProductsForCart
+  getProductsForCart,
+  getProductsByCategorySlug,
 } from "./product/action";
 
 //order
@@ -36,7 +36,7 @@ export {
   updateCancelRequestStatus,
   createReturnRequest,
   fetchReturnRequests,
-  updateReturnRequestStatus
+  updateReturnRequestStatus,
 } from "./order/action";
 
 export {
@@ -45,36 +45,78 @@ export {
   updateCoupon,
   deleteCoupon,
   validateCoupon,
-  recordCouponUsage
+  recordCouponUsage,
 } from "./coupon/action";
 
-
 //reviews
-export { toggleApproveReview, deleteReview, getReviewStats, createReview } from "./review/action"
-
+export {
+  toggleApproveReview,
+  deleteReview,
+  getReviewStats,
+  createReview,
+} from "./review/action";
 
 //cart
 
-export { addProductToUserCart, increaseCartItem, decreaseCartItem, removeCartItem } from "./cart/action"
-
+export {
+  addProductToUserCart,
+  increaseCartItem,
+  decreaseCartItem,
+  removeCartItem,
+} from "./cart/action";
 
 //featured products
-export { getFeaturedProducts, deleteFeaturedProduct, addFeaturedProduct } from "./featuredProduct/action"
+export {
+  getFeaturedProducts,
+  deleteFeaturedProduct,
+  addFeaturedProduct,
+} from "./featuredProduct/action";
 
 //featured categories
-export { getFeaturedCategories, deleteFeaturedCategory, addFeaturedCategory } from "./featuredCategory/action"
+export {
+  getFeaturedCategories,
+  deleteFeaturedCategory,
+  addFeaturedCategory,
+} from "./featuredCategory/action";
 //user
 
-export { getProfile, updateProfile, getAddresses, saveAddress, deleteAddress } from "./user/action"
+export {
+  getProfile,
+  updateProfile,
+  getAddresses,
+  saveAddress,
+  deleteAddress,
+} from "./user/action";
 
 //payment
 
-export { getPayments } from "./payment/action"
-
-
+export { getPayments } from "./payment/action";
 
 //auth
 
-export { signup, confirmSignup, resendOtp, resetPasswordUsingEmail, resetPasswordUsingOTP, logoutHandler } from "./auth/action";
+export {
+  signup,
+  confirmSignup,
+  resendOtp,
+  resetPasswordUsingEmail,
+  resetPasswordUsingOTP,
+  logoutHandler,
+} from "./auth/action";
 
-export {getOrderDetailsById} from "./order-confirmation/action"
+export { getOrderDetailsById } from "./order-confirmation/action";
+
+//search
+export { searchProducts } from "./search/action";
+
+//email templates
+export {
+  sendWelcomeEmail,
+  sendResetPasswordEmail,
+  sendOrderConfirmationEmail,
+  sendOrderCancellationEmail,
+  sendOrderShippedEmail,
+  sendOrderStatusEmail,
+  sendOutForDeliveryEmail,
+  sendPaymentReceivedEmail,
+  sendRefundEmail
+} from "./emailTemplates/action";

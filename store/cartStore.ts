@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { CartItem } from "./cartTypes";
@@ -41,11 +42,13 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item) =>
         set((state) => {
-          const existing = state.items.find((i) => sameVariant(i, item));
+          const safeItems = Array.isArray(state.items) ? state.items : [];
+
+          const existing = safeItems.find((i) => sameVariant(i, item));
 
           if (existing) {
             return {
-              items: state.items.map((i) =>
+              items: safeItems.map((i) =>
                 sameVariant(i, item)
                   ? { ...i, quantity: i.quantity + 1 }
                   : i
@@ -55,7 +58,7 @@ export const useCartStore = create<CartState>()(
 
           return {
             items: [
-              ...state.items,
+              ...safeItems,
               { ...item, quantity: 1, addedAt: Date.now() },
             ],
           };
@@ -63,14 +66,14 @@ export const useCartStore = create<CartState>()(
 
       removeItem: (productId, attributes) =>
         set((state) => ({
-          items: state.items.filter(
+          items: (Array.isArray(state.items) ? state.items : []).filter(
             (i) => !sameVariant(i, { productId, attributes })
           ),
         })),
 
       increase: (productId, attributes) =>
         set((state) => ({
-          items: state.items.map((i) =>
+          items: (Array.isArray(state.items) ? state.items : []).map((i) =>
             sameVariant(i, { productId, attributes })
               ? { ...i, quantity: i.quantity + 1 }
               : i
@@ -79,7 +82,7 @@ export const useCartStore = create<CartState>()(
 
       decrease: (productId, attributes) =>
         set((state) => ({
-          items: state.items
+          items: (Array.isArray(state.items) ? state.items : [])
             .map((i) =>
               sameVariant(i, { productId, attributes })
                 ? { ...i, quantity: i.quantity - 1 }
@@ -96,15 +99,25 @@ export const useCartStore = create<CartState>()(
           items, // 🔥 FULL REPLACE
         })),
       totalItems: () =>
-        get().items.reduce((t, i) => t + i.quantity, 0),
+        (Array.isArray(get().items) ? get().items : []).reduce((t, i) => t + i.quantity, 0),
 
       subtotal: () =>
-        get().items.reduce((t, i) => t + i.price * i.quantity, 0),
+        (Array.isArray(get().items) ? get().items : []).reduce((t, i) => t + i.price * i.quantity, 0),
     }),
 
     {
       name: "yunanved-cart",
       storage: createJSONStorage(() => localStorage),
+
+      merge: (persistedState: any, currentState) => {
+        return {
+          ...currentState,
+          ...persistedState,
+          items: Array.isArray(persistedState?.items)
+            ? persistedState.items
+            : [],
+        };
+      },
     }
   )
 );
