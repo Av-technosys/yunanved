@@ -17,13 +17,12 @@ import { toast } from "sonner";
 import { removeCartItem } from "@/helper";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 
-export const ProductCard = ({ product, index, className = "" }: any) => {
-  const { userDetails } = useClientSideUser();
+export const ProductCard = ({ product, index, userId, className = "" }: any) => {
+
   const items = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
-  const { handleAddToCart, isPending } = useAddToCart(userDetails?.id);
+  const { handleAddToCart, isPending } = useAddToCart(userId);
   const [isAdding, setIsAdding] = useState(false);
-  const userId = userDetails?.id;
 
   const clickLock = useRef(false);
   const isInCart = items.some(

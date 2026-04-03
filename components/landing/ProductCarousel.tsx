@@ -10,13 +10,14 @@ import {
   CarouselPrevious,
 } from "@/components/ui";
 import { ProductCard } from "../productCard";
-
+import { useClientSideUser } from "@/hooks/getClientSideUser";
 interface SectionProps {
   title: string;
   items: any[];
 }
 
 const ProductCarousel = ({ title, items }: SectionProps) => {
+  const { userDetails } = useClientSideUser();
   const [api, setApi] = React.useState<any>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
@@ -41,7 +42,8 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
       <div className="text-center mb-6 md:mb-10 md:px-4">
         <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
         <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto">
-          Discover our newest arrivals, thoughtfully designed to elevate everyday style.
+          Discover our newest arrivals, thoughtfully designed to elevate
+          everyday style.
         </p>
       </div>
 
@@ -57,18 +59,19 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
         >
           <CarouselContent className="overflow-visible py-2 md:px-3 ">
             {items.map((product, index) => (
-              <CarouselItem
-                key={product.id}
-                className="pl-2 basis-[70%] sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
-              >
-                <ProductCard product={product} index={index} />
+              <CarouselItem key={product.id}>
+                <ProductCard
+                  product={product}
+                  index={index}
+                  userId={userDetails?.id}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>
 
           {/* Nav Buttons */}
-         <CarouselPrevious className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 left-0 z-10" />
-<CarouselNext className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 right-0 z-10" />
+          <CarouselPrevious className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 left-0 z-10" />
+          <CarouselNext className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 right-0 z-10" />
         </Carousel>
 
         {/* Dots Pagination */}
