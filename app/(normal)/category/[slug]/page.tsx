@@ -9,6 +9,7 @@ import { getAllProductsByCategorySlug, getCategoryBySlug } from "@/helper/catego
 import { SidebarFilterWeb } from "./SidebarFilter";
 import { getCategoryFilteredArray } from "@/helper/getCommaSepratedArray";
 
+export const revalidate = 10;
 
 interface PageProps {
   params: {
