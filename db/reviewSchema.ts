@@ -8,11 +8,13 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./userSchema";
 import { productVariant } from "./productSchema";
+import { orderItem } from "./orderSchema";
 
 export const review = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => user.id),
   productVarientId: uuid("product_varient_id").notNull().references(() => productVariant.id),
+  orderItemId: uuid("order_item_id").references(() => orderItem.id),
   name: varchar("name"),
   email: varchar("email"),
   rating: integer("rating").notNull(),
