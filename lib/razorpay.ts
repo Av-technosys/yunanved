@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { NEXT_PUBLIC_RAZORPAY_KEY_ID } from "@/env";
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -51,6 +53,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   discountFixedAmount?: number | null;
 
 }) => {
+console.log(NEXT_PUBLIC_RAZORPAY_KEY_ID)
   const scriptLoaded = await loadRazorpayScript();
 
   if (!scriptLoaded) {
@@ -72,7 +75,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   // 2️⃣ Open Razorpay Checkout
   return new Promise((resolve, reject) => {
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: "INR",
       name,

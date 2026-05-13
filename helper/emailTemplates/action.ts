@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import nodemailer from "nodemailer";
+import { sendEmail } from '@/lib/email';
 
 async function injectTemplate(html: string, data: any) {
   return html.replace(/{{(.*?)}}/g, (_, key) => data[key.trim()] || '');
@@ -1973,22 +1974,13 @@ export async function sendOutForDeliveryEmail(email:string,orderId:string,estima
 }
 
 export async function sendPaymentReceivedEmail(email: string,userName:string,orderId:string,amount:string,paymentMethod:string,deliveryDate:string) {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: "email-smtp.ap-south-1.amazonaws.com", // SES endpoint
-      port: 587, // or 2587 or 25
-      secure: false, // TLS starts automatically
-      auth: {
-        user: process.env.SES_USER,
-        pass: process.env.SES_PASS,
-      },
-    });
 
-    const mailOptions = {
-      from: '"AV Technosys" <info@avtechnosys.com>',
-      to: [`${email}`],
-      subject: "Yunanved - Payment Received for Your Order",
-      html: `
+  console.log("Sending payment received email to:", email);
+  try {
+
+    
+ 
+    const html = `
        <body
     style="
       margin: 0;
@@ -2283,10 +2275,14 @@ export async function sendPaymentReceivedEmail(email: string,userName:string,ord
       </div>
     </center>
   </body>
-            `,
-    };
+            `
+  
 
-    const result = await transporter.sendMail(mailOptions);
+     const result = await sendEmail({
+      to: email,
+      subject: "Yunanved - Payment Received for Your Order",
+      html,
+    });
 
     return { success: true, result };
   } catch (error) {

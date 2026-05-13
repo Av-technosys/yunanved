@@ -597,6 +597,7 @@ export async function getProductSimilarProducts(slug: string | any) {
 }
 
 export async function getProductReviews(slug: string | any) {
+  console.log("slug coming up for reviews:", slug)
   try {
     const v = await db.query.productVariant.findFirst({
       where: eq(productVariant.slug, slug),
@@ -638,6 +639,7 @@ export async function getProductReviews(slug: string | any) {
     return [];
   }
 }
+
 
 export async function getProductsForCart(productIds: string[]) {
   try {
@@ -682,7 +684,7 @@ export async function saveProductAttributes(productId: string, payload: any) {
 
 export async function getProductsByCategorySlug(slug: string) {
   try {
-    const products = await db
+    let products = await db
       .select({
         id: productVariant.id,
         name: productVariant.name,
@@ -699,6 +701,23 @@ export async function getProductsByCategorySlug(slug: string) {
       .innerJoin(category, eq(category.id, productCategory.categoryId))
       .where(eq(category.slug, slug))
       .limit(10);
+
+    if (products.length === 0) {
+      products = await db
+        .select({
+          id: productVariant.id,
+          name: productVariant.name,
+          basePrice: productVariant.basePrice,
+          strikethroughPrice: productVariant.strikethroughPrice,
+          bannerImage: productVariant.bannerImage,
+          slug: productVariant.slug,
+          sku: productVariant.sku,
+          rating: productVariant.rating,
+        })
+        .from(productVariant)
+        .limit(10);
+    }
+
 
     return products;
   } catch (error) {

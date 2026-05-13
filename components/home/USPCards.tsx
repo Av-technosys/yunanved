@@ -36,7 +36,7 @@ export const USPCards = () => {
 
           <img
             src={card.image}
-            className="absolute right-0 bottom-0 w-1/2 h-36 object-contain object-bottom-right"
+            className="absolute right-0 bottom-0 w-1/2 h-44 object-contain object-bottom-right"
           />
         </div>
       ))}

@@ -48,17 +48,28 @@ export async function POST(req: Request) {
     });
   }
 
-  const result = await createOrder({
-    items,
-    userId,
-    fixedAmount: amount,
-    address,
-    razorpayPaymentId: razorpay_payment_id,
-    razorpayOrderId: razorpay_order_id,
-    couponTransactionId,
-  });
+const result = await createOrder({
+  items,
+  userId,
+  fixedAmount: amount,
+  address,
+  razorpayPaymentId: razorpay_payment_id,
+  razorpayOrderId: razorpay_order_id,
+  couponTransactionId,
+});
 
-  const baseUrl = process.env.BASE_URL!;
+if (!result || !result.orderId) {
+  console.error("Order creation failed:", result);
+
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Failed to create order",
+    },
+    { status: 500 }
+  );
+}
+ // const baseUrl = process.env.BASE_URL!;
 
   // const finalHtml = getOrderTemplate({
   //   orderId: result?.orderId || razorpay_order_id,

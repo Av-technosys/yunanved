@@ -1,59 +1,93 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-'use server';
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// 'use server';
 
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 
 
-let transporter: nodemailer.Transporter | null = null;
+// let transporter: nodemailer.Transporter | null = null;
 
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: 'email-smtp.ap-south-1.amazonaws.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SES_USER!,
-        pass: process.env.SES_PASS!,
-      },
-    });
-  }
-  return transporter;
-}
+// function getTransporter() {
+//   if (!transporter) {
+//     transporter = nodemailer.createTransport({
+//       host: 'email-smtp.ap-south-1.amazonaws.com',
+//       port: 587,
+//       secure: false,
+//       auth: {
+//         user: process.env.SES_USER!,
+//         pass: process.env.SES_PASS!,
+//       },
+//     });
+//   }
+//   return transporter;
+// }
 
-type SendEmailProps = {
-  to: string | string[];
-  subject: string ;
-  html: any;      
-  bcc?: string[];
-  replyTo?: string;
-  attachments?: any[];
+// type SendEmailProps = {
+//   to: string | string[];
+//   subject: string ;
+//   html: any;      
+//   bcc?: string[];
+//   replyTo?: string;
+//   attachments?: any[];
+// };
+
+// export async function sendEmail({
+//   to,
+//   subject,
+//   html,
+//   bcc,
+//   replyTo,
+//   attachments,
+// }: SendEmailProps) {
+//   try {
+//     const transporter = getTransporter();
+
+//     const result = await transporter.sendMail({
+//       from: `"Yunanved" <info@avtechnosys.com>`,
+//       to,
+//       subject,
+//       html,
+//       bcc,
+//       replyTo,
+//       attachments,
+//     });
+
+//     return { success: true, result };
+//   } catch (error) {
+//     console.error('Email Error:', error);
+//     return { success: false, error };
+//   }
+// }
+
+import { SendEmailCommand } from "@aws-sdk/client-ses";
+import { sesClient } from "@/lib/aws";
+
+type SendEmailParams = {
+  to: string;
+  subject: string;
+  html: string;
 };
 
-export async function sendEmail({
+export const sendEmail = async ({
   to,
   subject,
   html,
-  bcc,
-  replyTo,
-  attachments,
-}: SendEmailProps) {
-  try {
-    const transporter = getTransporter();
+}: SendEmailParams) => {
+  const command = new SendEmailCommand({
+    Source: process.env.EMAIL_FROM!,
+    Destination: {
+      ToAddresses: [to],
+    },
+    Message: {
+      Subject: {
+        Data: subject,
+      },
+      Body: {
+        Html: {
+          Data: html,
+        },
+      },
+    },
+  });
 
-    const result = await transporter.sendMail({
-      from: `"Yunanved" <info@avtechnosys.com>`,
-      to,
-      subject,
-      html,
-      bcc,
-      replyTo,
-      attachments,
-    });
-
-    return { success: true, result };
-  } catch (error) {
-    console.error('Email Error:', error);
-    return { success: false, error };
-  }
-}
+  return await sesClient.send(command);
+};

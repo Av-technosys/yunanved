@@ -5,7 +5,6 @@ import { getProductsByCategorySlug } from "@/helper";
 export default async function Collections() {
   const bestSeller = await getProductsByCategorySlug("best-seller");
   const newArrival = await getProductsByCategorySlug("new-arrival");
-
   return (
     <div className="bg-white mt-8">
       <ProductCarousel title="New Arrival" items={newArrival} />

@@ -27,21 +27,23 @@ export default function CartPage() {
 
   const { userDetails } = useClientSideUser()
   const userId = userDetails?.id
+const rawItems = useCartStore((s) => s.items);
 
-  const items = useCartStore((s) => s.items)
-  const increase = useCartStore((s) => s.increase)
-  const decrease = useCartStore((s) => s.decrease)
-  const removeItem = useCartStore((s) => s.removeItem)
+const items = Array.isArray(rawItems) ? rawItems : [];
 
-  const initializeCheckout = useCheckoutStore((s) => s.initializeCheckout)
+const increase = useCartStore((s) => s.increase);
+const decrease = useCartStore((s) => s.decrease);
+const removeItem = useCartStore((s) => s.removeItem);
 
-  const [freshProducts, setFreshProducts] = useState<any[]>([])
-  const [isFetching, setIsFetching] = useState(false)
+const initializeCheckout = useCheckoutStore((s) => s.initializeCheckout);
 
-  const productKeys = useMemo(
-    () => items.map((i) => i.productId).sort().join("|"),
-    [items]
-  )
+const [freshProducts, setFreshProducts] = useState<any[]>([]);
+const [isFetching, setIsFetching] = useState(false);
+
+const productKeys = useMemo(
+  () => items.map((i: any) => i.productId).sort().join("|"),
+  [items]
+);
 
   useEffect(() => {
     let cancelled = false

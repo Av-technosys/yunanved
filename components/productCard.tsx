@@ -17,18 +17,23 @@ import { toast } from "sonner";
 import { removeCartItem } from "@/helper";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 
-export const ProductCard = ({ product, index, userId, className = "" }: any) => {
+export const ProductCard = ({ product, index, className = "" }: any) => {
+  const { userDetails, loading } = useClientSideUser();
+  const userId = userDetails?.id;
+  const rawItems = useCartStore((state) => state.items);
 
-  const items = useCartStore((state) => state.items);
+  const items = Array.isArray(rawItems) ? rawItems : [];
+
   const removeItem = useCartStore((state) => state.removeItem);
   const { handleAddToCart, isPending } = useAddToCart(userId);
   const [isAdding, setIsAdding] = useState(false);
 
   const clickLock = useRef(false);
+
   const isInCart = items.some(
     (i: { productId: any; attributes: any }) =>
       i.productId === product.id &&
-      JSON.stringify(i.attributes) === JSON.stringify([]),
+      JSON.stringify(i.attributes ?? []) === JSON.stringify([]),
   );
   const productDetailsForCart = {
     productId: product.id,
@@ -53,6 +58,7 @@ export const ProductCard = ({ product, index, userId, className = "" }: any) => 
       }
     });
   };
+
   const handleClick = async () => {
     if (clickLock.current || isAdding) return;
 
@@ -66,7 +72,7 @@ export const ProductCard = ({ product, index, userId, className = "" }: any) => 
       clickLock.current = false;
     }
   };
-const rating = Number(product.rating) || 0;
+  const rating = Number(product.rating) || 0;
   return (
     <>
       <Card key={index} className="p-0">
@@ -110,9 +116,10 @@ const rating = Number(product.rating) || 0;
         <CardFooter className="">
           <div className="flex flex-col md:flex-row gap-2 mb-4 w-full md:items-center justify-between">
             <div className=" font-semibold text-lg">₹{product.basePrice}</div>
+
             <Button
-              disabled={isAdding}
-           variant={isInCart ? "outline" : "default"}
+              disabled={isAdding || loading}
+              variant={isInCart ? "outline" : "default"}
               onClick={() => {
                 if (isInCart) {
                   handleRemove({
@@ -124,8 +131,19 @@ const rating = Number(product.rating) || 0;
                 }
               }}
             >
-              {isInCart ? "Remove" : isAdding ? "Adding..." : "Add to Cart"}
-             {isInCart ? <Undo2 className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+              {loading
+                ? "Loading..."
+                : isInCart
+                  ? "Remove"
+                  : isAdding
+                    ? "Adding..."
+                    : "Add to Cart"}
+
+              {isInCart ? (
+                <Undo2 className="h-4 w-4" />
+              ) : (
+                <ShoppingCart className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </CardFooter>
