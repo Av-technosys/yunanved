@@ -33,11 +33,13 @@ type Props = {
   address: Address;
   onEdit: (address: Address) => void;
   onDelete: (id: string) => void;
+  isPrimary: boolean;
 };
 
 export  function AddressCard({
   address,
   onEdit,
+  isPrimary,
   onDelete,
 }: Props) {
   const fullAddress = [
@@ -54,22 +56,22 @@ export  function AddressCard({
     <div
       className={`relative p-5 rounded-2xl border-2 shadow-md transition-all
         ${
-          address.isDefault
-            ? "border-blue-400 bg-blue-50/40"
+          isPrimary
+            ? "border-blue-400 "
             : "border-gray-100 hover:border-blue-400"
         }
       `}
     >
       {/* HEADER */}
       <div className="flex items-center gap-2 mb-3">
-        {address.isDefault ? (
+        {isPrimary ? (
           <Home size={18} className="text-[#1D4E4E]" />
         ) : (
           <Briefcase size={18} className="text-[#1D4E4E]" />
         )}
 
         <span className="font-bold text-[#1D4E4E] text-lg">
-          {address.isDefault ? "Primary Address" : "Saved Address"}
+          {isPrimary ? "Primary Address" : "Saved Address"}
         </span>
       </div>
 
@@ -83,7 +85,7 @@ export  function AddressCard({
       {/* FOOTER */}
       <div className="flex justify-between items-center pt-4 border-t">
         <span className="text-[11px] font-bold text-blue-600">
-          {address.isDefault ? "Primary Delivery" : ""}
+          {isPrimary ? "Primary Delivery" : ""}
         </span>
 
         <div className="flex gap-3 text-gray-400">

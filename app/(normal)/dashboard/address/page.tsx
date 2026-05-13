@@ -13,6 +13,7 @@ import {AddressForm} from "@/components/dashboard";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 import { AddressListSkeleton } from "./addressSkeleton";
+import { toast } from "sonner";
 
 export default function AddressPage() {
   const [view, setView] = useState<"list" | "add" | "edit">("list");
@@ -30,23 +31,29 @@ export default function AddressPage() {
     loadAddresses();
   }, [tempUserId]);
 
-  const loadAddresses = async () => {
-    try {
-      setLoading(true);
-      const data = await getAddresses(tempUserId)
+const loadAddresses = async () => {
+  try {
+    setLoading(true);
+    const data = await getAddresses(tempUserId);
+    console.log(data);
 
-        if (Array.isArray(data)) {
-          setAddresses(data)
-        } else {
-          setAddresses([])
-        }
-    } catch (error) {
-      console.error(error);
+    if (Array.isArray(data)) {
+      const sortedAddresses = [...data].sort((a, b) => {
+        if (a.isPrimary === b.isPrimary) return 0;
+        return a.isPrimary ? -1 : 1;
+      });
+
+      setAddresses(sortedAddresses);
+    } else {
       setAddresses([]);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    setAddresses([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleEdit = (addr: any) => {
     setForm(addr);
@@ -66,12 +73,19 @@ export default function AddressPage() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    startTransition(async () => {
-      await deleteAddress(id);
-      await loadAddresses();
-    });
-  };
+const handleDelete = (id: string) => {
+  startTransition(async () => {
+    const response = await deleteAddress(id);
+
+    if (!response.success) {
+      toast.error(response.message);
+      return;
+    }
+
+    toast.success(response.message);
+    await loadAddresses();
+  });
+};
 
   if (loading) {
     return <AddressListSkeleton />;
@@ -101,12 +115,15 @@ export default function AddressPage() {
             </button>
           </div>
         ) : (
-          <AddressList
-            addresses={addresses}
-            onAdd={handleAdd}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+   <AddressList
+  addresses={addresses.sort((a, b) => {
+    if (a.isPrimary === b.isPrimary) return 0;
+    return a.isPrimary ? -1 : 1; 
+  })}
+  onAdd={handleAdd}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+/>
         )
       ) : (
         /* ADDRESS FORM */

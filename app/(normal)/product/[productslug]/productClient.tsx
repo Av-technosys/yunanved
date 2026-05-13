@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { useCartStore } from "@/store/cartStore";
 import { removeCartItem } from "@/helper";
+import { useCheckoutStore } from "@/store/checkoutStore";
 import { toast } from "sonner";
 import { startTransition } from "react";
 import StarRatings from "react-star-ratings";
@@ -25,6 +26,9 @@ const ProductClient = ({
 }: any) => {
   const router = useRouter();
   const { userDetails } = useClientSideUser();
+  const initializeCheckout = useCheckoutStore(
+    (state) => state.initializeCheckout,
+  );
   const [activeVariant, setActiveVariant] = useState(initialProduct);
   const [bannerImage, setBannerImage] = useState<any>(
     activeVariant.bannerImage,
@@ -88,6 +92,22 @@ const ProductClient = ({
     }
   };
 
+  const handleBuyNow = () => {
+    initializeCheckout({
+      items: [
+        {
+          productId: activeVariant.id,
+          slug: activeVariant.slug,
+          quantity: 1,
+          price: activeVariant.basePrice || 0,
+        },
+      ],
+      total: activeVariant.basePrice || 0,
+      userId,
+    });
+
+    router.push("/checkout");
+  };
   const handleVariantChange = (variant: any) => {
     setActiveVariant(variant);
     setBannerImage(variant.bannerImage);
@@ -199,8 +219,9 @@ const ProductClient = ({
                   : "Out of Stock"}
               </Button>
               <Button
-                variant={"default"}
+                variant="default"
                 disabled={!activeVariant.isInStock}
+                onClick={handleBuyNow}
                 className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600 disabled:opacity-50"
               >
                 Buy Now
@@ -247,12 +268,11 @@ function ProductReview({ activeVariant }: { activeVariant: any }) {
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      
       {/* ⭐ Stars */}
       <StarRatings
         rating={rating}
-        starRatedColor="#facc15"   // yellow-400
-        starEmptyColor="#e5e7eb"   // gray-200
+        starRatedColor="#facc15" // yellow-400
+        starEmptyColor="#e5e7eb" // gray-200
         numberOfStars={5}
         starDimension="18px"
         starSpacing="2px"
@@ -260,9 +280,7 @@ function ProductReview({ activeVariant }: { activeVariant: any }) {
       />
 
       {/* ⭐ Rating number */}
-      <span className="font-medium text-gray-800">
-        {rating.toFixed(1)}
-      </span>
+      <span className="font-medium text-gray-800">{rating.toFixed(1)}</span>
 
       {/* 📝 Review count */}
       <span className="text-gray-400">

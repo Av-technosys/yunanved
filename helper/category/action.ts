@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
-import { arrayContains, arrayOverlaps, avg, count, desc, eq, inArray } from "drizzle-orm";
+import { arrayContains, arrayOverlaps, avg, count, desc, eq, gte, inArray, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { productCategory, category, product, productVariant, review } from "@/db";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
@@ -194,35 +194,49 @@ export async function getCategories() {
   }
 }
 
+
+
 export async function getAllProductsByCategorySlug(
   searchCategories: string[],
   filters?: {
-    isReturnable?: boolean;
-    isReplaceable?: boolean;
-    isFreeDelivery?: boolean;
-    isCancelable?: boolean;
+    stock?: string[];
+    brand?: string[];
+    min?: number;
+    max?: number;
   }
 ) {
   const conditions = [];
+
 
   if (searchCategories?.length) {
     conditions.push(inArray(category.slug, searchCategories));
   }
 
-  if (filters?.isReturnable !== undefined) {
-    conditions.push(eq(productVariant.isReturnable, filters.isReturnable));
+
+  // if (filters?.stock?.length) {
+  //   conditions.push(
+  //     inArray(productVariant.stockStatus, filters.stock)
+  //   );
+  // }
+
+ 
+  // if (filters?.brand?.length) {
+  //   conditions.push(
+  //     inArray(productVariant.brand, filters.brand)
+  //   );
+  // }
+
+ 
+  if (filters?.min !== undefined) {
+    conditions.push(
+      gte(productVariant.basePrice, filters.min)
+    );
   }
 
-  if (filters?.isReplaceable !== undefined) {
-    conditions.push(eq(productVariant.isReplacement, filters.isReplaceable));
-  }
-
-  if (filters?.isFreeDelivery !== undefined) {
-    conditions.push(eq(productVariant.isFreeDelivery, filters.isFreeDelivery));
-  }
-
-  if (filters?.isCancelable !== undefined) {
-    conditions.push(eq(productVariant.isCancelable, filters.isCancelable));
+  if (filters?.max !== undefined) {
+    conditions.push(
+      lte(productVariant.basePrice, filters.max)
+    );
   }
 
   try {
@@ -234,30 +248,34 @@ export async function getAllProductsByCategorySlug(
         strikethroughPrice: productVariant.strikethroughPrice,
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
-        rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
+
+        rating: sql<number>`
+          ROUND(COALESCE(${avg(review.rating)}, 0), 1)
+        `,
+
         reviewCount: count(review.id),
-        sku: productVariant.sku,
       })
       .from(productVariant)
       .innerJoin(
         productCategory,
-        eq(productVariant.productId, productCategory.productId),
+        eq(productVariant.productId, productCategory.productId)
       )
       .innerJoin(
         category,
-        eq(category.id, productCategory.categoryId),
+        eq(category.id, productCategory.categoryId)
       )
-       .leftJoin(
+      .leftJoin(
         review,
         eq(review.productVarientId, productVariant.id)
       )
       .where(
-        conditions.length > 0 ? and(...conditions) : undefined // ✅ works with Drizzle
+        conditions.length ? and(...conditions) : undefined
       )
       .groupBy(productVariant.id);
+
     return products;
   } catch (error) {
-    console.error("fetch products by category failed:", error);
+    console.error("Product fetch failed:", error);
     return [];
   }
 }

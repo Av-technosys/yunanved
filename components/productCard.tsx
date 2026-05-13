@@ -72,7 +72,10 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
       clickLock.current = false;
     }
   };
-  const rating = Number(product.rating) || 0;
+  const rawRating = Number(product.rating) || 0;
+
+  const rating = rawRating >= 100 ? rawRating / 100 : rawRating;
+
   return (
     <>
       <Card key={index} className="p-0">
@@ -107,7 +110,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                   starDimension="20px"
                   starSpacing="2px"
                   starRatedColor="#facc15"
-                  name="rating"
+                  starEmptyColor="#e5e7eb"
                 />
               </div>
             </div>
