@@ -24,18 +24,26 @@ import { useState, useCallback } from "react";
 
 interface FilterSidebarProps {
   categories?: Array<{ id: string; name: string; slug: string }>;
+  currentCategorySlug: string;
 }
 
-export function FilterSidebar({ categories = [] }: FilterSidebarProps) {
+export function FilterSidebar({
+  categories = [],
+  currentCategorySlug,
+}: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
 
   // Get initial values from URL
   const initialFilters = search.get("cat")?.split(",").filter(Boolean) || [];
-  const initialCategories = initialFilters.filter(
+  const initialCategoriesFromUrl = initialFilters.filter(
     (item) => !["in-stock", "out-of-stock"].includes(item),
   );
+  const initialCategories =
+    initialCategoriesFromUrl.length > 0
+      ? initialCategoriesFromUrl
+      : [currentCategorySlug];
   const initialStock = initialFilters.filter((item) =>
     ["in-stock", "out-of-stock"].includes(item),
   );
@@ -56,8 +64,14 @@ export function FilterSidebar({ categories = [] }: FilterSidebarProps) {
     if (open) {
       const filters = search.get("cat")?.split(",").filter(Boolean) || [];
 
+      const categoriesFromUrl = filters.filter(
+        (item) => !["in-stock", "out-of-stock"].includes(item),
+      );
+
       setSelectedCategories(
-        filters.filter((item) => !["in-stock", "out-of-stock"].includes(item)),
+        categoriesFromUrl.length > 0
+          ? categoriesFromUrl
+          : [currentCategorySlug],
       );
       setSelectedStock(
         filters.filter((item) => ["in-stock", "out-of-stock"].includes(item)),
