@@ -212,21 +212,14 @@ export async function getAllProductsByCategorySlug(
     conditions.push(inArray(category.slug, searchCategories));
   }
 
+  if (filters?.stock?.includes("in-stock")) {
+    conditions.push(eq(productVariant.isInStock, true));
+  }
 
-  // if (filters?.stock?.length) {
-  //   conditions.push(
-  //     inArray(productVariant.stockStatus, filters.stock)
-  //   );
-  // }
+  if (filters?.stock?.includes("out-of-stock")) {
+    conditions.push(eq(productVariant.isInStock, false));
+  }
 
- 
-  // if (filters?.brand?.length) {
-  //   conditions.push(
-  //     inArray(productVariant.brand, filters.brand)
-  //   );
-  // }
-
- 
   if (filters?.min !== undefined) {
     conditions.push(
       gte(productVariant.basePrice, filters.min)

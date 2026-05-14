@@ -82,17 +82,15 @@ export function SidebarFilterWeb() {
     }
   }, [filteredCategoryDebounceValue, priceRange, router, search]);
   // Clear all filters
-  const handleClearFilter = () => {
-    setSelectedCategoriesClientArray([]);
+const handleClearFilter = () => {
+  setSelectedCategoriesClientArray([]);
+  setPriceRange([0, 100000]);
 
-    const newSearchParams = new URLSearchParams(search.toString());
-    newSearchParams.delete("cat");
-
-    router.push(`?${newSearchParams.toString()}`);
-  };
+  router.push(window.location.pathname);
+};
 
   return (
-    <div className="col-span-1 hidden md:flex flex-col gap-3">
+    <div className="flex flex-col gap-3">
       <div className="sticky top-4">
         <Card>
           <CardContent>

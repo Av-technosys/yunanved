@@ -13,19 +13,32 @@ import { SidebarFilterWeb } from "./SidebarFilter";
 
 export const revalidate = 10;
 
-/**
- * Helper: parse query params safely
- */
+
 function parseFilters(searchParams: any) {
   const cat =
     typeof searchParams.cat === "string"
       ? searchParams.cat.split(",")
       : [];
 
-  const min = Number(searchParams.min);
-  const max = Number(searchParams.max);
+  const stock = cat.filter((item: string) =>
+    ["in-stock", "out-of-stock"].includes(item)
+  );
 
-  return { cat, min, max };
+  const realCat = cat.filter(
+    (item: string) => !["in-stock", "out-of-stock"].includes(item)
+  );
+
+  const min =
+    searchParams.min !== undefined && !Number.isNaN(Number(searchParams.min))
+      ? Number(searchParams.min)
+      : undefined;
+
+  const max =
+    searchParams.max !== undefined && !Number.isNaN(Number(searchParams.max))
+      ? Number(searchParams.max)
+      : undefined;
+
+  return { cat: realCat, stock, min, max };
 }
 
 interface PageProps {
@@ -59,8 +72,9 @@ const Page = async ({ params, searchParams }: PageProps) => {
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0">
-      <SidebarFilterWeb />
-
+<div className="hidden md:block col-span-1">
+  <SidebarFilterWeb />
+</div>
       <div className="col-span-4 md:col-span-3 w-full flex flex-col gap-2">
         <div className="w-full flex items-center justify-between">
           <Button variant="outline" className="md:hidden">

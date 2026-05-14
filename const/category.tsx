@@ -27,6 +27,6 @@ export const FILTERS = [
     {
         key: "availability",
         title: "Availability",
-        options: ["in-stock", "out-of-stock", "preorder"],
+        options: ["in-stock", "out-of-stock"],
     },
 ];
