@@ -27,9 +27,13 @@ import { useEffect, useState } from "react";
 
 interface SidebarFilterWebProps {
   categories?: Array<{ id: string; name: string; slug: string }>;
+  currentCategorySlug: string;
 }
 
-export function SidebarFilterWeb({ categories = [] }: SidebarFilterWebProps) {
+export function SidebarFilterWeb({
+  categories = [],
+  currentCategorySlug,
+}: SidebarFilterWebProps) {
   const search = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -45,9 +49,14 @@ export function SidebarFilterWeb({ categories = [] }: SidebarFilterWebProps) {
   });
 
   // Separate categories and stock filters
-  const categoryFilterValues = selectedFilters.filter(
+  const categoryFilterValuesFromUrl = selectedFilters.filter(
     (item) => !["in-stock", "out-of-stock"].includes(item),
   );
+
+  const categoryFilterValues =
+    categoryFilterValuesFromUrl.length > 0
+      ? categoryFilterValuesFromUrl
+      : [currentCategorySlug];
 
   const stockFilters = selectedFilters.filter((item) =>
     ["in-stock", "out-of-stock"].includes(item),

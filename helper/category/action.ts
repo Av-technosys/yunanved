@@ -203,7 +203,7 @@ export async function getAllProductsByCategorySlug(
     brand?: string[];
     min?: number;
     max?: number;
-  }
+  }   
 ) {
   const conditions = [];
 

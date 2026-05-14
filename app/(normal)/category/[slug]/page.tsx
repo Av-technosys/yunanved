@@ -43,7 +43,7 @@ function parseFilters(searchParams: RouteSearchParams) {
       ? Number(searchParams.max)
       : undefined;
 
-  return { cat: realCat, stock, min, max };
+  return { cat: realCat, hasCategoryQuery: typeof searchParams.cat === "string", stock, min, max };
 }
 
 interface CategoryPageProps {
@@ -58,10 +58,13 @@ const Page = async ({ params, searchParams }: CategoryPageProps) => {
   const sp = await searchParams;
 
   const filters = parseFilters(sp);
+  const selectedCategorySlugs = filters.hasCategoryQuery
+    ? filters.cat
+    : [slug];
 
   const [products, categoryInfo, allCategories] = await Promise.all([
     getAllProductsByCategorySlug(
-      [slug, ...filters.cat],
+      selectedCategorySlugs,
       filters
     ),
     getCategoryBySlug(slug),
@@ -87,12 +90,12 @@ const Page = async ({ params, searchParams }: CategoryPageProps) => {
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0">
       <div className="hidden md:block col-span-1">
-        <SidebarFilterWeb categories={categories} />
+        <SidebarFilterWeb categories={categories} currentCategorySlug={slug} />
       </div>
       <div className="col-span-4 md:col-span-3 w-full flex flex-col gap-2">
         <div className="w-full flex items-center justify-between">
           <div className="md:hidden">
-            <FilterSidebar categories={categories} />
+            <FilterSidebar categories={categories} currentCategorySlug={slug} />
           </div>
 
           <div className="text-black hidden md:block font-bold text-lg">
