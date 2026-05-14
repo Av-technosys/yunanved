@@ -56,6 +56,10 @@ interface VariantInput {
   returnDays: number;
   replacementDays: number;
   attributes: { attribute: string; value: string }[];
+  length?: number;
+  width?: number;
+  height?: number;
+  weight?: number;
 }
 
 export async function createProduct(formData: FormData) {
@@ -112,6 +116,10 @@ export async function createProduct(formData: FormData) {
         replacementDays: v.replacementDays,
         rating: 0,
         reviewCount: 0,
+        length: v.length,
+        width: v.width,
+        height: v.height,
+        weight: v.weight,
       }));
 
       const insertedVariants = await tx
@@ -250,6 +258,10 @@ export async function updateProduct(formData: FormData): Promise<void> {
               returnDays: v.returnDays,
               replacementDays: v.replacementDays,
               updatedAt: new Date(),
+              length: v.length,
+              width: v.width,
+              height: v.height,
+              weight: v.weight
             })
             .where(eq(productVariant.id, vId));
         } else {
@@ -279,6 +291,10 @@ export async function updateProduct(formData: FormData): Promise<void> {
               replacementDays: v.replacementDays,
               rating: 0,
               reviewCount: 0,
+              length: v.length,
+              width: v.width,
+              height: v.height,
+              weight: v.weight
             })
             .returning({ id: productVariant.id });
           vId = created.id;
@@ -382,6 +398,10 @@ export async function getFullProduct(identifier: string) {
           updatedAt: productVariant.updatedAt,
           rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
           reviewCount: count(review.id),
+          length: productVariant.length,
+          width: productVariant.width,
+          height: productVariant.height,
+          weight: productVariant.weight,
         })
         .from(productVariant)
         .leftJoin(

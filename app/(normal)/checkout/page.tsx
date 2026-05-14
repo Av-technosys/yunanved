@@ -50,8 +50,8 @@ export default function Checkout() {
     0,
   );
 
- 
-  
+
+
   const handleRemoveCoupon = () => {
     setDiscount(0);
     setCouponId(null);
@@ -69,13 +69,13 @@ export default function Checkout() {
         userId,
       });
 
-    setDiscount(data.discount);
-    setCouponId(data.couponId);
-    setAppliedCouponCode(couponCode);
+      setDiscount(data.discount);
+      setCouponId(data.couponId);
+      setAppliedCouponCode(couponCode);
 
-    setIsDiscountPercentage(data.isDiscountPercentage);
-    setDiscountPercentage(data.discountPercentage);
-    setDiscountFixedAmount(data.discountFixedAmount);
+      setIsDiscountPercentage(data.isDiscountPercentage);
+      setDiscountPercentage(data.discountPercentage);
+      setDiscountFixedAmount(data.discountFixedAmount);
 
 
       toast.success("Coupon applied 🎉");

@@ -48,6 +48,10 @@ type Variant = {
   isReplacement: boolean;
   returnDays: number;
   replacementDays: number;
+  width: number;
+  height: number;
+  length: number;
+  weight: number;
 };
 
 interface EditProductProps {
@@ -98,6 +102,10 @@ export default function EditProduct({
       isReplacement: v.isReplacement ?? false,
       returnDays: v.returnDays ?? 0,
       replacementDays: v.replacementDays ?? 0,
+      length: v.length ?? 0,
+      width: v.width ?? 0,
+      height: v.height ?? 0,
+      weight: v.weight ?? 0,
     })),
   );
 
@@ -130,6 +138,10 @@ export default function EditProduct({
       isReplacement: variants[0]?.isReplacement || false,
       returnDays: variants[0]?.returnDays || 0,
       replacementDays: variants[0]?.replacementDays || 0,
+      length: variants[0]?.length || 0,
+      width: variants[0]?.width || 0,
+      height: variants[0]?.height || 0,
+      weight: variants[0]?.weight || 0,
     };
     setVariants([...variants, newVariant]);
     setActiveIndex(variants.length);
@@ -245,6 +257,10 @@ export default function EditProduct({
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
         .filter((a) => a.value.trim().length > 0),
+      length: v.length,
+      width: v.width,
+      height: v.height,
+      weight: v.weight,
     }));
 
     formData.append("variants", JSON.stringify(payload));
@@ -412,6 +428,7 @@ export default function EditProduct({
                       }
                     />
                   </div>
+
                   <div className="flex items-center space-x-2 pt-8">
                     <Switch
                       checked={activeVariant.isInStock}
@@ -420,6 +437,62 @@ export default function EditProduct({
                       }
                     />
                     <Label>In Stock</Label>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Length</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={activeVariant.length}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          length: Number(e.target.value),
+                        })
+                      }
+                      placeholder="e.g. 7"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Width</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={activeVariant.width}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          width: Number(e.target.value),
+                        })
+                      }
+                      placeholder="e.g. 7"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Height</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={activeVariant.height}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          height: Number(e.target.value),
+                        })
+                      }
+                      placeholder="e.g. 7"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Weight in gram</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={activeVariant.weight}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          weight: Number(e.target.value),
+                        })
+                      }
+                      placeholder="e.g. 7"
+                    />
                   </div>
                 </div>
 

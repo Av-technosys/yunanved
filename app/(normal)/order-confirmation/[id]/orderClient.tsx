@@ -10,23 +10,23 @@ import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { useSession } from "next-auth/react";
 
 export default function OrderClient({ orderDetails }: any) {
-    const { userDetails } = useClientSideUser();
-    const { data: session } = useSession();
-    const subtotal =
-  orderDetails?.items?.reduce(
-    (acc: number, item: any) => acc + item.productPrice * item.quantity,
-    0
-  ) ?? 0;
+  const { userDetails } = useClientSideUser();
+  const { data: session } = useSession();
+  const subtotal =
+    orderDetails?.items?.reduce(
+      (acc: number, item: any) => acc + item.productPrice * item.quantity,
+      0
+    ) ?? 0;
 
-const couponDiscount =
-  orderDetails?.coupon?.discountFixedAmount ??
-  (orderDetails?.coupon?.isDiscountPercentage
-    ? Math.round(
+  const couponDiscount =
+    orderDetails?.coupon?.discountFixedAmount ??
+    (orderDetails?.coupon?.isDiscountPercentage
+      ? Math.round(
         (subtotal * orderDetails?.coupon?.discountPercentage) / 100
       )
-    : 0);
+      : 0);
 
-const deliveryFee = subtotal > 0 ? 15 : 0;
+  const deliveryFee = subtotal > 0 ? 15 : 0;
   return (
     <>
       <div className="max-w-4xl px-2 md:px-4 lg:px-0 mx-auto my-10 max-sm:my-0 space-y-6">
@@ -123,26 +123,26 @@ const deliveryFee = subtotal > 0 ? 15 : 0;
               </div>
             ))}
 
-        <div className="space-y-2 text-sm">
-  <p className="font-medium">Order Summary</p>
+            <div className="space-y-2 text-sm">
+              <p className="font-medium">Order Summary</p>
 
-  <div className="flex justify-between text-gray-600">
-    <span>Subtotal</span>
-    <span>₹{subtotal}</span>
-  </div>
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
 
-  {orderDetails?.coupon && (
-    <div className="flex justify-between text-green-600">
-      <span>Coupon ({orderDetails.coupon.code})</span>
-      <span>-₹{couponDiscount}</span>
-    </div>
-  )}
+              {orderDetails?.coupon && (
+                <div className="flex justify-between text-green-600">
+                  <span>Coupon ({orderDetails.coupon.code})</span>
+                  <span>-₹{couponDiscount}</span>
+                </div>
+              )}
 
-  <div className="flex justify-between text-gray-600">
-    <span>Delivery</span>
-    <span>₹{deliveryFee}</span>
-  </div>
-</div>
+              <div className="flex justify-between text-gray-600">
+                <span>Delivery</span>
+                <span>₹{deliveryFee}</span>
+              </div>
+            </div>
 
             {/* TOTAL */}
             <div className="flex justify-between  font-semibold">
@@ -155,9 +155,9 @@ const deliveryFee = subtotal > 0 ? 15 : 0;
         </Card>
 
         <div className="flex gap-4 justify-end pt-4">
-          <Button variant="outline" className="rounded-full">
+          {/* <Button variant="outline" className="rounded-full">
             Print Invoice
-          </Button>
+          </Button> */}
           <Link href={"/"}>
             <Button className="rounded-full bg-teal-800 hover:bg-teal-900">
               Continue Shopping

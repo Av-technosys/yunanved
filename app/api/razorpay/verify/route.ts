@@ -2,15 +2,13 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { createOrder, recordCouponUsage } from "@/helper"; // adjust path
 import { RAZORPAY_KEY_SECRET } from "@/env";
-import { sendEmail } from "@/lib/email";
-import { getOrderTemplate, sendOrderConfirmationEmail, sendPaymentReceivedEmail } from "@/helper/emailTemplates/action";
-import { useSession } from "next-auth/react";
+import { sendPaymentReceivedEmail } from "@/helper/emailTemplates/action";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
 
 export async function POST(req: Request) {
   const body = await req.json();
 
-   const user:any = await getServerSideUser();
+  const user: any = await getServerSideUser();
 
   const {
     razorpay_order_id,
@@ -48,45 +46,27 @@ export async function POST(req: Request) {
     });
   }
 
-const result = await createOrder({
-  items,
-  userId,
-  fixedAmount: amount,
-  address,
-  razorpayPaymentId: razorpay_payment_id,
-  razorpayOrderId: razorpay_order_id,
-  couponTransactionId,
-});
+  const result = await createOrder({
+    items,
+    userId,
+    fixedAmount: amount,
+    address,
+    razorpayPaymentId: razorpay_payment_id,
+    razorpayOrderId: razorpay_order_id,
+    couponTransactionId,
+  });
 
-if (!result || !result.orderId) {
-  console.error("Order creation failed:", result);
+  if (!result || !result.orderId) {
+    console.error("Order creation failed:", result);
 
-  return NextResponse.json(
-    {
-      success: false,
-      message: "Failed to create order",
-    },
-    { status: 500 }
-  );
-}
- // const baseUrl = process.env.BASE_URL!;
-
-  // const finalHtml = getOrderTemplate({
-  //   orderId: result?.orderId || razorpay_order_id,
-  //   customerName: address?.name || 'Customer',
-  //   amount: amount.toString(),
-  //   email: address?.email || '',
-  //   baseUrl,
-  //   paymentMethod: 'Online Payment',
-  // });
-  // sendEmail({
-  //   to: address?.email,
-  //   subject: 'Order Confirmed 🎉',
-  //   html: finalHtml,
-  // }).catch((err) => {
-  //   console.error('Order email failed:', err);
-  // });
-
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to create order",
+      },
+      { status: 500 }
+    );
+  }
 
   await sendPaymentReceivedEmail(user?.email, `${user?.firstName} ${user?.lastName}`, result?.orderId || razorpay_order_id, amount.toString(), 'Online Payment', '7-8 days from order date');
   return NextResponse.json(result);

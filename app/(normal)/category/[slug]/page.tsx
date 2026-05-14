@@ -72,9 +72,9 @@ const Page = async ({ params, searchParams }: PageProps) => {
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0">
-<div className="hidden md:block col-span-1">
-  <SidebarFilterWeb />
-</div>
+      <div className="hidden md:block col-span-1">
+        <SidebarFilterWeb />
+      </div>
       <div className="col-span-4 md:col-span-3 w-full flex flex-col gap-2">
         <div className="w-full flex items-center justify-between">
           <Button variant="outline" className="md:hidden">
@@ -85,9 +85,9 @@ const Page = async ({ params, searchParams }: PageProps) => {
             {categoryInfo.name}
           </div>
 
-          <div className="text-gray-600">
+          {/* <div className="text-gray-600">
             Sort by : Latest Product
-          </div>
+          </div> */}
         </div>
 
         <CategoryView products={products} slug={slug} />

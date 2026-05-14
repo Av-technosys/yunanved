@@ -16,11 +16,11 @@ interface PageProps {
 
 const Page = async ({ params }: PageProps) => {
   const { id } = await params;
-  const orderDetails:any = await getOrderById(id);
+  const orderDetails: any = await getOrderById(id);
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="bg-gray-100">
         <div className="space-y-6 max-w-3xl mx-auto p-4">
           <Card>
@@ -74,7 +74,7 @@ const Page = async ({ params }: PageProps) => {
 
           <div className="flex justify-end gap-4">
             <Link href="/dashboard/orders">
-            <Button  className="w-[200px] border border-[var(--bg-product-button)] rounded-full text-[var(--bg-product-button)]" variant="outline">Cancel</Button></Link>
+              <Button className="w-[200px] border border-[var(--bg-product-button)] rounded-full text-[var(--bg-product-button)]" variant="outline">Cancel</Button></Link>
             <Button className="bg-[var(--bg-product-button)] hover:bg-[var(--bg-product-button-hover)] w-[200px] rounded-full">Download Invoice</Button>
           </div>
         </div>

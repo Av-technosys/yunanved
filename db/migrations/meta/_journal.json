@@ -43,6 +43,13 @@
       "when": 1778667368750,
       "tag": "0005_smiling_quicksilver",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778744353810,
+      "tag": "0006_rare_hellion",
+      "breakpoints": true
     }
   ]
 }

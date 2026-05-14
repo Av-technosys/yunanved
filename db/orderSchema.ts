@@ -14,6 +14,10 @@ import { ORDER_STATUS } from "@/const";
 export const shippingToken = pgTable("shipping_token", {
   id: uuid("id").primaryKey().defaultRandom(),
   token: varchar("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  email: varchar("email"),
   createdAt: timestamp("created_at").notNull().defaultNow()
 });
 

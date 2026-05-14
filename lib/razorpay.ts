@@ -46,14 +46,14 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   items: any[];
   userId: string;
   address: any;
-  couponId?: string | null;  
-  couponCode? : string | null;
+  couponId?: string | null;
+  couponCode?: string | null;
   isDiscountPercentage?: boolean;
   discountPercentage?: number | null;
   discountFixedAmount?: number | null;
 
 }) => {
-console.log(NEXT_PUBLIC_RAZORPAY_KEY_ID)
+  console.log(NEXT_PUBLIC_RAZORPAY_KEY_ID)
   const scriptLoaded = await loadRazorpayScript();
 
   if (!scriptLoaded) {
@@ -101,12 +101,12 @@ console.log(NEXT_PUBLIC_RAZORPAY_KEY_ID)
               discountFixedAmount
             }),
           });
- 
+
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
             resolve(verifyData);
-            
+
           } else {
             reject("Payment verification failed");
           }
@@ -120,7 +120,7 @@ console.log(NEXT_PUBLIC_RAZORPAY_KEY_ID)
       },
     };
 
-  const razor = new window.Razorpay(options);
+    const razor = new window.Razorpay(options);
 
     razor.on("payment.failed", function (response: any) {
       reject(response.error);
