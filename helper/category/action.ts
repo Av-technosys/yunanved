@@ -241,6 +241,7 @@ export async function getAllProductsByCategorySlug(
         strikethroughPrice: productVariant.strikethroughPrice,
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
+        isInStock: productVariant.isInStock,
 
         rating: sql<number>`
           ROUND(COALESCE(${avg(review.rating)}, 0), 1)

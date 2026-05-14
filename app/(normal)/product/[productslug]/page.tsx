@@ -12,7 +12,6 @@ const Page = async (props: any) => {
   const params = await props.params;
   const product = await getFullProduct(params.productslug);
 
-
   if (!product) {
     return <div className="p-20 text-center">Product not found</div>;
   }

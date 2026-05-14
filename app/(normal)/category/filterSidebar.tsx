@@ -19,40 +19,57 @@ import {
 } from "@/components/ui/sheet";
 
 import { Filter, X } from "lucide-react";
-import { FILTERS } from "@/const/category";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useCallback } from "react";
 
-export function FilterSidebar() {
+interface FilterSidebarProps {
+  categories?: Array<{ id: string; name: string; slug: string }>;
+}
+
+export function FilterSidebar({ categories = [] }: FilterSidebarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const search = useSearchParams();
 
   // Get initial values from URL
-  const initialCategories = search.get("cat")?.split(",").filter(Boolean) || [];
+  const initialFilters = search.get("cat")?.split(",").filter(Boolean) || [];
+  const initialCategories = initialFilters.filter(
+    (item) => !["in-stock", "out-of-stock"].includes(item),
+  );
+  const initialStock = initialFilters.filter((item) =>
+    ["in-stock", "out-of-stock"].includes(item),
+  );
   const initialMin = search.get("min") || "0";
   const initialMax = search.get("max") || "100000";
 
   // Local state for temporary filters
   const [selectedCategories, setSelectedCategories] =
     useState<string[]>(initialCategories);
+  const [selectedStock, setSelectedStock] = useState<string[]>(initialStock);
   const [priceRange, setPriceRange] = useState<[number, number]>([
     Number(initialMin),
     Number(initialMax),
   ]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Reset local state when sheet opens (sync with URL)
-  useEffect(() => {
-    if (isOpen) {
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      const filters = search.get("cat")?.split(",").filter(Boolean) || [];
+
       setSelectedCategories(
-        search.get("cat")?.split(",").filter(Boolean) || [],
+        filters.filter((item) => !["in-stock", "out-of-stock"].includes(item)),
+      );
+      setSelectedStock(
+        filters.filter((item) => ["in-stock", "out-of-stock"].includes(item)),
       );
       setPriceRange([
         Number(search.get("min") || "0"),
         Number(search.get("max") || "100000"),
       ]);
     }
-  }, [isOpen, search]);
+
+    setIsOpen(open);
+  };
 
   const handleToggleCategory = (item: string) => {
     const updated = selectedCategories.includes(item)
@@ -62,16 +79,32 @@ export function FilterSidebar() {
     setSelectedCategories(updated);
   };
 
+  const handleToggleStock = (item: string) => {
+    const updated = selectedStock.includes(item)
+      ? selectedStock.filter((i) => i !== item)
+      : [...selectedStock, item];
+
+    setSelectedStock(updated);
+  };
+
   const handlePriceChange = (value: number[]) => {
     setPriceRange([value[0], value[1]]);
+  };
+
+  const handleClearFilter = () => {
+    setSelectedCategories([]);
+    setSelectedStock([]);
+    setPriceRange([0, 100000]);
   };
 
   const handleApplyFilters = useCallback(() => {
     const params = new URLSearchParams(search.toString());
 
-    // Apply categories
-    if (selectedCategories.length) {
-      params.set("cat", selectedCategories.join(","));
+    // Combine categories and stock filters
+    const allFilters = [...selectedCategories, ...selectedStock];
+
+    if (allFilters.length) {
+      params.set("cat", allFilters.join(","));
     } else {
       params.delete("cat");
     }
@@ -89,32 +122,18 @@ export function FilterSidebar() {
       params.delete("max");
     }
 
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-
-    // Use replaceState to update URL without triggering navigation/re-render
-    window.history.replaceState(null, "", newUrl);
+    const nextQuery = params.toString();
+    const newUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
 
     // Close sheet
     setIsOpen(false);
 
-    // Manually trigger a refresh of the page data
-    // This is a hack but prevents full re-render
-    router.refresh();
-  }, [selectedCategories, priceRange, search, router]);
-
-  const handleClearAndApply = useCallback(() => {
-    // Clear URL params using replaceState
-    window.history.replaceState(null, "", window.location.pathname);
-
-    // Close sheet
-    setIsOpen(false);
-
-    // Refresh the page data
-    router.refresh();
-  }, [router]);
+    // Mobile keeps local state while editing and updates products only on Apply.
+    router.replace(newUrl, { scroll: false });
+  }, [selectedCategories, selectedStock, priceRange, search, pathname, router]);
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>
         <span className="lg:hidden flex items-center gap-1 cursor-pointer">
           Filter <Filter className="h-5 w-5" />
@@ -136,35 +155,70 @@ export function FilterSidebar() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-4">
-          <Accordion type="single" collapsible defaultValue={FILTERS[0]?.key}>
-            {FILTERS.map((filter) => (
-              <AccordionItem key={filter.key} value={filter.key}>
-                <AccordionTrigger>{filter.title}</AccordionTrigger>
+          <Accordion
+            type="multiple"
+            defaultValue={["categories", "stock", "price"]}
+          >
+            {/* Categories from Database */}
+            {categories.length > 0 && (
+              <AccordionItem value="categories">
+                <AccordionTrigger>Categories</AccordionTrigger>
 
                 <AccordionContent className="space-y-3">
-                  {filter.options.map((item) => (
+                  {categories.map((category) => (
                     <div
-                      key={`${filter.key}-${item}`}
+                      key={category.slug}
                       className="flex items-center space-x-2"
                     >
                       <Checkbox
-                        checked={selectedCategories.includes(item)}
-                        onCheckedChange={() => handleToggleCategory(item)}
-                        id={`mobile-${filter.key}-${item}`}
+                        checked={selectedCategories.includes(category.slug)}
+                        onCheckedChange={() =>
+                          handleToggleCategory(category.slug)
+                        }
+                        id={`mobile-category-${category.slug}`}
                       />
 
                       <Label
                         className="capitalize"
-                        htmlFor={`mobile-${filter.key}-${item}`}
+                        htmlFor={`mobile-category-${category.slug}`}
                       >
-                        {item}
+                        {category.name}
                       </Label>
                     </div>
                   ))}
                 </AccordionContent>
               </AccordionItem>
-            ))}
+            )}
 
+            {/* Stock Filter */}
+            <AccordionItem value="stock">
+              <AccordionTrigger>Stock</AccordionTrigger>
+
+              <AccordionContent className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={selectedStock.includes("in-stock")}
+                    onCheckedChange={() => handleToggleStock("in-stock")}
+                    id="mobile-stock-in-stock"
+                  />
+
+                  <Label htmlFor="mobile-stock-in-stock">In Stock</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={selectedStock.includes("out-of-stock")}
+                    onCheckedChange={() => handleToggleStock("out-of-stock")}
+                    id="mobile-stock-out-of-stock"
+                  />
+
+                  <Label htmlFor="mobile-stock-out-of-stock">
+                    Out of Stock
+                  </Label>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Price Filter */}
             <AccordionItem value="price">
               <AccordionTrigger>Price</AccordionTrigger>
 
@@ -198,7 +252,7 @@ export function FilterSidebar() {
           </Button>
           <Button
             type="button"
-            onClick={handleClearAndApply}
+            onClick={handleClearFilter}
             variant="outline"
             className="w-full text-(--bg-product-button) border-(--bg-product-button)"
           >

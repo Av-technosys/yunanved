@@ -28,6 +28,8 @@ const navItems = [
   { label: "User", href: "/admin/users", icon: User },
   { label: "Review", href: "/admin/review", icon: MessageSquare },
   { label: "Payment", href: "/admin/payment", icon: IndianRupee },
+  { label: "Contact Requests", href: "/admin/contact-request", icon: MessageSquare },
+
   { label: "Cancel Requests", href: "/admin/cancel-request", icon: FileText },
   { label: "Return Requests", href: "/admin/return-request", icon: Package },
   {

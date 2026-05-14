@@ -1,20 +1,25 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import CategoryView from "@/components/category/CategoryView";
-import { Button } from "@/components/ui";
 import { FilterSidebar } from "../filterSidebar";
 
 import {
   getAllProductsByCategorySlug,
   getCategoryBySlug,
+  getCategories,
 } from "@/helper/category/action";
 
 import { SidebarFilterWeb } from "./SidebarFilter";
 
 export const revalidate = 10;
 
+type RouteSearchParams = Record<string, string | string[] | undefined>;
 
-function parseFilters(searchParams: any) {
+type CategoryFilter = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+function parseFilters(searchParams: RouteSearchParams) {
   const cat =
     typeof searchParams.cat === "string"
       ? searchParams.cat.split(",")
@@ -41,28 +46,37 @@ function parseFilters(searchParams: any) {
   return { cat: realCat, stock, min, max };
 }
 
-interface PageProps {
-  params: {
+interface CategoryPageProps {
+  params: Promise<{
     slug: string;
-  };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  }>;
+  searchParams: Promise<RouteSearchParams>;
 }
 
-const Page = async ({ params, searchParams }: PageProps) => {
+const Page = async ({ params, searchParams }: CategoryPageProps) => {
   const { slug } = await params;
   const sp = await searchParams;
 
   const filters = parseFilters(sp);
 
-  const [products, categoryInfo] = await Promise.all([
+  const [products, categoryInfo, allCategories] = await Promise.all([
     getAllProductsByCategorySlug(
       [slug, ...filters.cat],
       filters
     ),
     getCategoryBySlug(slug),
+    getCategories(),
   ]);
+
+  const categories = allCategories.map(
+    (category): CategoryFilter => ({
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+    })
+  );
+
+  console.log("Products:", products);
 
   if (!categoryInfo) {
     return (
@@ -73,13 +87,13 @@ const Page = async ({ params, searchParams }: PageProps) => {
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0">
       <div className="hidden md:block col-span-1">
-        <SidebarFilterWeb />
+        <SidebarFilterWeb categories={categories} />
       </div>
       <div className="col-span-4 md:col-span-3 w-full flex flex-col gap-2">
         <div className="w-full flex items-center justify-between">
-          <Button variant="outline" className="md:hidden">
-            <FilterSidebar />
-          </Button>
+          <div className="md:hidden">
+            <FilterSidebar categories={categories} />
+          </div>
 
           <div className="text-black hidden md:block font-bold text-lg">
             {categoryInfo.name}
