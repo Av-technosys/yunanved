@@ -20,6 +20,7 @@ export async function getFeaturedProducts() {
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
         strikethroughPrice: productVariant.strikethroughPrice,
+        isInStock: productVariant.isInStock
       })
       .from(featuredProductVarient)
       .innerJoin(

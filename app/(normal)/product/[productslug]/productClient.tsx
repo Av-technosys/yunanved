@@ -18,6 +18,7 @@ import { useCheckoutStore } from "@/store/checkoutStore";
 import { toast } from "sonner";
 import { startTransition } from "react";
 import StarRatings from "react-star-ratings";
+
 const ProductClient = ({
   productInfo: initialProduct,
   variants = [],

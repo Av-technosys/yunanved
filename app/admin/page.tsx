@@ -1,23 +1,20 @@
+import { getDashboardData } from "@/helper/getDashboardData";
 
-import { getDashboardData } from "@/helper/getDashboardData"
-
-import { OrderStatusBoxes } from "@/components/admin"
-import { OrderStatusChart } from "@/components/admin"
-import { RecentOrdersTable } from "@/components/admin"
-import { QuickActions } from "@/components/admin"
-import { DashboardCards } from "@/components/admin"
+import { OrderStatusBoxes } from "@/components/admin";
+// import { OrderStatusChart } from "@/components/admin"
+import { RecentOrdersTable } from "@/components/admin";
+import { QuickActions } from "@/components/admin";
+import { DashboardCards } from "@/components/admin";
 
 export default async function DashboardPage() {
+  const data = await getDashboardData();
 
-  const data = await getDashboardData()
-
-  const safeData  = data.orderStatus.map((item) => ({
-  status: item.status as string,
-  count: item.count,
-}));
+  const safeData = data.orderStatus.map((item) => ({
+    status: item.status as string,
+    count: item.count,
+  }));
   return (
     <div className="space-y-6 p-3">
-
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800">
           Dashboard Overview
@@ -38,14 +35,10 @@ export default async function DashboardPage() {
         <QuickActions />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <RecentOrdersTable orders={data.recentOrders} />
-        </div>
-
-        <OrderStatusChart data={safeData} />
+      <div className="w-full">
+        <RecentOrdersTable orders={data.recentOrders} />
       </div>
-
+      {/* <OrderStatusChart data={safeData} /> */}
     </div>
-  )
+  );
 }

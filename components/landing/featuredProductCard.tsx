@@ -126,13 +126,19 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
                   addToCartHandler();
                 }
               }}
-              disabled={isAdding}
-              variant={isInCart ? "outline" : "default"}
+              disabled={isAdding || !product.isInStock}
+              variant={isInCart ? "outline" : !product.isInStock ? "outline" : "default"}
             >
-              {isInCart ? "Remove" : isAdding ? "Adding..." : "Add to Cart"}
+              {!product.isInStock
+                ? "Out of Stock"
+                : isInCart
+                  ? "Remove"
+                  : isAdding
+                    ? "Adding..."
+                    : "Add to Cart"}
               {isInCart ? (
                 <Undo2 className="h-4 w-4" />
-              ) : (
+              ) : !product.isInStock ? null : (
                 <ShoppingCart className="h-4 w-4" />
               )}
             </Button>

@@ -21,36 +21,61 @@ import {
 } from "@/components/ui";
 import { Slider } from "@/components/ui";
 
-import { FILTERS } from "@/const/category";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getCategoryFilteredArray } from "@/helper/getCommaSepratedArray";
 import { useEffect, useState } from "react";
 
-export function SidebarFilterWeb() {
+interface SidebarFilterWebProps {
+  categories?: Array<{ id: string; name: string; slug: string }>;
+}
+
+export function SidebarFilterWeb({ categories = [] }: SidebarFilterWebProps) {
   const search = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
-  // Current selected categories from URL
-  const selectedCategory = getCategoryFilteredArray({
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    Number(search.get("min") || "0"),
+    Number(search.get("max") || "100000"),
+  ]);
+  const searchQuery = search.toString();
+
+  // Current selected filters from URL
+  const selectedFilters = getCategoryFilteredArray({
     value: search.get("cat") || "",
   });
 
+  // Separate categories and stock filters
+  const categoryFilterValues = selectedFilters.filter(
+    (item) => !["in-stock", "out-of-stock"].includes(item),
+  );
+
+  const stockFilters = selectedFilters.filter((item) =>
+    ["in-stock", "out-of-stock"].includes(item),
+  );
+
   // Local state
   const [selectedCategoriesClientArray, setSelectedCategoriesClientArray] =
-    useState<string[]>(selectedCategory);
+    useState<string[]>(categoryFilterValues);
 
-  // Keep state in sync when URL changes
-  useEffect(() => {
-    setSelectedCategoriesClientArray(selectedCategory);
-  }, [search.toString()]);
+  const [selectedStockClientArray, setSelectedStockClientArray] =
+    useState<string[]>(stockFilters);
 
-  // Toggle checkbox
-  function handleCheckboxClick({ item }: { item: string }) {
+  // Toggle category checkbox
+  function handleCategoryCheckboxClick({ item }: { item: string }) {
     const newSelectedCategory = selectedCategoriesClientArray.includes(item)
       ? selectedCategoriesClientArray.filter((i) => i !== item)
       : [...selectedCategoriesClientArray, item];
 
     setSelectedCategoriesClientArray(newSelectedCategory);
+  }
+
+  // Toggle stock checkbox
+  function handleStockCheckboxClick({ item }: { item: string }) {
+    const newSelectedStock = selectedStockClientArray.includes(item)
+      ? selectedStockClientArray.filter((i) => i !== item)
+      : [...selectedStockClientArray, item];
+
+    setSelectedStockClientArray(newSelectedStock);
   }
 
   // Debounce changes
@@ -59,35 +84,67 @@ export function SidebarFilterWeb() {
     700,
   );
 
+  const filteredStockDebounceValue = useDebounce(selectedStockClientArray, 700);
+
   // Update URL when filters change
   useEffect(() => {
-    const newSearchParams = new URLSearchParams(search.toString());
+    if (
+      typeof window !== "undefined" &&
+      !window.matchMedia("(min-width: 768px)").matches
+    ) {
+      return;
+    }
 
-    // Categories
-    if (filteredCategoryDebounceValue.length > 0) {
-      newSearchParams.set("cat", filteredCategoryDebounceValue.join(","));
+    const newSearchParams = new URLSearchParams(searchQuery);
+
+    // Combine categories and stock filters
+    const allFilters = [
+      ...filteredCategoryDebounceValue,
+      ...filteredStockDebounceValue,
+    ];
+
+    if (allFilters.length > 0) {
+      newSearchParams.set("cat", allFilters.join(","));
     } else {
       newSearchParams.delete("cat");
     }
 
-    // Price range
-    newSearchParams.set("min", String(priceRange[0]));
-    newSearchParams.set("max", String(priceRange[1]));
+    if (priceRange[0] !== 0) {
+      newSearchParams.set("min", String(priceRange[0]));
+    } else {
+      newSearchParams.delete("min");
+    }
 
-    const currentQuery = search.toString();
+    if (priceRange[1] !== 100000) {
+      newSearchParams.set("max", String(priceRange[1]));
+    } else {
+      newSearchParams.delete("max");
+    }
+
     const nextQuery = newSearchParams.toString();
 
-    if (currentQuery !== nextQuery) {
-      router.push(`?${nextQuery}`);
+    if (searchQuery !== nextQuery) {
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+        scroll: false,
+      });
     }
-  }, [filteredCategoryDebounceValue, priceRange, router, search]);
-  // Clear all filters
-const handleClearFilter = () => {
-  setSelectedCategoriesClientArray([]);
-  setPriceRange([0, 100000]);
+  }, [
+    filteredCategoryDebounceValue,
+    filteredStockDebounceValue,
+    pathname,
+    priceRange,
+    router,
+    searchQuery,
+  ]);
 
-  router.push(window.location.pathname);
-};
+  // Clear all filters
+  const handleClearFilter = () => {
+    setSelectedCategoriesClientArray([]);
+    setSelectedStockClientArray([]);
+    setPriceRange([0, 100000]);
+
+    router.replace(pathname, { scroll: false });
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -103,42 +160,73 @@ const handleClearFilter = () => {
 
             <CardDescription>
               <Accordion
-                type="single"
-                collapsible
-                defaultValue={FILTERS[0]?.key}
+                type="multiple"
+                defaultValue={["categories", "stock", "price"]}
                 className="max-w-lg"
               >
-                {FILTERS.map((filter) => (
-                  <AccordionItem key={filter.key} value={filter.key}>
-                    <AccordionTrigger>{filter.title}</AccordionTrigger>
-
+                {/* Categories from Database */}
+                {categories.length > 0 && (
+                  <AccordionItem value="categories">
+                    <AccordionTrigger>Categories</AccordionTrigger>
                     <AccordionContent className="space-y-3">
-                      {filter.options.map((item) => (
+                      {categories.map((category) => (
                         <div
-                          key={`${filter.key}-${item}`}
+                          key={category.slug}
                           className="flex items-center space-x-2"
                         >
                           <Checkbox
                             checked={selectedCategoriesClientArray.includes(
-                              item,
+                              category.slug,
                             )}
                             onCheckedChange={() =>
-                              handleCheckboxClick({ item })
+                              handleCategoryCheckboxClick({
+                                item: category.slug,
+                              })
                             }
-                            id={`${filter.key}-${item}`}
+                            id={`category-${category.slug}`}
                           />
                           <Label
                             className="capitalize"
-                            htmlFor={`${filter.key}-${item}`}
+                            htmlFor={`category-${category.slug}`}
                           >
-                            {item}
+                            {category.name}
                           </Label>
                         </div>
                       ))}
                     </AccordionContent>
                   </AccordionItem>
-                ))}
+                )}
 
+                {/* Stock Filter */}
+                <AccordionItem value="stock">
+                  <AccordionTrigger>Stock</AccordionTrigger>
+                  <AccordionContent className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedStockClientArray.includes("in-stock")}
+                        onCheckedChange={() =>
+                          handleStockCheckboxClick({ item: "in-stock" })
+                        }
+                        id="stock-in-stock"
+                      />
+                      <Label htmlFor="stock-in-stock">In Stock</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedStockClientArray.includes(
+                          "out-of-stock",
+                        )}
+                        onCheckedChange={() =>
+                          handleStockCheckboxClick({ item: "out-of-stock" })
+                        }
+                        id="stock-out-of-stock"
+                      />
+                      <Label htmlFor="stock-out-of-stock">Out of Stock</Label>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {/* Price Filter */}
                 <AccordionItem value="price">
                   <AccordionTrigger>Price</AccordionTrigger>
                   <AccordionContent>
@@ -165,10 +253,6 @@ const handleClearFilter = () => {
 
             <CardFooter>
               <div className="w-full flex flex-col gap-3 my-5">
-                <Button className="w-full text-base md:text-xs lg:text-base bg-(--bg-product-button) hover:bg-(--bg-product-button-hover)">
-                  Apply Filter
-                </Button>
-
                 <Button
                   variant="outline"
                   onClick={handleClearFilter}

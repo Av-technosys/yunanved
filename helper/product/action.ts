@@ -714,6 +714,7 @@ export async function getProductsByCategorySlug(slug: string) {
         slug: productVariant.slug,
         sku: productVariant.sku,
         rating: productVariant.rating,
+        isInStock: productVariant.isInStock,
       })
       .from(productVariant)
       .innerJoin(product, eq(product.id, productVariant.productId))
@@ -733,6 +734,7 @@ export async function getProductsByCategorySlug(slug: string) {
           slug: productVariant.slug,
           sku: productVariant.sku,
           rating: productVariant.rating,
+          isInStock: productVariant.isInStock,
         })
         .from(productVariant)
         .limit(10);

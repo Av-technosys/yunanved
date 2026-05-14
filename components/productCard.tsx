@@ -18,6 +18,8 @@ import { removeCartItem } from "@/helper";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 
 export const ProductCard = ({ product, index, className = "" }: any) => {
+
+
   const { userDetails, loading } = useClientSideUser();
   const userId = userDetails?.id;
   const rawItems = useCartStore((state) => state.items);
@@ -121,8 +123,8 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
             <div className=" font-semibold text-lg">₹{product.basePrice}</div>
 
             <Button
-              disabled={isAdding || loading}
-              variant={isInCart ? "outline" : "default"}
+              disabled={isAdding || loading || !product.isInStock}
+              variant={isInCart ? "outline" : !product.isInStock ? "outline" : "default"}
               onClick={() => {
                 if (isInCart) {
                   handleRemove({
@@ -136,15 +138,17 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
             >
               {loading
                 ? "Loading..."
-                : isInCart
-                  ? "Remove"
-                  : isAdding
-                    ? "Adding..."
-                    : "Add to Cart"}
+                : !product.isInStock
+                  ? "Out of Stock"
+                  : isInCart
+                    ? "Remove"
+                    : isAdding
+                      ? "Adding..."
+                      : "Add to Cart"}
 
               {isInCart ? (
                 <Undo2 className="h-4 w-4" />
-              ) : (
+              ) : !product.isInStock ? null : (
                 <ShoppingCart className="h-4 w-4" />
               )}
             </Button>
