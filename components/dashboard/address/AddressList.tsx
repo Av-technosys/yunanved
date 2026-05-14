@@ -15,6 +15,7 @@ export  function AddressList({
         {addresses.map((addr: any) => (
           <AddressCard
             key={addr.id}
+            isPrimary={addr.isPrimary}
             address={addr}
             onEdit={onEdit}
             onDelete={onDelete}

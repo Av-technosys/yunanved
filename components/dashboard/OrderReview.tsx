@@ -24,6 +24,7 @@ export const OrderReview = ({
   orderDetails,
   setorderDetailsReview,
   onBack,
+  
 }: any) => {
   const { upload, uploading } = useFileUpload();
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
@@ -75,7 +76,7 @@ export const OrderReview = ({
     });
   };
 
-  const handleSubmitReview = async (productVarientId: string) => {
+  const handleSubmitReview = async (productVarientId: string, orderItemId: string) => {
 
     const productMedia = fileKey
       .filter((f) => f.variantId === productVarientId)
@@ -84,6 +85,7 @@ export const OrderReview = ({
     const reviewData = {
       userId: orderDetails.userId,
       productVarientId,
+      orderItemId,
       rating: ratings[productVarientId] || 0,
       message: comments[productVarientId] || "",
       media: productMedia,
@@ -96,7 +98,7 @@ export const OrderReview = ({
        setLoadingProduct(productVarientId);
 
       const response = await createReview(reviewData);
-
+     
       if (response.success) {
         toast.success("Review submitted successfully!");
 
@@ -105,7 +107,7 @@ export const OrderReview = ({
         setFileKey([]);
         setPreviews([]);
       } else {
-        toast.error("Failed to submit review");
+        toast.error(response.message);
       }
      }else{
       toast.error("Please give rating and write a review to the product");
@@ -322,7 +324,7 @@ export const OrderReview = ({
                             loadingProduct === variantId &&
                             loadingProduct !== null
                           }
-                          onClick={() => handleSubmitReview(variantId)}
+                          onClick={() => handleSubmitReview(variantId, item.id)}
                         >
                           {loadingProduct === variantId &&
                           loadingProduct !== null
