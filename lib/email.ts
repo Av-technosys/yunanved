@@ -1,71 +1,57 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// 'use server';
 
-// import nodemailer from 'nodemailer';
-
-
-// let transporter: nodemailer.Transporter | null = null;
-
-// function getTransporter() {
-//   if (!transporter) {
-//     transporter = nodemailer.createTransport({
-//       host: 'email-smtp.ap-south-1.amazonaws.com',
-//       port: 587,
-//       secure: false,
-//       auth: {
-//         user: process.env.SES_USER!,
-//         pass: process.env.SES_PASS!,
-//       },
-//     });
-//   }
-//   return transporter;
-// }
-
-// type SendEmailProps = {
-//   to: string | string[];
-//   subject: string ;
-//   html: any;      
-//   bcc?: string[];
-//   replyTo?: string;
-//   attachments?: any[];
-// };
-
-// export async function sendEmail({
-//   to,
-//   subject,
-//   html,
-//   bcc,
-//   replyTo,
-//   attachments,
-// }: SendEmailProps) {
-//   try {
-//     const transporter = getTransporter();
-
-//     const result = await transporter.sendMail({
-//       from: `"Yunanved" <info@avtechnosys.com>`,
-//       to,
-//       subject,
-//       html,
-//       bcc,
-//       replyTo,
-//       attachments,
-//     });
-
-//     return { success: true, result };
-//   } catch (error) {
-//     console.error('Email Error:', error);
-//     return { success: false, error };
-//   }
-// }
 
 import { SendEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/lib/aws";
+import fs from "fs";
+import path from "path";
 
 type SendEmailParams = {
   to: string;
   subject: string;
   html: string;
 };
+
+type TemplateData = Record<string, string | number | null | undefined>;
+
+type SendTemplateEmailParams = {
+  to: string;
+  subject: string;
+  template: string;
+  type: string;
+  data?: TemplateData;
+};
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function loadTemplate(template: string, type: string) {
+  const templatePath = path.join(
+    process.cwd(),
+    "email-templates",
+    type,
+    `${template}.html`,
+  );
+
+  return fs.readFileSync(templatePath, "utf-8");
+}
+
+function renderTemplate(template: string, data: TemplateData = {}) {
+  return template.replace(/{{\s*([^}]+)\s*}}/g, (_, key: string) => {
+    const value = data[key.trim()];
+
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return escapeHtml(String(value));
+  });
+}
 
 export const sendEmail = async ({
   to,
@@ -90,4 +76,20 @@ export const sendEmail = async ({
   });
 
   return await sesClient.send(command);
+};
+
+export const sendTemplateEmail = async ({
+  to,
+  subject,
+  template,
+  type,
+  data,
+}: SendTemplateEmailParams) => {
+  const html = renderTemplate(loadTemplate(template, type), data);
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+  });
 };

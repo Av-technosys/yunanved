@@ -357,70 +357,78 @@ export async function createOrder({
     });
 
 
-    let shipmentToken = await getShippingTokenFromDB();
-    if (!shipmentToken) shipmentToken = await createNewShipingToken();
+    try {
+      let shipmentToken = await getShippingTokenFromDB();
+      if (!shipmentToken) shipmentToken = await createNewShipingToken();
 
-    const nowDateString = new Date()
-      .toISOString()
-      .slice(0, 16)
-      .replace("T", " ");
-    console.log(nowDateString, "nowDateString")
-    const shiprocketPayload: ShiprocketOrderPayload = {
-      order_id: orderId,
-      order_date: nowDateString,
-      pickup_location: "Home",
-      billing_customer_name: userDetail.first_name,
-      billing_last_name: userDetail.last_name || "",
+      const nowDateString = new Date()
+        .toISOString()
+        .slice(0, 16)
+        .replace("T", " ");
+      console.log(nowDateString, "nowDateString")
+      const shiprocketPayload: ShiprocketOrderPayload = {
+        order_id: orderId,
+        order_date: nowDateString,
+        pickup_location: "Home",
+        billing_customer_name: userDetail.first_name,
+        billing_last_name: userDetail.last_name || "",
 
-      billing_address: address.addressLine1,
-      billing_address_2: address.addressLine2 || "",
+        billing_address: address.addressLine1,
+        billing_address_2: address.addressLine2 || "",
 
-      billing_city: address.city,
-      billing_pincode: Number(address.pincode),
+        billing_city: address.city,
+        billing_pincode: Number(address.pincode),
 
-      billing_state: address.state,
-      billing_country: address.country || "India",
+        billing_state: address.state,
+        billing_country: address.country || "India",
 
-      billing_email: userDetail.email,
-      billing_phone: Number(userDetail.number),
+        billing_email: userDetail.email,
+        billing_phone: Number(userDetail.number),
 
-      shipping_is_billing: true,
+        shipping_is_billing: true,
 
-      order_items: orderItemsToInsert.map((item) => ({
-        name: item.productName || "Product",
-        sku: item.productSKU,
-        units: item.quantity,
-        selling_price: item.productPrice || 0,
-        discount: 0,
-        tax: 0,
-        hsn: 10223,
-      })),
+        order_items: orderItemsToInsert.map((item) => ({
+          name: item.productName || "Product",
+          sku: item.productSKU,
+          units: item.quantity,
+          selling_price: item.productPrice || 0,
+          discount: 0,
+          tax: 0,
+          hsn: 10223,
+        })),
 
-      payment_method: "Prepaid",
+        payment_method: "Prepaid",
 
-      shipping_charges: 0,
-      giftwrap_charges: 0,
-      transaction_charges: 0,
-      total_discount: 0,
+        shipping_charges: 0,
+        giftwrap_charges: 0,
+        transaction_charges: 0,
+        total_discount: 0,
 
-      sub_total: orderItemsToInsert.reduce(
-        (acc, item) => acc + (item.productPrice || 0) * item.quantity,
-        0
-      ),
-
-      length: Math.max(...products.map((p) => p.length || 1)),
-      breadth: Math.max(...products.map((p) => p.width || 1)),
-      height: products.reduce((acc, p) => acc + (p.height || 1), 0),
-
-      weight:
-        products.reduce(
-          // (acc, p) => acc + ((p.weight || 0.5) * p.quantity),
-          (acc, p) => acc + ((p.weight || 0.5) * 1),
+        sub_total: orderItemsToInsert.reduce(
+          (acc, item) => acc + (item.productPrice || 0) * item.quantity,
           0
-        ) || 0.5,
-    };
-    console.log('shiprocketPayload', shiprocketPayload)
-    await createShiprocketOrder(shipmentToken, shiprocketPayload);
+        ),
+
+        length: Math.max(...products.map((p) => p.length || 1)),
+        breadth: Math.max(...products.map((p) => p.width || 1)),
+        height: products.reduce((acc, p) => acc + (p.height || 1), 0),
+
+        weight:
+          products.reduce(
+            // (acc, p) => acc + ((p.weight || 0.5) * p.quantity),
+            (acc, p) => acc + ((p.weight || 0.5) * 1),
+            0
+          ) || 0.5,
+      };
+      console.log('shiprocketPayload', shiprocketPayload)
+      await createShiprocketOrder(shipmentToken, shiprocketPayload);
+    } catch (shippingError: any) {
+      console.error("Shiprocket order creation failed:", {
+        status: shippingError?.response?.status,
+        data: shippingError?.response?.data,
+        message: shippingError?.message,
+      });
+    }
 
 
     const cartRes = await db.query.cart.findFirst({

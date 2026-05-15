@@ -9,7 +9,7 @@ import { getServerSideUser } from "@/hooks/getServerSideUser";
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const user: any = await getServerSideUser();
+  const user = await getServerSideUser();
 
   const {
     razorpay_order_id,
@@ -72,6 +72,14 @@ export async function POST(req: Request) {
     );
   }
 
-  await sendPaymentReceivedEmail(user?.email, `${user?.firstName} ${user?.lastName}`, result?.orderId || razorpay_order_id, String(result?.amount ?? ""), 'Online Payment', '7-8 days from order date');
+  await sendPaymentReceivedEmail(
+    user.email,
+    `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
+    result.orderId || razorpay_order_id,
+    String(result.amount ?? ""),
+    "Online Payment",
+    "7-8 days from order date",
+  );
+
   return NextResponse.json(result);
 }
