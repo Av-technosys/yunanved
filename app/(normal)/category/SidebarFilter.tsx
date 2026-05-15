@@ -27,12 +27,10 @@ import { useEffect, useState } from "react";
 
 interface SidebarFilterWebProps {
   categories?: Array<{ id: string; name: string; slug: string }>;
-  currentCategorySlug: string;
 }
 
 export function SidebarFilterWeb({
   categories = [],
-  currentCategorySlug,
 }: SidebarFilterWebProps) {
   const search = useSearchParams();
   const pathname = usePathname();
@@ -53,18 +51,13 @@ export function SidebarFilterWeb({
     (item) => !["in-stock", "out-of-stock"].includes(item),
   );
 
-  const categoryFilterValues =
-    categoryFilterValuesFromUrl.length > 0
-      ? categoryFilterValuesFromUrl
-      : [currentCategorySlug];
-
   const stockFilters = selectedFilters.filter((item) =>
     ["in-stock", "out-of-stock"].includes(item),
   );
 
   // Local state
   const [selectedCategoriesClientArray, setSelectedCategoriesClientArray] =
-    useState<string[]>(categoryFilterValues);
+    useState<string[]>(categoryFilterValuesFromUrl);
 
   const [selectedStockClientArray, setSelectedStockClientArray] =
     useState<string[]>(stockFilters);

@@ -52,7 +52,7 @@ export const MobileAnimateNavBar = ({ isMobileNavOpen, setIsMobileNavOpen }: any
             }}
           >
             {CATEGORY_1.map((item, idx: number) => (
-              <Link key={idx} href={`/category/${item.slug}`}>
+              <Link key={idx} href={`/category?cat=${item.slug}`}>
                 <motion.div
                   variants={{
                     hidden: { opacity: 0, y: 10 },

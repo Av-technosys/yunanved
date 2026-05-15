@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { RefreshCw, Star, Truck, Undo2 } from "lucide-react";
+import { Minus, Plus, RefreshCw, Star, Trash2, Truck, Undo2 } from "lucide-react";
 import { ProductCard } from "@/components/productCard";
 import { Button } from "@/components/ui";
 import { useRef, useState } from "react";
@@ -13,7 +13,7 @@ import ReviewCard from "../reviewCard";
 import { useRouter } from "next/navigation";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { useCartStore } from "@/store/cartStore";
-import { removeCartItem } from "@/helper";
+import { decreaseCartItem, increaseCartItem, removeCartItem } from "@/helper";
 import { useCheckoutStore } from "@/store/checkoutStore";
 import { toast } from "sonner";
 import { startTransition } from "react";
@@ -36,12 +36,15 @@ const ProductClient = ({
   );
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
-  const { handleAddToCart } = useAddToCart(userDetails?.id);
+  const { handleAddToCart } = useAddToCart();
   const items = useCartStore((state) => state.items) || [];
   const removeItem = useCartStore((state) => state.removeItem);
+  const increase = useCartStore((state) => state.increase);
+  const decrease = useCartStore((state) => state.decrease);
   const userId = userDetails?.id;
 
-  const isInCart = items.some((i) => i.productId === activeVariant.id);
+  const cartItem = items.find((i) => i.productId === activeVariant.id);
+  const isInCart = Boolean(cartItem);
   const productDetailsForCart = {
     productId: activeVariant.id,
     sku: activeVariant.sku,
@@ -72,10 +75,43 @@ const ProductClient = ({
 
     startTransition(async () => {
       try {
-        await removeCartItem(userId, item.productId);
+        const result = await removeCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to remove item");
       } catch {
         useCartStore.getState().addItem(item);
         toast.error("Failed to remove item");
+      }
+    });
+  };
+
+  const handleIncrease = (item: any) => {
+    increase(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        const result = await increaseCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to update quantity");
+      } catch {
+        decrease(item.productId, item.attributes);
+        toast.error("Failed to update quantity");
+      }
+    });
+  };
+
+  const handleDecrease = (item: any) => {
+    decrease(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        const result = await decreaseCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to update quantity");
+      } catch {
+        if (item.quantity <= 1) {
+          useCartStore.getState().addItem(item);
+        } else {
+          increase(item.productId, item.attributes);
+        }
+        toast.error("Failed to update quantity");
       }
     });
   };
@@ -197,28 +233,54 @@ const ProductClient = ({
             />
 
             <div className="flex gap-4 mt-2">
-              <Button
-                onClick={() => {
-                  if (isInCart) {
-                    handleRemove();
-                  } else {
-                    handleClick();
-                  }
-                }}
-                disabled={isAdding || !activeVariant.isInStock}
-                variant={isInCart ? "outline" : "default"}
-                className={`flex-1 rounded-full font-medium transition
+              {isInCart ? (
+                <div className="flex flex-1 items-center gap-2">
+                  <div className="flex flex-1 items-center justify-center rounded-full border bg-gray-50 px-2 py-1">
+                    <button
+                      type="button"
+                      onClick={() => handleDecrease(cartItem)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="min-w-8 text-center text-sm font-semibold">
+                      {cartItem?.quantity ?? 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleIncrease(cartItem)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    onClick={handleRemove}
+                    aria-label="Remove from cart"
+                    className="rounded-full"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleClick}
+                  disabled={isAdding || !activeVariant.isInStock}
+                  variant="default"
+                  className={`flex-1 rounded-full font-medium transition
     ${isAdding || !activeVariant.isInStock ? "opacity-70 pointer-events-none" : ""}
   `}
-              >
-                {activeVariant.isInStock
-                  ? isInCart
-                    ? "Remove"
-                    : isAdding
+                >
+                  {activeVariant.isInStock
+                    ? isAdding
                       ? "Adding..."
                       : "Add to Cart"
-                  : "Out of Stock"}
-              </Button>
+                    : "Out of Stock"}
+                </Button>
+              )}
               <Button
                 variant="default"
                 disabled={!activeVariant.isInStock}
@@ -265,7 +327,8 @@ const ProductClient = ({
 export default ProductClient;
 
 function ProductReview({ activeVariant }: { activeVariant: any }) {
-  const rating = Number(activeVariant.rating) || 0;
+  const rawRating = Number(activeVariant.rating) || 0;
+  const rating = rawRating >= 100 ? rawRating / 100 : rawRating;
 
   return (
     <div className="flex items-center gap-2 text-sm">

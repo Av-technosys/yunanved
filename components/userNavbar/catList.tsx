@@ -9,7 +9,7 @@ export const CatList = () => {
   return (
     <div className=" flex flex-col gap-4">
       {[...CATEGORY_1, ...moreSidebarCategories].map((item, idx: number) => (
-        <Link key={idx} href={`/category/${item.slug}`}>
+        <Link key={idx} href={`/category?cat=${item.slug}`}>
           <div className="capitalize font-bold text-2xl cursor-pointer hover:scale-105 duration-200 ">
             {item.name}
           </div>

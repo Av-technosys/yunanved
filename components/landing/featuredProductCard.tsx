@@ -2,33 +2,67 @@
 "use client";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
-import { ShoppingCart, Star, Undo2 } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Star, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAddToCart } from "@/helper/useAddToCart";
 import { startTransition, useRef, useState } from "react";
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { useCartStore } from "@/store/cartStore";
-import { removeCartItem } from "@/helper";
+import { decreaseCartItem, increaseCartItem, removeCartItem } from "@/helper";
 import { toast } from "sonner";
 
-export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
-  const { handleAddToCart } = useAddToCart(userDetails?.id);
+export const FeaturedProductCard = ({ product, key }: any) => {
+  const { handleAddToCart } = useAddToCart();
 
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
   const items = useCartStore((state) => state.items) || [];
   const removeItem = useCartStore((state) => state.removeItem);
-  const userId = userDetails?.id;
+  const increase = useCartStore((state) => state.increase);
+  const decrease = useCartStore((state) => state.decrease);
 
   const handleRemove = (item: any) => {
     removeItem(item.productId, item.attributes);
 
     startTransition(async () => {
       try {
-        await removeCartItem(userId, item.productId);
+        const result = await removeCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to remove item");
       } catch {
         useCartStore.getState().addItem(item); // rollback
         toast.error("Failed to remove item");
+      }
+    });
+  };
+
+  const handleIncrease = (item: any) => {
+    increase(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        const result = await increaseCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to update quantity");
+      } catch {
+        decrease(item.productId, item.attributes);
+        toast.error("Failed to update quantity");
+      }
+    });
+  };
+
+  const handleDecrease = (item: any) => {
+    decrease(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        const result = await decreaseCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to update quantity");
+      } catch {
+        if (item.quantity <= 1) {
+          useCartStore.getState().addItem(item);
+        } else {
+          increase(item.productId, item.attributes);
+        }
+        toast.error("Failed to update quantity");
       }
     });
   };
@@ -59,9 +93,12 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
     }
   };
 
-  const isInCart =
-    Array.isArray(items) &&
-    items.some((i) => i.productId === product.productId);
+  const cartItem = Array.isArray(items)
+    ? items.find((i) => i.productId === product.productId)
+    : undefined;
+  const isInCart = Boolean(cartItem);
+  const rawRating = Number(product.rating) || 0;
+  const rating = rawRating >= 100 ? rawRating / 100 : rawRating;
 
   return (
     <div>
@@ -95,7 +132,7 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
               <Star
                 key={i}
                 size={12}
-                fill={i < Math.round(product.rating) ? "#FFC107" : "none"}
+                fill={i < Math.round(rating) ? "#FFC107" : "none"}
                 stroke="#FFC107"
               />
             ))}
@@ -115,33 +152,53 @@ export const FeaturedProductCard = ({ product, key, userDetails }: any) => {
               ₹{product.basePrice}
             </span>
 
-            <Button
-              onClick={() => {
-                if (isInCart) {
-                  handleRemove({
-                    productId: product.productId,
-                    attributes: [],
-                  });
-                } else {
-                  addToCartHandler();
-                }
-              }}
-              disabled={isAdding || !product.isInStock}
-              variant={isInCart ? "outline" : !product.isInStock ? "outline" : "default"}
-            >
-              {!product.isInStock
-                ? "Out of Stock"
-                : isInCart
-                  ? "Remove"
+            {isInCart ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center rounded-full border bg-gray-50 px-1 py-1">
+                  <button
+                    type="button"
+                    onClick={() => handleDecrease(cartItem)}
+                    className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="min-w-6 text-center text-sm font-semibold">
+                    {cartItem?.quantity ?? 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleIncrease(cartItem)}
+                    className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => handleRemove(cartItem)}
+                  aria-label="Remove from cart"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={addToCartHandler}
+                disabled={isAdding || !product.isInStock}
+                variant={!product.isInStock ? "outline" : "default"}
+              >
+                {!product.isInStock
+                  ? "Out of Stock"
                   : isAdding
                     ? "Adding..."
                     : "Add to Cart"}
-              {isInCart ? (
-                <Undo2 className="h-4 w-4" />
-              ) : !product.isInStock ? null : (
-                <ShoppingCart className="h-4 w-4" />
-              )}
-            </Button>
+                {!product.isInStock ? null : (
+                  <ShoppingCart className="h-4 w-4" />
+                )}
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
