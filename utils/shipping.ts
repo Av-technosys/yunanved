@@ -15,20 +15,21 @@ export async function getShippingTokenFromDB() {
     }
     return token;
 }
-export async function createNewShipingToken() {
+export async function createNewShipingToken(): Promise<string> {
     const res = await axios.post(shippingAPIs.login, shiprocket);
     const { token, first_name, last_name, email, created_at } = res.data;
-    if (!token) return null;
     const expiresAt = new Date(created_at);
     expiresAt.setDate(expiresAt.getDate() + 8)
-    await db.insert(shippingToken).values({
+    const tokenInsert = await db.insert(shippingToken).values({
         token,
         firstName: first_name,
         lastName: last_name,
         email,
         expiresAt,
-        createdAt: created_at
-    })
+        createdAt: new Date(created_at)
+    }).returning();
+
+    return tokenInsert[0]?.token || "";
 
 }
 export async function createShiprocketOrder(token: string, orderData: ShiprocketOrderPayload) {
@@ -56,10 +57,12 @@ export async function createShiprocketOrder(token: string, orderData: Shiprocket
         packaging_box_error
     } = res.data;
 
+    console.log(res.data, " res data");
+
     await db.insert(shipment).values({
-        orderId: order_id,
+        orderId: channel_order_id,
         shipmentId: shipment_id,
-        shipmentOrderId: channel_order_id,
+        shipmentOrderId: order_id,
         awbCode: awb_code,
         courierName: courier_name,
         pickupStatus: status,

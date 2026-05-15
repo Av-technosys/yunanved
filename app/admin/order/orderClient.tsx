@@ -66,7 +66,7 @@ const OrderClient = ({ order, total, currentPage, pageSize, status }: Props) => 
 
 
 
-const ORDER_STATUS = [
+  const ORDER_STATUS = [
     { value: "pending", label: "Pending" },
     { value: "completed", label: "Completed" },
     { value: "cancelled", label: "Cancelled" },

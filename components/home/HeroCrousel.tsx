@@ -9,7 +9,7 @@ export const HeroCrousel = () => {
             {/* Dark Blur Overlay */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center text-center px-4">
                 <h1 className="text-white text-4xl md:text-6xl font-bold mb-4">
-                    20% Off on Groceries
+                    20% Off
                 </h1>
                 <p className="text-gray-200 text-sm md:text-lg max-w-xl leading-relaxed">
                     Discover the latest trend in technology — elegant design crafted

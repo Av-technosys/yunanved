@@ -9,6 +9,8 @@ import { user } from "@/db/userSchema";
 import { revalidatePath } from "next/cache";
 import { cart, cartItem, productVariant, product } from "@/db";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
+import { createNewShipingToken, createShiprocketOrder, getShippingTokenFromDB } from "@/utils/shipping";
+import { ShiprocketOrderPayload } from "@/types/shipping";
 type CancelStatus = "pending" | "approved" | "rejected" | "refunded";
 
 export const fetchOrders = async ({
@@ -121,6 +123,8 @@ export async function createOrder({
   couponTransactionId?: string | null;
 
 }) {
+
+  console.log(address)
   try {
     if (!items || items.length === 0) {
       throw new Error("Order items are required");
@@ -138,10 +142,12 @@ export async function createOrder({
     if (products.length !== items.length) {
       throw new Error("Some products not found");
     }
-
+    const [userDetail] = await db.select().from(user).where(eq(user.id, userId))
     const productMap = new Map(products.map((p) => [p.id, p]));
 
     const safeAmount = Math.round(fixedAmount);
+    let orderId = ''
+    let orderItemsToInsert: any[] = []
 
     const result = await db.transaction(async (tx) => {
       const insertedOrder = await tx
@@ -161,9 +167,11 @@ export async function createOrder({
         })
         .returning({ id: order.id });
 
-      const orderId = insertedOrder[0].id;
+      console.log(insertedOrder, "insertedOrder")
 
-      const orderItemsToInsert = items.map((item) => {
+      orderId = insertedOrder[0].id;
+
+      orderItemsToInsert = items.map((item) => {
         const variantId =
           (item as any).productVarientId || (item as any).productId;
         const p = productMap.get(variantId);
@@ -200,6 +208,74 @@ export async function createOrder({
 
       return { orderId };
     });
+
+
+    let shipmentToken = await getShippingTokenFromDB();
+    if (!shipmentToken) shipmentToken = await createNewShipingToken();
+
+    const nowDateString = new Date()
+      .toISOString()
+      .slice(0, 16)
+      .replace("T", " ");
+    console.log(nowDateString, "nowDateString")
+    const shiprocketPayload: ShiprocketOrderPayload = {
+      order_id: orderId,
+      order_date: nowDateString,
+      pickup_location: "Home",
+      billing_customer_name: userDetail.first_name,
+      billing_last_name: userDetail.last_name || "",
+
+      billing_address: address.addressLine1,
+      billing_address_2: address.addressLine2 || "",
+
+      billing_city: address.city,
+      billing_pincode: Number(address.pincode),
+
+      billing_state: address.state,
+      billing_country: address.country || "India",
+
+      billing_email: userDetail.email,
+      billing_phone: Number(userDetail.number),
+
+      shipping_is_billing: true,
+
+      order_items: orderItemsToInsert.map((item) => ({
+        name: item.productName || "Product",
+        sku: item.productSKU,
+        units: item.quantity,
+        selling_price: item.productPrice || 0,
+        discount: 0,
+        tax: 0,
+        hsn: 10223,
+      })),
+
+      payment_method: "Prepaid",
+
+      shipping_charges: 0,
+      giftwrap_charges: 0,
+      transaction_charges: 0,
+      total_discount: 0,
+
+      sub_total: orderItemsToInsert.reduce(
+        (acc, item) => acc + (item.productPrice || 0) * item.quantity,
+        0
+      ),
+
+      length: Math.max(...products.map((p) => p.length || 1)),
+      breadth: Math.max(...products.map((p) => p.width || 1)),
+      height: products.reduce((acc, p) => acc + (p.height || 1), 0),
+
+      weight:
+        products.reduce(
+          // (acc, p) => acc + ((p.weight || 0.5) * p.quantity),
+          (acc, p) => acc + ((p.weight || 0.5) * 1),
+          0
+        ) || 0.5,
+    };
+    console.log('shiprocketPayload', shiprocketPayload)
+    await createShiprocketOrder(shipmentToken, shiprocketPayload);
+
+
     const cartRes = await db.query.cart.findFirst({
       where: eq(cart.userId, userId),
     });

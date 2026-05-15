@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, Input, Label } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui";
@@ -12,11 +12,13 @@ import { Loader2 } from "lucide-react";
 import { fetchOrderDetails } from "@/helper/index"; // server action
 import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import Link from "next/link";
+import axios from "axios";
+import { toast } from "sonner";
 export default function Details({ id }: { id: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [isPending, startTransition] = useTransition();
 
-  
+
 
   const BASE = NEXT_PUBLIC_S3_BASE_URL!;
 
@@ -91,7 +93,9 @@ export default function Details({ id }: { id: string }) {
                 </div>
               ))}
             </div>
-            <div className="flex gap-4 pt-4">
+            <ShipmentAwbId orderId={orderInfo?.order?.id} />
+
+            <div className="flex gap-4">
               <Button
                 variant="outline"
                 className="flex-1 rounded-full border-slate-200 text-slate-600"
@@ -102,6 +106,8 @@ export default function Details({ id }: { id: string }) {
                 Track Order
               </Button>
             </div>
+
+
           </CardContent>
         </Card>
 
@@ -114,7 +120,7 @@ export default function Details({ id }: { id: string }) {
             </CardHeader>
             <CardContent className="flex items-center gap-5">
               <Avatar className="h-24 w-24">
-                <AvatarImage  src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${orderInfo?.user.profileImage}`} />
+                <AvatarImage src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${orderInfo?.user.profileImage}`} />
                 <AvatarFallback>
                   {orderInfo?.user.first_name?.slice(0, 1).toUpperCase()}</AvatarFallback>
               </Avatar>
@@ -183,7 +189,7 @@ export default function Details({ id }: { id: string }) {
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-4">
                           <Avatar className="h-20 w-20 border-2 border-slate-100">
-                            <AvatarImage src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`} className="object-contain"/>
+                            <AvatarImage src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${item.productImage}`} className="object-contain" />
                             <AvatarFallback>{item.productName?.slice(0, 1).toUpperCase()}</AvatarFallback>
                           </Avatar>
 
@@ -221,5 +227,82 @@ export default function Details({ id }: { id: string }) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+
+
+function ShipmentAwbId({ orderId }: { orderId: string }) {
+  const [awbNumber, setAwbNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Get existing AWB on component load
+  useEffect(() => {
+    const getAwb = async () => {
+      try {
+        setIsLoading(true);
+
+        const res = await axios.get(
+          `/api/admin/orders/${orderId}/awb`
+        );
+
+        setAwbNumber(res.data?.awbCode || "");
+      } catch (error) {
+        console.error("Failed to fetch AWB", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getAwb();
+  }, [orderId]);
+
+  // Update AWB
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    try {
+      setIsLoading(true);
+
+      await axios.patch(
+        `/api/admin/orders/${orderId}/awb`,
+        {
+          awbCode: awbNumber,
+        }
+      );
+      toast.success("AWB updated successfully")
+    } catch (error) {
+      console.error("Failed to update AWB", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex gap-2 items-end"
+    >
+      <div className="flex flex-col gap-2 w-full">
+        <Label>AWB Number</Label>
+        <Input
+          placeholder="AWB Number"
+          value={awbNumber}
+          onChange={(e) =>
+            setAwbNumber(e.target.value)
+          }
+        />
+      </div>
+
+
+      <Button
+        type="submit"
+        disabled={isLoading}
+      >
+        {isLoading ? "Loading..." : "Submit"}
+      </Button>
+    </form>
   );
 }
