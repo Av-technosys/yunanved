@@ -24,12 +24,10 @@ import { useState, useCallback } from "react";
 
 interface FilterSidebarProps {
   categories?: Array<{ id: string; name: string; slug: string }>;
-  currentCategorySlug: string;
 }
 
 export function FilterSidebar({
   categories = [],
-  currentCategorySlug,
 }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -40,10 +38,6 @@ export function FilterSidebar({
   const initialCategoriesFromUrl = initialFilters.filter(
     (item) => !["in-stock", "out-of-stock"].includes(item),
   );
-  const initialCategories =
-    initialCategoriesFromUrl.length > 0
-      ? initialCategoriesFromUrl
-      : [currentCategorySlug];
   const initialStock = initialFilters.filter((item) =>
     ["in-stock", "out-of-stock"].includes(item),
   );
@@ -52,7 +46,7 @@ export function FilterSidebar({
 
   // Local state for temporary filters
   const [selectedCategories, setSelectedCategories] =
-    useState<string[]>(initialCategories);
+    useState<string[]>(initialCategoriesFromUrl);
   const [selectedStock, setSelectedStock] = useState<string[]>(initialStock);
   const [priceRange, setPriceRange] = useState<[number, number]>([
     Number(initialMin),
@@ -68,11 +62,7 @@ export function FilterSidebar({
         (item) => !["in-stock", "out-of-stock"].includes(item),
       );
 
-      setSelectedCategories(
-        categoriesFromUrl.length > 0
-          ? categoriesFromUrl
-          : [currentCategorySlug],
-      );
+      setSelectedCategories(categoriesFromUrl);
       setSelectedStock(
         filters.filter((item) => ["in-stock", "out-of-stock"].includes(item)),
       );

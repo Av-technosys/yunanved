@@ -86,7 +86,8 @@ const productKeys = useMemo(
 
     startTransition(async () => {
       try {
-        await increaseCartItem(userId, item.productId)
+        const result = await increaseCartItem(item.productId)
+        if (!result?.success) throw new Error("Failed to update quantity")
       } catch {
         decrease(item.productId, item.attributes)
         toast.error("Failed to update quantity")
@@ -100,9 +101,14 @@ const productKeys = useMemo(
 
     startTransition(async () => {
       try {
-        await decreaseCartItem(userId, item.productId)
+        const result = await decreaseCartItem(item.productId)
+        if (!result?.success) throw new Error("Failed to update quantity")
       } catch {
-        increase(item.productId, item.attributes)
+        if (item.quantity <= 1) {
+          useCartStore.getState().addItem(item)
+        } else {
+          increase(item.productId, item.attributes)
+        }
         toast.error("Failed to update quantity")
       }
     })
@@ -114,7 +120,8 @@ const productKeys = useMemo(
 
     startTransition(async () => {
       try {
-        await removeCartItem(userId, item.productId)
+        const result = await removeCartItem(item.productId)
+        if (!result?.success) throw new Error("Failed to remove item")
       } catch {
         useCartStore.getState().addItem(item)
         toast.error("Failed to remove item")

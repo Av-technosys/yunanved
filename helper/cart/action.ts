@@ -92,7 +92,6 @@ import { getServerSideUser } from "@/hooks/getServerSideUser";
 //   }
 // }
 export async function addProductToUserCart(
-  userId: string,
   productId: string,
   quantity: number,
 ) {
@@ -185,11 +184,17 @@ export async function addProductToUserCart(
     return { success: false };
   }
 }
-export async function increaseCartItem(userId: string, productId: string) {
+export async function increaseCartItem(productId: string) {
+  const userInfo = await getServerSideUser();
+
+  if (!userInfo?.id) {
+    return { success: false, userIsNotLoggedIn: true };
+  }
+
   const existingCart = await db
     .select()
     .from(cart)
-    .where(eq(cart.userId, userId))
+    .where(eq(cart.userId, userInfo.id))
     .then((r) => r[0]);
 
   if (!existingCart) return { success: false };
@@ -209,12 +214,18 @@ export async function increaseCartItem(userId: string, productId: string) {
   return { success: true };
 }
 
-export async function decreaseCartItem(userId: string, productId: string) {
+export async function decreaseCartItem(productId: string) {
   try {
+    const userInfo = await getServerSideUser();
+
+    if (!userInfo?.id) {
+      return { success: false, userIsNotLoggedIn: true };
+    }
+
     const existingCart = await db
       .select({ id: cart.id })
       .from(cart)
-      .where(eq(cart.userId, userId))
+      .where(eq(cart.userId, userInfo.id))
       .then((r) => r[0]);
 
     if (!existingCart) return { success: false };
@@ -249,12 +260,18 @@ export async function decreaseCartItem(userId: string, productId: string) {
   }
 }
 
-export async function removeCartItem(userId: string, productId: string) {
+export async function removeCartItem(productId: string) {
   try {
+    const userInfo = await getServerSideUser();
+
+    if (!userInfo?.id) {
+      return { success: false, userIsNotLoggedIn: true };
+    }
+
     const existingCart = await db
       .select({ id: cart.id })
       .from(cart)
-      .where(eq(cart.userId, userId))
+      .where(eq(cart.userId, userInfo.id))
       .then((r) => r[0]);
 
     if (!existingCart) return { success: false };
@@ -275,9 +292,11 @@ export async function removeCartItem(userId: string, productId: string) {
   }
 }
 
-export async function getUserCart(userId: string) {
+export async function getUserCart(userId?: string) {
+  const userInfo = await getServerSideUser();
+  const actualUserId = userInfo?.id ?? userId;
   
-  if (!userId) {
+  if (!actualUserId) {
     return {
       error: "User ID not provided. Unable to fetch profile."
     };
@@ -287,7 +306,7 @@ export async function getUserCart(userId: string) {
     const existingCart = await db
       .select()
       .from(cart)
-      .where(eq(cart.userId, userId))
+      .where(eq(cart.userId, actualUserId))
       .then((r) => r[0]);
 
     if (!existingCart) {

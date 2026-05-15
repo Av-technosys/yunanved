@@ -16,7 +16,7 @@ export const BentoGallery = async () => {
           return (
             <Link
               key={card.id}
-              href={`/category/${card.slug}`}
+              href={`/category?cat=${card.slug}`}
               className={`relative overflow-hidden rounded-4xl group cursor-pointer bg-white ${
                 isLarge ? "md:col-span-2 md:row-span-2" : ""
               }`}

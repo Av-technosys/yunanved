@@ -1,9 +1,8 @@
 import CategoryView from "@/components/category/CategoryView";
-import { FilterSidebar } from "../filterSidebar";
+import { FilterSidebar } from "./filterSidebar";
 
 import {
   getAllProductsByCategorySlug,
-  getCategoryBySlug,
   getCategories,
 } from "@/helper/category/action";
 
@@ -43,31 +42,24 @@ function parseFilters(searchParams: RouteSearchParams) {
       ? Number(searchParams.max)
       : undefined;
 
-  return { cat: realCat, hasCategoryQuery: typeof searchParams.cat === "string", stock, min, max };
+  return { cat: realCat, stock, min, max };
 }
 
 interface CategoryPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
   searchParams: Promise<RouteSearchParams>;
 }
 
-const Page = async ({ params, searchParams }: CategoryPageProps) => {
-  const { slug } = await params;
+const Page = async ({ searchParams }: CategoryPageProps) => {
   const sp = await searchParams;
 
   const filters = parseFilters(sp);
-  const selectedCategorySlugs = filters.hasCategoryQuery
-    ? filters.cat
-    : [slug];
+  const selectedCategorySlugs = filters.cat;
 
-  const [products, categoryInfo, allCategories] = await Promise.all([
+  const [products, allCategories] = await Promise.all([
     getAllProductsByCategorySlug(
       selectedCategorySlugs,
       filters
     ),
-    getCategoryBySlug(slug),
     getCategories(),
   ]);
 
@@ -79,27 +71,24 @@ const Page = async ({ params, searchParams }: CategoryPageProps) => {
     })
   );
 
-  console.log("Products:", products);
-
-  if (!categoryInfo) {
-    return (
-      <div className="p-20 text-center">Category not found</div>
-    );
-  }
-
+  const selectedCategories = categories.filter((category) =>
+    selectedCategorySlugs.includes(category.slug)
+  );
+  const heading =
+    selectedCategories.length === 1 ? selectedCategories[0].name : "All Categories";
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0">
       <div className="hidden md:block col-span-1">
-        <SidebarFilterWeb categories={categories} currentCategorySlug={slug} />
+        <SidebarFilterWeb categories={categories} />
       </div>
       <div className="col-span-4 md:col-span-3 w-full flex flex-col gap-2">
         <div className="w-full flex items-center justify-between">
           <div className="md:hidden">
-            <FilterSidebar categories={categories} currentCategorySlug={slug} />
+            <FilterSidebar categories={categories} />
           </div>
 
           <div className="text-black hidden md:block font-bold text-lg">
-            {categoryInfo.name}
+            {heading}
           </div>
 
           {/* <div className="text-gray-600">
@@ -107,7 +96,7 @@ const Page = async ({ params, searchParams }: CategoryPageProps) => {
           </div> */}
         </div>
 
-        <CategoryView products={products} slug={slug} />
+        <CategoryView products={products} />
       </div>
     </div>
   );

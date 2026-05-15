@@ -396,20 +396,15 @@ export async function getFullProduct(identifier: string) {
           isFreeDelivery: productVariant.isFreeDelivery,
           createdAt: productVariant.createdAt,
           updatedAt: productVariant.updatedAt,
-          rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
-          reviewCount: count(review.id),
+          rating: productVariant.rating,
+          reviewCount: productVariant.reviewCount,
           length: productVariant.length,
           width: productVariant.width,
           height: productVariant.height,
           weight: productVariant.weight,
         })
         .from(productVariant)
-        .leftJoin(
-          review,
-          eq(review.productVarientId, productVariant.id)
-        )
-        .where(eq(productVariant.productId, productGroupId))
-        .groupBy(productVariant.id),
+        .where(eq(productVariant.productId, productGroupId)),
 
       db
         .select()
