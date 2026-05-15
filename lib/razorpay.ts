@@ -27,33 +27,20 @@ export const loadRazorpayScript = (): Promise<boolean> => {
 
 /**
  * Opens Razorpay Checkout
- */export const initiateRazorpayPayment = async ({
-  amount,
+ */
+export const initiateRazorpayPayment = async ({
   name,
   description,
   items,
-  userId,
   address,
-  couponId,
   couponCode,
-  isDiscountPercentage,
-  discountPercentage,
-  discountFixedAmount,
 }: {
-  amount: number;
   name: string;
   description: string;
   items: any[];
-  userId: string;
   address: any;
-  couponId?: string | null;
   couponCode?: string | null;
-  isDiscountPercentage?: boolean;
-  discountPercentage?: number | null;
-  discountFixedAmount?: number | null;
-
 }) => {
-  console.log(NEXT_PUBLIC_RAZORPAY_KEY_ID)
   const scriptLoaded = await loadRazorpayScript();
 
   if (!scriptLoaded) {
@@ -64,7 +51,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   const res = await fetch("/api/razorpay/order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({ items, couponCode }),
   });
 
   const order = await res.json();
@@ -91,14 +78,8 @@ export const loadRazorpayScript = (): Promise<boolean> => {
             body: JSON.stringify({
               ...response,
               items,
-              userId,
               address,
-              amount,
-              couponId,
               couponCode,
-              isDiscountPercentage,
-              discountPercentage,
-              discountFixedAmount
             }),
           });
 

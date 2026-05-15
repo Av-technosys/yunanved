@@ -28,6 +28,8 @@ export {
   fetchOrders,
   fetchOrderDetails,
   updateOrderStatus,
+  calculateCheckoutPricing,
+  getCheckoutPricingQuote,
   createOrder,
   getOrdersByUserId,
   getOrderById,

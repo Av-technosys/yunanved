@@ -3,9 +3,9 @@
 "use client";
 
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { getAddresses } from "@/helper";
+import { getAddresses, getCheckoutPricingQuote } from "@/helper";
 // import { tempUserId } from "@/const";
 import { useCheckoutStore } from "@/store/checkoutStore";
 import { initiateRazorpayPayment } from "@/lib/razorpay";
@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
-import { validateCoupon } from "@/helper";
 import CheckoutBreadcrumb from "./components/CheckoutBreadcrumb";
 import AddressSelector from "./components/AddressSelector";
 import OrderSummary from "./components/OrderSummary";
@@ -37,24 +36,27 @@ export default function Checkout() {
   const setPaymentStatus = useCheckoutStore((s) => s.setPaymentStatus);
   const clearCheckout = useCheckoutStore((s) => s.clearCheckout);
   const clearCart = useCartStore((s) => s.clearCart);
-  const userId: any = useCheckoutStore((s) => s.userId);
   const [couponCode, setCouponCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [couponId, setCouponId] = useState<string | null>(null);
   const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
-  const [isDiscountPercentage, setIsDiscountPercentage] = useState(false);
-  const [discountPercentage, setDiscountPercentage] = useState<number | null>(null);
-  const [discountFixedAmount, setDiscountFixedAmount] = useState<number | null>(null);
-  const subtotal = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0,
+  const [pricing, setPricing] = useState({
+    subtotal: 0,
+    discount: 0,
+    deliveryFee: 0,
+    total: 0,
+  });
+
+  const quoteItems = useMemo(
+    () =>
+      items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    [items],
   );
 
 
 
   const handleRemoveCoupon = () => {
-    setDiscount(0);
-    setCouponId(null);
     setAppliedCouponCode(null);
     setCouponCode("");
 
@@ -63,29 +65,20 @@ export default function Checkout() {
 
   const handleApplyCoupon = async () => {
     try {
-      const data = await validateCoupon({
-        code: couponCode,
-        subtotal,
-        userId,
+      const data = await getCheckoutPricingQuote({
+        items: quoteItems,
+        couponCode,
       });
 
-      setDiscount(data.discount);
-      setCouponId(data.couponId);
+      setPricing(data);
       setAppliedCouponCode(couponCode);
-
-      setIsDiscountPercentage(data.isDiscountPercentage);
-      setDiscountPercentage(data.discountPercentage);
-      setDiscountFixedAmount(data.discountFixedAmount);
-
 
       toast.success("Coupon applied 🎉");
     } catch (err: any) {
       toast.error(err.message);
     }
   };
-  // const discount = subtotal * 0.2;
-  const deliveryFee = subtotal > 0 ? 15 : 0;
-  const finalTotal = subtotal - discount + deliveryFee;
+  const { subtotal, discount, deliveryFee, total: finalTotal } = pricing;
 
   const { userDetails } = useClientSideUser();
   const tempUserId = userDetails?.id;
@@ -116,6 +109,43 @@ export default function Checkout() {
     fetchAddresses();
   }, [tempUserId]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPricing() {
+      if (!items.length) {
+        setPricing({
+          subtotal: 0,
+          discount: 0,
+          deliveryFee: 0,
+          total: 0,
+        });
+        return;
+      }
+
+      try {
+        const data = await getCheckoutPricingQuote({
+          items: quoteItems,
+          couponCode: appliedCouponCode,
+        });
+
+        if (!cancelled) {
+          setPricing(data);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          toast.error(err.message || "Failed to calculate checkout total");
+        }
+      }
+    }
+
+    loadPricing();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items.length, quoteItems, appliedCouponCode]);
+
   const handlePayment = async () => {
     if (!selected) {
       toast.error("Please select a shipping address");
@@ -127,17 +157,11 @@ export default function Checkout() {
       setPaymentStatus("processing");
 
       const res: any = await initiateRazorpayPayment({
-        amount: finalTotal,
         name: "YUNANVED",
         description: "Order Payment",
         items: items,
-        userId,
         address: addresses.find((a) => a.id === selected),
-        couponId,
         couponCode: appliedCouponCode,
-        isDiscountPercentage,
-        discountPercentage,
-        discountFixedAmount
       });
 
       setPaymentStatus("success");

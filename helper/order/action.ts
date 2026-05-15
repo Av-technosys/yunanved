@@ -11,7 +11,146 @@ import { cart, cartItem, productVariant, product } from "@/db";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
 import { createNewShipingToken, createShiprocketOrder, getShippingTokenFromDB } from "@/utils/shipping";
 import { ShiprocketOrderPayload } from "@/types/shipping";
+import { coupon, couponTransaction } from "@/db/userSchema";
 type CancelStatus = "pending" | "approved" | "rejected" | "refunded";
+
+const DELIVERY_FEE = 15;
+
+type CheckoutInputItem = {
+  productVarientId?: string;
+  productId?: string;
+  quantity: number;
+};
+
+export async function calculateCheckoutPricing({
+  items,
+  couponCode,
+  userId,
+}: {
+  items: CheckoutInputItem[];
+  couponCode?: string | null;
+  userId: string;
+}) {
+  if (!items || items.length === 0) {
+    throw new Error("Order items are required");
+  }
+
+  const normalizedItems = items.map((item) => {
+    const productVarientId = item.productVarientId || item.productId;
+    const quantity = Math.max(1, Math.floor(Number(item.quantity) || 0));
+
+    if (!productVarientId) {
+      throw new Error("Invalid order item");
+    }
+
+    return { productVarientId, quantity };
+  });
+
+  const productIds = normalizedItems.map((item) => item.productVarientId);
+
+  const products = await db
+    .select()
+    .from(productVariant)
+    .where(inArray(productVariant.id, productIds));
+
+  if (products.length !== new Set(productIds).size) {
+    throw new Error("Some products not found");
+  }
+
+  const productMap = new Map(products.map((p) => [p.id, p]));
+  const subtotal = normalizedItems.reduce((total, item) => {
+    const productInfo = productMap.get(item.productVarientId);
+
+    if (!productInfo || productInfo.basePrice == null) {
+      throw new Error("Invalid product data");
+    }
+
+    return total + productInfo.basePrice * item.quantity;
+  }, 0);
+
+  let discount = 0;
+  let couponData: typeof coupon.$inferSelect | null = null;
+
+  if (couponCode) {
+    couponData = await db.query.coupon.findFirst({
+      where: eq(coupon.code, couponCode),
+    }) ?? null;
+
+    if (!couponData) {
+      throw new Error("Invalid coupon");
+    }
+
+    if (subtotal < couponData.minimumOrderValue) {
+      throw new Error("Minimum order value not met");
+    }
+
+    if (couponData.useOnce) {
+      const alreadyUsed = await db.query.couponTransaction.findFirst({
+        where: and(
+          eq(couponTransaction.userId, userId),
+          eq(couponTransaction.couponId, couponData.id),
+        ),
+      });
+
+      if (alreadyUsed) {
+        throw new Error("Coupon already used");
+      }
+    }
+
+    if (couponData.isDiscountPercentage) {
+      discount = (subtotal * (couponData.discountPercentage ?? 0)) / 100;
+
+      if (couponData.maximumDiscountAmount) {
+        discount = Math.min(discount, couponData.maximumDiscountAmount);
+      }
+    } else {
+      discount = couponData.discountFixedAmount ?? 0;
+    }
+  }
+
+  const deliveryFee = subtotal > 0 ? DELIVERY_FEE : 0;
+  const total = Math.max(0, Math.round(subtotal - discount + deliveryFee));
+
+  return {
+    items: normalizedItems,
+    products,
+    productMap,
+    subtotal,
+    discount,
+    deliveryFee,
+    total,
+    coupon: couponData,
+  };
+}
+
+export async function getCheckoutPricingQuote({
+  items,
+  couponCode,
+}: {
+  items: CheckoutInputItem[];
+  couponCode?: string | null;
+}) {
+  const userInfo = await getServerSideUser();
+
+  if (!userInfo?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const pricing = await calculateCheckoutPricing({
+    items,
+    couponCode,
+    userId: userInfo.id,
+  });
+
+  return {
+    subtotal: pricing.subtotal,
+    discount: pricing.discount,
+    deliveryFee: pricing.deliveryFee,
+    total: pricing.total,
+    couponId: pricing.coupon?.id ?? null,
+    couponCode: pricing.coupon?.code ?? null,
+  };
+}
 
 export const fetchOrders = async ({
   page = 1,
@@ -113,50 +252,60 @@ export async function createOrder({
   razorpayPaymentId,
   razorpayOrderId,
   couponTransactionId,
+  couponCode,
 }: {
-  items: { productVarientId: string; quantity: number }[];
+  items: CheckoutInputItem[];
   userId: string;
-  fixedAmount: number;
+  fixedAmount?: number;
   address: any;
   razorpayPaymentId: string;
   razorpayOrderId: string;
   couponTransactionId?: string | null;
+  couponCode?: string | null;
 
 }) {
 
   console.log(address)
   try {
-    if (!items || items.length === 0) {
-      throw new Error("Order items are required");
-    }
+    const pricing = await calculateCheckoutPricing({
+      items,
+      couponCode,
+      userId,
+    });
 
-    const productIds = items.map(
-      (i) => (i as any).productVarientId || (i as any).productId,
-    );
-
-    const products = await db
-      .select()
-      .from(productVariant)
-      .where(inArray(productVariant.id, productIds));
-
-    if (products.length !== items.length) {
-      throw new Error("Some products not found");
-    }
+    const { products, productMap } = pricing;
     const [userDetail] = await db.select().from(user).where(eq(user.id, userId))
-    const productMap = new Map(products.map((p) => [p.id, p]));
 
-    const safeAmount = Math.round(fixedAmount);
+    const safeAmount = pricing.total;
     let orderId = ''
     let orderItemsToInsert: any[] = []
 
     const result = await db.transaction(async (tx) => {
+      let finalCouponTransactionId = couponTransactionId ?? null;
+
+      if (!finalCouponTransactionId && pricing.coupon) {
+        const [couponUsage] = await tx
+          .insert(couponTransaction)
+          .values({
+            userId,
+            couponId: pricing.coupon.id,
+            code: pricing.coupon.code,
+            isDiscountPercentage: pricing.coupon.isDiscountPercentage,
+            discountPercentage: pricing.coupon.discountPercentage,
+            discountFixedAmount: pricing.coupon.discountFixedAmount,
+          })
+          .returning({ id: couponTransaction.id });
+
+        finalCouponTransactionId = couponUsage.id;
+      }
+
       const insertedOrder = await tx
         .insert(order)
         .values({
           userId,
           status: "paid",
           totalAmountPaid: safeAmount,
-          couponTransactionId: couponTransactionId ?? null,
+          couponTransactionId: finalCouponTransactionId,
           addressLine1: address.addressLine1,
           addressLine2: address.addressLine2,
           city: address.city,
@@ -171,10 +320,8 @@ export async function createOrder({
 
       orderId = insertedOrder[0].id;
 
-      orderItemsToInsert = items.map((item) => {
-        const variantId =
-          (item as any).productVarientId || (item as any).productId;
-        const p = productMap.get(variantId);
+      orderItemsToInsert = pricing.items.map((item) => {
+        const p = productMap.get(item.productVarientId);
 
         if (!p || !p.name || !p.slug || p.basePrice == null) {
           throw new Error("Invalid product data");
@@ -288,6 +435,7 @@ export async function createOrder({
     return {
       success: true,
       orderId: result.orderId,
+      amount: safeAmount,
     };
   } catch (error) {
     console.error("Order creation failed:", error);
