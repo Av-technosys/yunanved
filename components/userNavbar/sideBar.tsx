@@ -69,7 +69,7 @@ export function SidebarNavSheet() {
               <div className="mt-2 ml-4 flex flex-col gap-2 text-lg text-gray-300">
                 {categories.map((cat, i) => (
                   <Link
-                    href={`/category/${cat.toLowerCase().replace(/\s+/g, "-")}`}
+                    href={`/category?cat=${cat.toLowerCase().replace(/\s+/g, "-")}`}
                     key={i}
                     className=""
                   >

@@ -8,8 +8,21 @@ import {
 import { couponTransaction, user } from "./userSchema";
 import { productVariant } from "./productSchema";
 import { text } from "drizzle-orm/pg-core";
-import { orderStatusEnum , returnRequestStatusEnum, cancelRequestStatusEnum } from "./enum";
+import { orderStatusEnum, returnRequestStatusEnum, cancelRequestStatusEnum } from "./enum";
 import { ORDER_STATUS } from "@/const";
+
+export const shippingToken = pgTable("shipping_token", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  token: varchar("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  email: varchar("email"),
+  createdAt: timestamp("created_at").notNull().defaultNow()
+});
+
+
+
 // ----------------------
 // Orders Table
 // ----------------------
@@ -35,6 +48,29 @@ export const order = pgTable("order", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+
+export const shipment = pgTable("shipment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id").references(() => order.id),
+  shipmentId: varchar("shipment_id").notNull(),
+  shipmentOrderId: varchar("shipment_order_id").notNull(),
+  awbCode: varchar("awb_code").notNull(),
+  courierName: varchar("courier_name").notNull(),
+  pickupStatus: varchar("pickup_status").notNull(),
+  trackingStatus: varchar("tracking_status").notNull(),
+  labelUrl: varchar("label_url").notNull(),
+  invoiceUrl: varchar("invoice_url").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow()
+})
+
+export const shippingTrackingLogs = pgTable("shipping_tracking_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  shipmentId: uuid("shipment_id").notNull().references(() => shipment.id),
+  status: varchar("status").notNull(),
+  location: varchar("location"),
+  remark: varchar("remark"),
+  createdAt: timestamp("created_at").notNull().defaultNow()
+})
 // ----------------------
 // Order Items Table
 // ----------------------

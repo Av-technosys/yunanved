@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { RefreshCw, Star, Truck, Undo2 } from "lucide-react";
+import { Minus, Plus, RefreshCw, Star, Trash2, Truck, Undo2 } from "lucide-react";
 import { ProductCard } from "@/components/productCard";
 import { Button } from "@/components/ui";
 import { useRef, useState } from "react";
@@ -13,10 +13,12 @@ import ReviewCard from "../reviewCard";
 import { useRouter } from "next/navigation";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 import { useCartStore } from "@/store/cartStore";
-import { removeCartItem } from "@/helper";
+import { decreaseCartItem, increaseCartItem, removeCartItem } from "@/helper";
+import { useCheckoutStore } from "@/store/checkoutStore";
 import { toast } from "sonner";
 import { startTransition } from "react";
 import StarRatings from "react-star-ratings";
+
 const ProductClient = ({
   productInfo: initialProduct,
   variants = [],
@@ -25,18 +27,24 @@ const ProductClient = ({
 }: any) => {
   const router = useRouter();
   const { userDetails } = useClientSideUser();
+  const initializeCheckout = useCheckoutStore(
+    (state) => state.initializeCheckout,
+  );
   const [activeVariant, setActiveVariant] = useState(initialProduct);
   const [bannerImage, setBannerImage] = useState<any>(
     activeVariant.bannerImage,
   );
   const [isAdding, setIsAdding] = useState(false);
   const clickLock = useRef(false);
-  const { handleAddToCart } = useAddToCart(userDetails?.id);
+  const { handleAddToCart } = useAddToCart();
   const items = useCartStore((state) => state.items) || [];
   const removeItem = useCartStore((state) => state.removeItem);
+  const increase = useCartStore((state) => state.increase);
+  const decrease = useCartStore((state) => state.decrease);
   const userId = userDetails?.id;
 
-  const isInCart = items.some((i) => i.productId === activeVariant.id);
+  const cartItem = items.find((i) => i.productId === activeVariant.id);
+  const isInCart = Boolean(cartItem);
   const productDetailsForCart = {
     productId: activeVariant.id,
     sku: activeVariant.sku,
@@ -67,10 +75,43 @@ const ProductClient = ({
 
     startTransition(async () => {
       try {
-        await removeCartItem(userId, item.productId);
+        const result = await removeCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to remove item");
       } catch {
         useCartStore.getState().addItem(item);
         toast.error("Failed to remove item");
+      }
+    });
+  };
+
+  const handleIncrease = (item: any) => {
+    increase(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        const result = await increaseCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to update quantity");
+      } catch {
+        decrease(item.productId, item.attributes);
+        toast.error("Failed to update quantity");
+      }
+    });
+  };
+
+  const handleDecrease = (item: any) => {
+    decrease(item.productId, item.attributes);
+
+    startTransition(async () => {
+      try {
+        const result = await decreaseCartItem(item.productId);
+        if (!result?.success) throw new Error("Failed to update quantity");
+      } catch {
+        if (item.quantity <= 1) {
+          useCartStore.getState().addItem(item);
+        } else {
+          increase(item.productId, item.attributes);
+        }
+        toast.error("Failed to update quantity");
       }
     });
   };
@@ -88,6 +129,22 @@ const ProductClient = ({
     }
   };
 
+  const handleBuyNow = () => {
+    initializeCheckout({
+      items: [
+        {
+          productId: activeVariant.id,
+          slug: activeVariant.slug,
+          quantity: 1,
+          price: activeVariant.basePrice || 0,
+        },
+      ],
+      total: activeVariant.basePrice || 0,
+      userId,
+    });
+
+    router.push("/checkout");
+  };
   const handleVariantChange = (variant: any) => {
     setActiveVariant(variant);
     setBannerImage(variant.bannerImage);
@@ -176,31 +233,58 @@ const ProductClient = ({
             />
 
             <div className="flex gap-4 mt-2">
-              <Button
-                onClick={() => {
-                  if (isInCart) {
-                    handleRemove();
-                  } else {
-                    handleClick();
-                  }
-                }}
-                disabled={isAdding || !activeVariant.isInStock}
-                variant={isInCart ? "outline" : "default"}
-                className={`flex-1 rounded-full font-medium transition
+              {isInCart ? (
+                <div className="flex flex-1 items-center gap-2">
+                  <div className="flex flex-1 items-center justify-center rounded-full border bg-gray-50 px-2 py-1">
+                    <button
+                      type="button"
+                      onClick={() => handleDecrease(cartItem)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="min-w-8 text-center text-sm font-semibold">
+                      {cartItem?.quantity ?? 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleIncrease(cartItem)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    onClick={handleRemove}
+                    aria-label="Remove from cart"
+                    className="rounded-full"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleClick}
+                  disabled={isAdding || !activeVariant.isInStock}
+                  variant="default"
+                  className={`flex-1 rounded-full font-medium transition
     ${isAdding || !activeVariant.isInStock ? "opacity-70 pointer-events-none" : ""}
   `}
-              >
-                {activeVariant.isInStock
-                  ? isInCart
-                    ? "Remove"
-                    : isAdding
+                >
+                  {activeVariant.isInStock
+                    ? isAdding
                       ? "Adding..."
                       : "Add to Cart"
-                  : "Out of Stock"}
-              </Button>
+                    : "Out of Stock"}
+                </Button>
+              )}
               <Button
-                variant={"default"}
+                variant="default"
                 disabled={!activeVariant.isInStock}
+                onClick={handleBuyNow}
                 className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600 disabled:opacity-50"
               >
                 Buy Now
@@ -243,16 +327,16 @@ const ProductClient = ({
 export default ProductClient;
 
 function ProductReview({ activeVariant }: { activeVariant: any }) {
-  const rating = Number(activeVariant.rating) || 0;
+  const rawRating = Number(activeVariant.rating) || 0;
+  const rating = rawRating >= 100 ? rawRating / 100 : rawRating;
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      
       {/* ⭐ Stars */}
       <StarRatings
         rating={rating}
-        starRatedColor="#facc15"   // yellow-400
-        starEmptyColor="#e5e7eb"   // gray-200
+        starRatedColor="#facc15" // yellow-400
+        starEmptyColor="#e5e7eb" // gray-200
         numberOfStars={5}
         starDimension="18px"
         starSpacing="2px"
@@ -260,9 +344,7 @@ function ProductReview({ activeVariant }: { activeVariant: any }) {
       />
 
       {/* ⭐ Rating number */}
-      <span className="font-medium text-gray-800">
-        {rating.toFixed(1)}
-      </span>
+      <span className="font-medium text-gray-800">{rating.toFixed(1)}</span>
 
       {/* 📝 Review count */}
       <span className="text-gray-400">

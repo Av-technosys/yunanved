@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { NEXT_PUBLIC_RAZORPAY_KEY_ID } from "@/env";
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -25,31 +27,19 @@ export const loadRazorpayScript = (): Promise<boolean> => {
 
 /**
  * Opens Razorpay Checkout
- */export const initiateRazorpayPayment = async ({
-  amount,
+ */
+export const initiateRazorpayPayment = async ({
   name,
   description,
   items,
-  userId,
   address,
-  couponId,
   couponCode,
-  isDiscountPercentage,
-  discountPercentage,
-  discountFixedAmount,
 }: {
-  amount: number;
   name: string;
   description: string;
   items: any[];
-  userId: string;
   address: any;
-  couponId?: string | null;  
-  couponCode? : string | null;
-  isDiscountPercentage?: boolean;
-  discountPercentage?: number | null;
-  discountFixedAmount?: number | null;
-
+  couponCode?: string | null;
 }) => {
   const scriptLoaded = await loadRazorpayScript();
 
@@ -61,7 +51,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   const res = await fetch("/api/razorpay/order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({ items, couponCode }),
   });
 
   const order = await res.json();
@@ -72,7 +62,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   // 2️⃣ Open Razorpay Checkout
   return new Promise((resolve, reject) => {
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: "INR",
       name,
@@ -88,22 +78,16 @@ export const loadRazorpayScript = (): Promise<boolean> => {
             body: JSON.stringify({
               ...response,
               items,
-              userId,
               address,
-              amount,
-              couponId,
               couponCode,
-              isDiscountPercentage,
-              discountPercentage,
-              discountFixedAmount
             }),
           });
- 
+
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
             resolve(verifyData);
-            
+
           } else {
             reject("Payment verification failed");
           }
@@ -117,7 +101,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
       },
     };
 
-  const razor = new window.Razorpay(options);
+    const razor = new window.Razorpay(options);
 
     razor.on("payment.failed", function (response: any) {
       reject(response.error);

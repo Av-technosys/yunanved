@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card } from "@/components/ui";
-import {AddressCard} from "../address/AddressCard";
+import { AddressCard } from "../address/AddressCard";
 import { Plus } from "lucide-react";
 
-export  function AddressList({
+export function AddressList({
   addresses,
   onAdd,
   onEdit,
@@ -15,6 +15,7 @@ export  function AddressList({
         {addresses.map((addr: any) => (
           <AddressCard
             key={addr.id}
+            isPrimary={addr.isPrimary}
             address={addr}
             onEdit={onEdit}
             onDelete={onDelete}

@@ -3,7 +3,7 @@
 
 import { Card } from "@/components/ui";
 import { Button } from "@/components/ui";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, ExternalLink, Loader2, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   AlertDialog,
@@ -16,7 +16,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { startTransition, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createCancelRequest } from "@/helper";
 import {
@@ -26,6 +26,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import axios from "axios";
 
 export function OrderStatusCard({ orderData, setOrderReview }: any) {
   const cancel = orderData.cancelRequest;
@@ -47,12 +48,12 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
       if (res?.success) {
         toast.success("Cancellation request submitted");
         startTransition(() => {
-        window.location.reload();
-        });     
-       } else {
+          window.location.reload();
+        });
+      } else {
         toast.error(
           res?.error ||
-            "Cancellation already requested. Please wait for admin approval.",
+          "Cancellation already requested. Please wait for admin approval.",
         );
       }
     } catch (error) {
@@ -106,9 +107,8 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
             <div key={i} className="relative flex gap-4 items-start">
               {i !== arr.length - 1 && (
                 <div
-                  className={`absolute left-[11px] top-6 w-[2px] h-10 ${
-                    step.done ? "bg-[#00B050]" : "bg-gray-200"
-                  }`}
+                  className={`absolute left-[11px] top-6 w-[2px] h-10 ${step.done ? "bg-[#00B050]" : "bg-gray-200"
+                    }`}
                 />
               )}
 
@@ -123,9 +123,8 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
 
               <div>
                 <p
-                  className={`font-semibold ${
-                    step.done ? "text-gray-800" : "text-gray-400"
-                  }`}
+                  className={`font-semibold ${step.done ? "text-gray-800" : "text-gray-400"
+                    }`}
                 >
                   {step.label}
                 </p>
@@ -209,45 +208,45 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
 
               <div className="mt-4">
 
-  <Select value={reason} onValueChange={setReason}>
+                <Select value={reason} onValueChange={setReason}>
 
-    <SelectTrigger className="w-full">
-      <SelectValue placeholder="Select reason" />
-    </SelectTrigger>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select reason" />
+                  </SelectTrigger>
 
-    <SelectContent>
+                  <SelectContent>
 
-      <SelectItem value="Ordered by mistake">
-        Ordered by mistake
-      </SelectItem>
+                    <SelectItem value="Ordered by mistake">
+                      Ordered by mistake
+                    </SelectItem>
 
-      <SelectItem value="Found cheaper elsewhere">
-        Found cheaper elsewhere
-      </SelectItem>
+                    <SelectItem value="Found cheaper elsewhere">
+                      Found cheaper elsewhere
+                    </SelectItem>
 
-      <SelectItem value="Delivery taking too long">
-        Delivery taking too long
-      </SelectItem>
+                    <SelectItem value="Delivery taking too long">
+                      Delivery taking too long
+                    </SelectItem>
 
-      <SelectItem value="Other">
-        Other
-      </SelectItem>
+                    <SelectItem value="Other">
+                      Other
+                    </SelectItem>
 
-    </SelectContent>
+                  </SelectContent>
 
-  </Select>
+                </Select>
 
-  {/* 🔥 Show textarea if "Other" */}
-  {reason === "Other" && (
-    <textarea
-      className="w-full border rounded-lg p-2 mt-3"
-      placeholder="Please enter your reason"
-      value={customReason}
-      onChange={(e) => setCustomReason(e.target.value)}
-    />
-  )}
+                {/* 🔥 Show textarea if "Other" */}
+                {reason === "Other" && (
+                  <textarea
+                    className="w-full border rounded-lg p-2 mt-3"
+                    placeholder="Please enter your reason"
+                    value={customReason}
+                    onChange={(e) => setCustomReason(e.target.value)}
+                  />
+                )}
 
-</div>
+              </div>
 
               <AlertDialogFooter>
                 <AlertDialogCancel>Close</AlertDialogCancel>
@@ -285,6 +284,102 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
           </Button>
         )}
       </div>
+      <ShipmentTracking orderId={orderData.id} />
     </Card>
+  );
+}
+
+
+
+function ShipmentTracking({
+  orderId,
+}: any) {
+  const [awbCode, setAwbCode] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getAwb = async () => {
+      try {
+        setIsLoading(true);
+
+        const res = await axios.get(
+          `/api/orders/${orderId}/awb`
+        );
+
+        setAwbCode(res.data?.awbCode || "");
+      } catch (error) {
+        console.error(
+          "Failed to fetch AWB",
+          error
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getAwb();
+  }, [orderId]);
+
+  const handleTrackOrder = () => {
+    if (!awbCode) return;
+
+    window.open(
+      `https://tracking.shiprocket.in/?awb=${awbCode}`,
+      "_blank"
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Loading tracking details...
+      </div>
+    );
+  }
+
+  if (!awbCode) {
+    return (
+      <div className="rounded-xl border p-4">
+        <div className="flex items-center gap-2">
+          <Truck className="h-5 w-5" />
+
+          <div>
+            <p className="font-medium">
+              Tracking not available yet
+            </p>
+
+            <p className="text-sm text-muted-foreground">
+              Courier has not been assigned.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleTrackOrder}
+      className="w-full rounded-xl border p-4 text-left transition hover:bg-muted"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Truck className="h-5 w-5" />
+
+          <div>
+            <p className="font-medium">
+              Track Shipment
+            </p>
+
+            <p className="text-sm text-muted-foreground">
+              AWB: {awbCode}
+            </p>
+          </div>
+        </div>
+
+        <ExternalLink className="h-4 w-4" />
+      </div>
+    </button>
   );
 }

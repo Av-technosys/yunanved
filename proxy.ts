@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { ADMIN_EMAILS } from "@/const/globalconst";
 
-export function proxy(req: NextRequest) {
+const adminEmails = new Set(ADMIN_EMAILS.map((email) => email.toLowerCase()));
+
+function notFound(req: NextRequest) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/admin-not-found";
+    url.search = "";
+
+    return NextResponse.rewrite(url, { status: 404 });
+}
+
+export async function proxy(req: NextRequest) {
     // Check for NextAuth session cookies (supports both HTTP and HTTPS configurations)
     const sessionToken = req.cookies.get("next-auth.session-token") || req.cookies.get("__Secure-next-auth.session-token");
     const isAuth = !!sessionToken;
@@ -15,7 +27,8 @@ export function proxy(req: NextRequest) {
         pathname.startsWith("/reset-password-email") ||
         pathname.startsWith("/reset-password-otp");
 
-    const isProtectedRoute = pathname === "/checkout" || pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
+    const isAdminRoute = pathname.startsWith("/admin");
+    const isProtectedRoute = pathname === "/checkout" || pathname.startsWith("/dashboard") || isAdminRoute;
 
     if (isAuthPage) {
         if (isAuth) {
@@ -23,6 +36,15 @@ export function proxy(req: NextRequest) {
         }
     } else if (isProtectedRoute && !isAuth) {
         return NextResponse.redirect(new URL("/sign-in", req.url));
+    }
+
+    if (isAdminRoute) {
+        const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+        const email = token?.email?.toLowerCase();
+
+        if (!email || !adminEmails.has(email)) {
+            return notFound(req);
+        }
     }
 
     return NextResponse.next();

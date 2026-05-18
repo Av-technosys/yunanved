@@ -147,6 +147,12 @@ export const pageSize = 4
 export const canResendOTPInterval = 10; // in seconds
 export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifier);
 
+export const ADMIN_EMAILS = [
+  "piyushkharejhs@gmail.com",
+  "info@avtechnosys.com",
+  "admin@yunanved.com",
+] as const;
+
 export const ORDER_STATUS = {
   PENDING: "pending",
   Paid:"paid",

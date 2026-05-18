@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import { featuredProductVarient, productVariant, review } from "@/db";
+import { featuredProductVarient, productVariant } from "@/db";
 import { db } from "@/lib/db";
-import { avg, eq, sql,count } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 export async function getFeaturedProducts() {
   try {
@@ -15,26 +15,29 @@ export async function getFeaturedProducts() {
         sku: productVariant.sku,
         description: productVariant.description,
         basePrice: productVariant.basePrice,
-        rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
-        reviewCount: count(review.id),
+        rating: productVariant.rating,
+        reviewCount: productVariant.reviewCount,
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
         strikethroughPrice: productVariant.strikethroughPrice,
+        isInStock: productVariant.isInStock
       })
       .from(featuredProductVarient)
       .innerJoin(
         productVariant,
         eq(featuredProductVarient.productVarientId, productVariant.id),
-      ) .leftJoin(
-        review,
-        eq(review.productVarientId, productVariant.id)
       )
-
-      .groupBy(productVariant.id, featuredProductVarient.id);
   } catch (error) {
     throw error;
   }
 }
+
+
+// ✅ cached function
+export const getCachedFeaturedProducts = unstable_cache(getFeaturedProducts, ["featured-products"], {
+  tags: ["featured-products"],
+  revalidate: 7200, // 2 hour
+});
 
 export async function deleteFeaturedProduct(id: string) {
   try {

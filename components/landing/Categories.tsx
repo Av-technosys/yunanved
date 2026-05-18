@@ -50,7 +50,7 @@ export async function Categories() {
 
 const CategoryCard = ({ cat }: { cat: any }) => {
   return (
-    <Link href={`category/${cat.slug}`}>
+    <Link href={`/category?cat=${cat.slug}`}>
       <div className="flex flex-col items-center group cursor-pointer">
         {/* Gradient Ring */}
         <div className="relative p-[3px] rounded-full bg-linear-to-tr from-yellow-400 via-red-500 to-purple-600 transition-transform duration-300 group-hover:scale-110">

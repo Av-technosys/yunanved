@@ -137,9 +137,11 @@ export async function deleteAddress(id: string) {
   }
 
   if (address.isPrimary) {
-    throw new Error(
-      "You cannot delete the default address. Please set another address as default first."
-    );
+    return {
+      success: false,
+      message:
+        "You cannot delete the default address. Please set another address as default first.",
+    };
   }
 
   await db.delete(userAddress).where(eq(userAddress.id, id));

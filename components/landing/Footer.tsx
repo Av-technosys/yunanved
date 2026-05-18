@@ -82,7 +82,7 @@ export const Footer = () => {
               ].map((item) => (
                 <li key={item}>
                   <Link
-                    href={`/category/${item.toLowerCase()}`}
+                    href={`/category?cat=${item.toLowerCase()}`}
                     className="hover:text-black transition"
                   >
                     {item}

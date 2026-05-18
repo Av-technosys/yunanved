@@ -33,28 +33,28 @@ const ORDER_STATUS_OPTIONS = Object.values(ORDER_STATUS).map((status) => ({
 
 const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
   const startIndex = (page - 1) * pageSize;
-   const now = new Date();
-   const currentDate = now.toLocaleDateString('en-IN');
-   const currentTime = now.toLocaleTimeString('en-IN');
+  const now = new Date();
+  const currentDate = now.toLocaleDateString('en-IN');
+  const currentTime = now.toLocaleTimeString('en-IN');
 
   const [isPending, startTransition] = useTransition();
- 
- 
+
+
 
   const router = useRouter();
   const pathname = usePathname();
 
-  const orderStatusEmailSender = async (order:any,value:any)=>{
-     const userDetails:any = await getUserEmailByUserId(order.userId);
-     if(value == 'processing'){
-      await sendOrderConfirmationEmail(userDetails?.email, order?.id ,currentDate,currentTime, 'Online Payment', '7-8 days from order date', order?.totalAmountPaid.toString(), `${order?.addressLine1} ${order?.addressLine2}, ${order?.city}, ${order?.state}, ${order?.postalCode}`);
-     }else if(value == 'canceled'){
+  const orderStatusEmailSender = async (order: any, value: any) => {
+    const userDetails: any = await getUserEmailByUserId(order.userId);
+    if (value == 'processing') {
+      await sendOrderConfirmationEmail(userDetails?.email, order?.id, currentDate, currentTime, 'Online Payment', '7-8 days from order date', order?.totalAmountPaid.toString(), `${order?.addressLine1} ${order?.addressLine2}, ${order?.city}, ${order?.state}, ${order?.postalCode}`);
+    } else if (value == 'canceled') {
       await sendOrderCancellationEmail(userDetails?.email, order?.id);
-     }else if (value == 'shipped') {
+    } else if (value == 'shipped') {
       await sendOrderShippedEmail(userDetails?.email, order?.id, 'Blue Dart', '987654321');
-     }else if(value == 'delivered'){
+    } else if (value == 'delivered') {
       await sendOrderStatusEmail(userDetails?.email, order?.id);
-     }
+    }
   }
 
 
@@ -102,7 +102,7 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
                         onValueChange={(value) => {
                           startTransition(() => {
                             updateOrderStatus(order.id, value);
-                            orderStatusEmailSender(order,value);
+                            orderStatusEmailSender(order, value);
                           });
                         }}
                       />

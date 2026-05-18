@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Loader2, RotateCcw, Star, Trash2 } from "lucide-react"
-import Image from "next/image"
-import { NEXT_PUBLIC_S3_BASE_URL } from "@/env"
-import {CartItemSkeleton} from "./CartItemSkeleton"
+import { Loader2, RotateCcw, Star, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
+import { CartItemSkeleton } from "./CartItemSkeleton";
 
-export  function CartItemsSection({
+export function CartItemsSection({
   items,
   productMap,
   isFetching,
@@ -17,19 +17,21 @@ export  function CartItemsSection({
     return (
       <div className="flex flex-col items-center justify-center py-2 gap-2">
         <>
-    <CartItemSkeleton />
-    <CartItemSkeleton />
-    <CartItemSkeleton />
-  </>
+          <CartItemSkeleton />
+          <CartItemSkeleton />
+          <CartItemSkeleton />
+        </>
       </div>
-    )
+    );
   }
 
-  return(
-  
-  items.map((item: any) => {
-    const live = productMap.get(item.productId)
-    if (!live) return null
+  return items.map((item: any) => {
+    const live = productMap.get(item.productId);
+    if (!live) return null;
+
+    const rating = Number(live.rating || 0);
+    const safeRating = rating > 5 ? rating / 100 : rating;
+    if (!live) return null;
 
     return (
       <div
@@ -39,9 +41,7 @@ export  function CartItemsSection({
         <hr className="mb-4" />
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 gap-4">
-
           <div className="flex flex-1 items-start gap-4">
-
             <div className="relative h-24 w-24 flex-shrink-0">
               <Image
                 src={`${NEXT_PUBLIC_S3_BASE_URL}/${live.bannerImage}`}
@@ -52,15 +52,14 @@ export  function CartItemsSection({
             </div>
 
             <div className="flex flex-col gap-1">
-
               <div className="flex items-center gap-2">
                 <p className="font-semibold text-gray-900 text-base">
                   {live.name}
                 </p>
 
-                {live.rating > 0 && (
+                {safeRating > 0 && (
                   <div className="flex items-center gap-1 bg-green-100 px-1.5 py-0.5 rounded text-[10px] font-bold text-green-700">
-                    {live.rating}
+                    {safeRating.toFixed(1)}
                     <Star size={10} fill="currentColor" />
                   </div>
                 )}
@@ -71,9 +70,7 @@ export  function CartItemsSection({
               </p>
 
               <div className="flex items-center gap-4 mt-1">
-                <p className="font-bold text-black">
-                  ₹{live.basePrice}
-                </p>
+                <p className="font-bold text-black">₹{live.basePrice}</p>
 
                 {live.isReturnable ? (
                   <span className="flex items-center gap-1 text-[10px] text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full">
@@ -85,14 +82,11 @@ export  function CartItemsSection({
                   </span>
                 )}
               </div>
-
             </div>
           </div>
 
           <div className="flex items-center justify-between w-full md:w-auto gap-6">
-
             <div className="flex items-center gap-3 bg-gray-50 border rounded-full px-2 py-1">
-
               <button
                 disabled={isPending}
                 onClick={() => handleDecrease(item)}
@@ -112,7 +106,6 @@ export  function CartItemsSection({
               >
                 +
               </button>
-
             </div>
 
             <button
@@ -122,12 +115,9 @@ export  function CartItemsSection({
             >
               <Trash2 size={18} />
             </button>
-
           </div>
-
         </div>
       </div>
-    )
-  })
-)
+    );
+  });
 }

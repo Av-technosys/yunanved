@@ -44,7 +44,7 @@ export function SearchWithIcon() {
     if (item.type === "product") {
       router.push(`/product/${item.slug}`);
     } else {
-      router.push(`/category/${item.slug}`);
+      router.push(`/category?cat=${item.slug}`);
     }
   };
 

@@ -8,6 +8,7 @@ import { NavbarCategoryRibbon } from "@/components/landing";
 import Collections from "@/components/landing/Collections";
 
 export default function Home() {
+
   return (
     <div className="flex px-4 max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
       <NavbarCategoryRibbon />
@@ -21,7 +22,7 @@ export default function Home() {
           <FeaturedProducts />
         </div>
       </div>
-      
+
       <Newsletter />
       <FAQ />
     </div>

@@ -101,9 +101,9 @@ export default function AddressSelector({
                     </Label>
                   </div>
 
-                  <Button variant="link" size="sm">
+                  <Link href={`/dashboard/address/`} className="text-sm hover:underline">
                     Edit
-                  </Button>
+                  </Link>
                 </CardContent>
               </Card>
             );

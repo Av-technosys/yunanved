@@ -6,58 +6,150 @@ import { eq, and, sql } from "drizzle-orm";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
 
 
+// export async function addProductToUserCart(
+//   userId: string,
+//   productId: string,
+//   quantity: number,
+// ) {
+//   const userInfo = await getServerSideUser();
+//   if (!userInfo?.id) {
+//     console.log("User not logged in, skipping DB transaction");
+//     return { 
+//       success: true,
+//       userIsNotLoggedIn: true,       
+//      };
+//   }
+
+//   const tempUserId = userInfo?.id;
+
+//   try {
+//     return await db.transaction(async (tx) => {
+//       // 0. Ensure user exists (especially for tempUserId in dev)
+//       if (userId === tempUserId) {
+//         const userExists = await tx
+//           .select()
+//           .from(user)
+//           .where(eq(user.id, userId))
+//           .then((r) => r[0]);
+//         if (!userExists) {
+//           await tx.insert(user).values({
+//             id: userId,
+//             first_name: "Guest",
+//             last_name: "User",
+//             email: "guest@example.com",
+//           });
+//         }
+//       }
+
+//       let existingCart = await tx
+//         .select()
+//         .from(cart)
+//         .where(eq(cart.userId, userId))
+//         .then((r) => r[0]);
+
+//       if (!existingCart) {
+//         const created = await tx.insert(cart).values({ userId }).returning();
+
+//         existingCart = created[0];
+//       }
+
+//       //  Locking the cart row if A and B have the same cart, only A will proess and B will wait until A is done.
+//       await tx.execute(
+//         sql`SELECT id FROM cart WHERE id = ${existingCart.id} FOR UPDATE`,
+//       );
+
+//       const existingCartItem = await tx
+//         .select()
+//         .from(cartItem)
+//         .where(
+//           and(
+//             eq(cartItem.cartId, existingCart.id),
+//             eq(cartItem.productVarientId, productId),
+//           ),
+//         )
+//         .then((r) => r[0]);
+
+//       if (existingCartItem) {
+//         await tx
+//           .update(cartItem)
+//           .set({
+//             quantity: sql`${cartItem.quantity} + ${quantity}`,
+//           })
+//           .where(eq(cartItem.id, existingCartItem.id));
+//       } else {
+//         await tx.insert(cartItem).values({
+//           cartId: existingCart.id,
+//           productVarientId: productId,
+//           quantity,
+//         });
+//       }
+
+//       return { success: true };
+//     });
+//   } catch (err) {
+//     console.error("❌ Add to cart failed:", err);
+//     return { success: false };
+//   }
+// }
 export async function addProductToUserCart(
-  userId: string,
   productId: string,
   quantity: number,
 ) {
   const userInfo = await getServerSideUser();
+
+  // If user is not logged in, skip DB transaction
   if (!userInfo?.id) {
     console.log("User not logged in, skipping DB transaction");
-    return { 
+    return {
       success: true,
-      userIsNotLoggedIn: true,       
-     };
+      userIsNotLoggedIn: true,
+    };
   }
 
-  const tempUserId = userInfo?.id;
+  // Always use authenticated user's ID
+  const actualUserId = userInfo.id;
 
   try {
     return await db.transaction(async (tx) => {
-      // 0. Ensure user exists (especially for tempUserId in dev)
-      if (userId === tempUserId) {
-        const userExists = await tx
-          .select()
-          .from(user)
-          .where(eq(user.id, userId))
-          .then((r) => r[0]);
-        if (!userExists) {
-          await tx.insert(user).values({
-            id: userId,
-            first_name: "Guest",
-            last_name: "User",
-            email: "guest@example.com",
-          });
-        }
+      // 0. Ensure user exists in DB
+      const userExists = await tx
+        .select()
+        .from(user)
+        .where(eq(user.id, actualUserId))
+        .then((r) => r[0]);
+
+      if (!userExists) {
+        await tx.insert(user).values({
+          id: actualUserId,
+          first_name: "Guest",
+          last_name: "User",
+          email: "guest@example.com",
+        });
       }
 
+      // 1. Find existing cart using authenticated user's ID
       let existingCart = await tx
         .select()
         .from(cart)
-        .where(eq(cart.userId, userId))
+        .where(eq(cart.userId, actualUserId))
         .then((r) => r[0]);
 
+      // 2. Create cart if not found
       if (!existingCart) {
-        const created = await tx.insert(cart).values({ userId }).returning();
+        const created = await tx
+          .insert(cart)
+          .values({ userId: actualUserId })
+          .returning();
 
         existingCart = created[0];
       }
 
-      //  Locking the cart row if A and B have the same cart, only A will proess and B will wait until A is done.
+      // 3. Lock cart row to avoid race conditions
       await tx.execute(
         sql`SELECT id FROM cart WHERE id = ${existingCart.id} FOR UPDATE`,
       );
 
+      // 4. Check if product already exists in cart
       const existingCartItem = await tx
         .select()
         .from(cartItem)
@@ -69,6 +161,7 @@ export async function addProductToUserCart(
         )
         .then((r) => r[0]);
 
+      // 5. Update quantity or insert new item
       if (existingCartItem) {
         await tx
           .update(cartItem)
@@ -91,11 +184,17 @@ export async function addProductToUserCart(
     return { success: false };
   }
 }
-export async function increaseCartItem(userId: string, productId: string) {
+export async function increaseCartItem(productId: string) {
+  const userInfo = await getServerSideUser();
+
+  if (!userInfo?.id) {
+    return { success: false, userIsNotLoggedIn: true };
+  }
+
   const existingCart = await db
     .select()
     .from(cart)
-    .where(eq(cart.userId, userId))
+    .where(eq(cart.userId, userInfo.id))
     .then((r) => r[0]);
 
   if (!existingCart) return { success: false };
@@ -115,12 +214,18 @@ export async function increaseCartItem(userId: string, productId: string) {
   return { success: true };
 }
 
-export async function decreaseCartItem(userId: string, productId: string) {
+export async function decreaseCartItem(productId: string) {
   try {
+    const userInfo = await getServerSideUser();
+
+    if (!userInfo?.id) {
+      return { success: false, userIsNotLoggedIn: true };
+    }
+
     const existingCart = await db
       .select({ id: cart.id })
       .from(cart)
-      .where(eq(cart.userId, userId))
+      .where(eq(cart.userId, userInfo.id))
       .then((r) => r[0]);
 
     if (!existingCart) return { success: false };
@@ -155,12 +260,18 @@ export async function decreaseCartItem(userId: string, productId: string) {
   }
 }
 
-export async function removeCartItem(userId: string, productId: string) {
+export async function removeCartItem(productId: string) {
   try {
+    const userInfo = await getServerSideUser();
+
+    if (!userInfo?.id) {
+      return { success: false, userIsNotLoggedIn: true };
+    }
+
     const existingCart = await db
       .select({ id: cart.id })
       .from(cart)
-      .where(eq(cart.userId, userId))
+      .where(eq(cart.userId, userInfo.id))
       .then((r) => r[0]);
 
     if (!existingCart) return { success: false };
@@ -181,9 +292,11 @@ export async function removeCartItem(userId: string, productId: string) {
   }
 }
 
-export async function getUserCart(userId: string) {
+export async function getUserCart(userId?: string) {
+  const userInfo = await getServerSideUser();
+  const actualUserId = userInfo?.id ?? userId;
   
-  if (!userId) {
+  if (!actualUserId) {
     return {
       error: "User ID not provided. Unable to fetch profile."
     };
@@ -193,7 +306,7 @@ export async function getUserCart(userId: string) {
     const existingCart = await db
       .select()
       .from(cart)
-      .where(eq(cart.userId, userId))
+      .where(eq(cart.userId, actualUserId))
       .then((r) => r[0]);
 
     if (!existingCart) {

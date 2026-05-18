@@ -96,7 +96,7 @@ export const useCartStore = create<CartState>()(
 
       setCart: (items) =>
         set(() => ({
-          items, // 🔥 FULL REPLACE
+          items: Array.isArray(items) ? items : [],
         })),
       totalItems: () =>
         (Array.isArray(get().items) ? get().items : []).reduce((t, i) => t + i.quantity, 0),

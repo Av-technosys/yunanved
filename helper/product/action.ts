@@ -56,6 +56,10 @@ interface VariantInput {
   returnDays: number;
   replacementDays: number;
   attributes: { attribute: string; value: string }[];
+  length?: number;
+  width?: number;
+  height?: number;
+  weight?: number;
 }
 
 export async function createProduct(formData: FormData) {
@@ -112,6 +116,10 @@ export async function createProduct(formData: FormData) {
         replacementDays: v.replacementDays,
         rating: 0,
         reviewCount: 0,
+        length: v.length,
+        width: v.width,
+        height: v.height,
+        weight: v.weight,
       }));
 
       const insertedVariants = await tx
@@ -250,6 +258,10 @@ export async function updateProduct(formData: FormData): Promise<void> {
               returnDays: v.returnDays,
               replacementDays: v.replacementDays,
               updatedAt: new Date(),
+              length: v.length,
+              width: v.width,
+              height: v.height,
+              weight: v.weight
             })
             .where(eq(productVariant.id, vId));
         } else {
@@ -279,6 +291,10 @@ export async function updateProduct(formData: FormData): Promise<void> {
               replacementDays: v.replacementDays,
               rating: 0,
               reviewCount: 0,
+              length: v.length,
+              width: v.width,
+              height: v.height,
+              weight: v.weight
             })
             .returning({ id: productVariant.id });
           vId = created.id;
@@ -380,16 +396,15 @@ export async function getFullProduct(identifier: string) {
           isFreeDelivery: productVariant.isFreeDelivery,
           createdAt: productVariant.createdAt,
           updatedAt: productVariant.updatedAt,
-          rating: sql<number>`ROUND(COALESCE(${avg(review.rating)}, 0), 1)`,
-          reviewCount: count(review.id),
+          rating: productVariant.rating,
+          reviewCount: productVariant.reviewCount,
+          length: productVariant.length,
+          width: productVariant.width,
+          height: productVariant.height,
+          weight: productVariant.weight,
         })
         .from(productVariant)
-        .leftJoin(
-          review,
-          eq(review.productVarientId, productVariant.id)
-        )
-        .where(eq(productVariant.productId, productGroupId))
-        .groupBy(productVariant.id),
+        .where(eq(productVariant.productId, productGroupId)),
 
       db
         .select()
@@ -597,6 +612,7 @@ export async function getProductSimilarProducts(slug: string | any) {
 }
 
 export async function getProductReviews(slug: string | any) {
+  console.log("slug coming up for reviews:", slug)
   try {
     const v = await db.query.productVariant.findFirst({
       where: eq(productVariant.slug, slug),
@@ -638,6 +654,7 @@ export async function getProductReviews(slug: string | any) {
     return [];
   }
 }
+
 
 export async function getProductsForCart(productIds: string[]) {
   try {
@@ -682,7 +699,7 @@ export async function saveProductAttributes(productId: string, payload: any) {
 
 export async function getProductsByCategorySlug(slug: string) {
   try {
-    const products = await db
+    let products = await db
       .select({
         id: productVariant.id,
         name: productVariant.name,
@@ -692,6 +709,7 @@ export async function getProductsByCategorySlug(slug: string) {
         slug: productVariant.slug,
         sku: productVariant.sku,
         rating: productVariant.rating,
+        isInStock: productVariant.isInStock,
       })
       .from(productVariant)
       .innerJoin(product, eq(product.id, productVariant.productId))
@@ -700,9 +718,37 @@ export async function getProductsByCategorySlug(slug: string) {
       .where(eq(category.slug, slug))
       .limit(10);
 
+    if (products.length === 0) {
+      products = await db
+        .select({
+          id: productVariant.id,
+          name: productVariant.name,
+          basePrice: productVariant.basePrice,
+          strikethroughPrice: productVariant.strikethroughPrice,
+          bannerImage: productVariant.bannerImage,
+          slug: productVariant.slug,
+          sku: productVariant.sku,
+          rating: productVariant.rating,
+          isInStock: productVariant.isInStock,
+        })
+        .from(productVariant)
+        .limit(10);
+    }
+
+
     return products;
   } catch (error) {
     console.error(error);
+    return [];
+  }
+}
+
+export async function getAllProductSlugs() {
+  try {
+    const slugs = await db.select({ slug: productVariant.slug }).from(productVariant);
+    return slugs.map(s => s.slug);
+  } catch (error) {
+    console.error("Failed to get product slugs:", error);
     return [];
   }
 }

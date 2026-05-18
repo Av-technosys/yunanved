@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sql } from "drizzle-orm";
-import { user, review, reviewMedia } from "@/db";
+import { user, review, reviewMedia, productVariant } from "@/db";
 
 export async function toggleApproveReview(id: string) {
   try {
@@ -59,12 +59,25 @@ export async function getReviewStats() {
 
 export async function createReview(reviewData: any) {
   try {
-    const { userId, productVarientId, rating, message, media } = reviewData;
+    const { userId, productVarientId,
+      orderItemId,
+      rating, message, media } = reviewData;
 
-    
+
 
     if (!productVarientId) {
       throw new Error("Product Variant ID is required for review submission");
+    }
+
+    const existingReview = await db.query.review.findFirst({
+      where: eq(review.orderItemId, orderItemId),
+      columns: {
+        id: true,
+      },
+    });
+
+    if (existingReview) {
+      return { "message": "You have already reviewed this purchase." };
     }
     await db.transaction(async (tx) => {
       const userInfo = await tx.query.user.findFirst({
@@ -84,6 +97,7 @@ export async function createReview(reviewData: any) {
         .insert(review)
         .values({
           userId,
+          orderItemId,
           productVarientId: productVarientId,
           name: fullName || "Guest User",
           email: userInfo?.email || "",
@@ -101,6 +115,23 @@ export async function createReview(reviewData: any) {
           })),
         );
       }
+
+      const ratingStats = await tx
+        .select({
+          averageRating: sql<number>`COALESCE(AVG(${review.rating}), 0)`,
+          reviewCount: sql<number>`COUNT(*)`,
+        })
+        .from(review)
+        .where(eq(review.productVarientId, productVarientId));
+
+      await tx
+        .update(productVariant)
+        .set({
+          rating: Math.round(Number(ratingStats[0].averageRating) * 100),
+          reviewCount: Number(ratingStats[0].reviewCount),
+          updatedAt: new Date(),
+        })
+        .where(eq(productVariant.id, productVarientId));
     });
 
     return { success: true };
