@@ -9,16 +9,15 @@ import {
   FileText,
   User,
   MessageSquare,
-  Settings,
   Code,
   Feather,
   ShoppingCart,
   IndianRupee,
   LogOut,
   Package,
+  Mail,
 } from "lucide-react";
 import { SheetClose } from "@/components/ui/sheet";
-import { Button } from "../ui/button";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutGrid },
@@ -29,6 +28,7 @@ const navItems = [
   { label: "Review", href: "/admin/review", icon: MessageSquare },
   { label: "Payment", href: "/admin/payment", icon: IndianRupee },
   { label: "Contact Requests", href: "/admin/contact-request", icon: MessageSquare },
+  { label: "Subscribed Users", href: "/admin/subscriptions", icon: Mail },
 
   { label: "Cancel Requests", href: "/admin/cancel-request", icon: FileText },
   { label: "Return Requests", href: "/admin/return-request", icon: Package },

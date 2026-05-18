@@ -22,11 +22,16 @@ import {
 import { Slider } from "@/components/ui";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { getCategoryFilteredArray } from "@/helper/getCommaSepratedArray";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface SidebarFilterWebProps {
   categories?: Array<{ id: string; name: string; slug: string }>;
+}
+
+const stockFilterValues = ["in-stock", "out-of-stock"];
+
+function getFilterValues(value: string | null) {
+  return value?.split(",").filter(Boolean) || [];
 }
 
 export function SidebarFilterWeb({
@@ -42,18 +47,17 @@ export function SidebarFilterWeb({
   const searchQuery = search.toString();
 
   // Current selected filters from URL
-  const selectedFilters = getCategoryFilteredArray({
-    value: search.get("cat") || "",
-  });
+  const selectedFilters = getFilterValues(search.get("cat"));
 
   // Separate categories and stock filters
   const categoryFilterValuesFromUrl = selectedFilters.filter(
-    (item) => !["in-stock", "out-of-stock"].includes(item),
+    (item) => !stockFilterValues.includes(item),
   );
 
   const stockFilters = selectedFilters.filter((item) =>
-    ["in-stock", "out-of-stock"].includes(item),
+    stockFilterValues.includes(item),
   );
+  const skipNextUrlUpdateRef = useRef(true);
 
   // Local state
   const [selectedCategoriesClientArray, setSelectedCategoriesClientArray] =
@@ -94,6 +98,11 @@ export function SidebarFilterWeb({
       typeof window !== "undefined" &&
       !window.matchMedia("(min-width: 768px)").matches
     ) {
+      return;
+    }
+
+    if (skipNextUrlUpdateRef.current) {
+      skipNextUrlUpdateRef.current = false;
       return;
     }
 

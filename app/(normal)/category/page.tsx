@@ -51,6 +51,12 @@ interface CategoryPageProps {
 
 const Page = async ({ searchParams }: CategoryPageProps) => {
   const sp = await searchParams;
+  const filterKey = ["cat", "min", "max"]
+    .map((key) => {
+      const value = sp[key];
+      return Array.isArray(value) ? value.join(",") : value ?? "";
+    })
+    .join("|");
 
   const filters = parseFilters(sp);
   const selectedCategorySlugs = filters.cat;
@@ -79,7 +85,7 @@ const Page = async ({ searchParams }: CategoryPageProps) => {
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-4 gap-4 my-5 px-2 md:px-4 lg:px-0">
       <div className="hidden md:block col-span-1">
-        <SidebarFilterWeb categories={categories} />
+        <SidebarFilterWeb key={filterKey} categories={categories} />
       </div>
       <div className="col-span-4 md:col-span-3 w-full flex flex-col gap-2">
         <div className="w-full flex items-center justify-between">
