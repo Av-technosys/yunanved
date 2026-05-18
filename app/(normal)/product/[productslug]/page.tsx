@@ -4,9 +4,16 @@ import {
   getProductSimilarProducts,
 } from "@/helper";
 import ProductClient from "./productClient";
-import { getProductReviews } from "@/helper/product/action";
+import { getProductReviews, getAllProductSlugs } from "@/helper/product/action";
 
-export const revalidate = 10;
+export const revalidate = 600;
+
+export async function generateStaticParams() {
+  const slugs = await getAllProductSlugs();
+  return slugs.map((slug) => ({
+    productslug: slug,
+  }));
+}
 
 const Page = async (props: any) => {
   const params = await props.params;

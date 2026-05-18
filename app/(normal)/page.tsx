@@ -7,9 +7,8 @@ import { Newsletter } from "@/components/landing";
 import { NavbarCategoryRibbon } from "@/components/landing";
 import Collections from "@/components/landing/Collections";
 
-export const revalidate = 10;
-
 export default function Home() {
+
   return (
     <div className="flex px-4 max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
       <NavbarCategoryRibbon />
