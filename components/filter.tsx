@@ -1,13 +1,14 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
 export const useUpdateQuery = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  const updateQuery = (key: string, value?: string) => {
+  const updateQuery = useCallback((key: string, value?: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
     if (value) {
@@ -17,8 +18,14 @@ export const useUpdateQuery = () => {
     }
 
     params.set("page", "1");
-    router.push(`${pathname}?${params.toString()}`);
-  };
+    const nextQuery = params.toString();
+
+    if (nextQuery === searchParams.toString()) {
+      return;
+    }
+
+    router.push(`${pathname}?${nextQuery}`);
+  }, [pathname, router, searchParams]);
 
   return updateQuery;
 };
