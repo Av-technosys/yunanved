@@ -59,7 +59,7 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
         >
           <CarouselContent className="overflow-visible  py-2 md:px-3 ">
             {items.map((product, index) => (
-              <CarouselItem key={product.id} className="basis-1/3">
+              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3">
                 <ProductCard
                   product={product}
                   index={index}

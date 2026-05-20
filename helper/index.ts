@@ -122,3 +122,9 @@ export {
   sendPaymentReceivedEmail,
   sendRefundEmail
 } from "./emailTemplates/action";
+
+//newsletter
+export {
+  fetchNewsletterSubscriptions,
+  subscribeToNewsletter,
+} from "./newsletter/action";
