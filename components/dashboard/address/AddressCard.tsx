@@ -36,7 +36,7 @@ type Props = {
   isPrimary: boolean;
 };
 
-export  function AddressCard({
+export function AddressCard({
   address,
   onEdit,
   isPrimary,
@@ -54,11 +54,10 @@ export  function AddressCard({
 
   return (
     <div
-      className={`relative p-5 rounded-2xl border-2 shadow-md transition-all
-        ${
-          isPrimary
-            ? "border-blue-400 "
-            : "border-gray-100 hover:border-blue-400"
+      className={`relative p-5 bg-white rounded-2xl border-2 shadow-md transition-all
+        ${isPrimary
+          ? "border-blue-400 "
+          : "border-gray-100 hover:border-blue-400"
         }
       `}
     >

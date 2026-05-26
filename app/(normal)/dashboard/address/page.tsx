@@ -6,9 +6,9 @@ import { useEffect, useState, useTransition } from "react";
 import { getAddresses, saveAddress, deleteAddress } from "@/helper";
 // import { tempUserId } from "@/const/globalconst";
 
-import {Breadcrumb} from "@/components/dashboard";
-import {AddressList} from "@/components/dashboard";
-import {AddressForm} from "@/components/dashboard";
+import { Breadcrumb } from "@/components/dashboard";
+import { AddressList } from "@/components/dashboard";
+import { AddressForm } from "@/components/dashboard";
 
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 
@@ -22,7 +22,7 @@ export default function AddressPage() {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
 
-  const {userDetails} = useClientSideUser();
+  const { userDetails } = useClientSideUser();
 
   const tempUserId = userDetails?.id;
 
@@ -31,29 +31,29 @@ export default function AddressPage() {
     loadAddresses();
   }, [tempUserId]);
 
-const loadAddresses = async () => {
-  try {
-    setLoading(true);
-    const data = await getAddresses(tempUserId);
-    console.log(data);
+  const loadAddresses = async () => {
+    try {
+      setLoading(true);
+      const data = await getAddresses(tempUserId);
+      console.log(data);
 
-    if (Array.isArray(data)) {
-      const sortedAddresses = [...data].sort((a, b) => {
-        if (a.isPrimary === b.isPrimary) return 0;
-        return a.isPrimary ? -1 : 1;
-      });
+      if (Array.isArray(data)) {
+        const sortedAddresses = [...data].sort((a, b) => {
+          if (a.isPrimary === b.isPrimary) return 0;
+          return a.isPrimary ? -1 : 1;
+        });
 
-      setAddresses(sortedAddresses);
-    } else {
+        setAddresses(sortedAddresses);
+      } else {
+        setAddresses([]);
+      }
+    } catch (error) {
+      console.error(error);
       setAddresses([]);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error(error);
-    setAddresses([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleEdit = (addr: any) => {
     setForm(addr);
@@ -73,19 +73,19 @@ const loadAddresses = async () => {
     });
   };
 
-const handleDelete = (id: string) => {
-  startTransition(async () => {
-    const response = await deleteAddress(id);
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      const response = await deleteAddress(id);
 
-    if (!response.success) {
-      toast.error(response.message);
-      return;
-    }
+      if (!response.success) {
+        toast.error(response.message);
+        return;
+      }
 
-    toast.success(response.message);
-    await loadAddresses();
-  });
-};
+      toast.success(response.message);
+      await loadAddresses();
+    });
+  };
 
   if (loading) {
     return <AddressListSkeleton />;
@@ -98,7 +98,7 @@ const handleDelete = (id: string) => {
       {/* ADDRESS LIST VIEW */}
       {view === "list" ? (
         addresses.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center mt-6">
+          <div className=" rounded-2xl border border-gray-100 p-10 text-center mt-6">
             <p className="text-lg font-semibold text-gray-700">
               No Address Found
             </p>
@@ -115,15 +115,15 @@ const handleDelete = (id: string) => {
             </button>
           </div>
         ) : (
-   <AddressList
-  addresses={addresses.sort((a, b) => {
-    if (a.isPrimary === b.isPrimary) return 0;
-    return a.isPrimary ? -1 : 1; 
-  })}
-  onAdd={handleAdd}
-  onEdit={handleEdit}
-  onDelete={handleDelete}
-/>
+          <AddressList
+            addresses={addresses.sort((a, b) => {
+              if (a.isPrimary === b.isPrimary) return 0;
+              return a.isPrimary ? -1 : 1;
+            })}
+            onAdd={handleAdd}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         )
       ) : (
         /* ADDRESS FORM */

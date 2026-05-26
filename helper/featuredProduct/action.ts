@@ -3,7 +3,7 @@
 import { featuredProductVarient, productVariant } from "@/db";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 export async function getFeaturedProducts() {
   try {
@@ -31,6 +31,13 @@ export async function getFeaturedProducts() {
     throw error;
   }
 }
+
+
+// ✅ cached function
+export const getCachedFeaturedProducts = unstable_cache(getFeaturedProducts, ["featured-products"], {
+  tags: ["featured-products"],
+  revalidate: 7200, // 2 hour
+});
 
 export async function deleteFeaturedProduct(id: string) {
   try {

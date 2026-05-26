@@ -742,3 +742,13 @@ export async function getProductsByCategorySlug(slug: string) {
     return [];
   }
 }
+
+export async function getAllProductSlugs() {
+  try {
+    const slugs = await db.select({ slug: productVariant.slug }).from(productVariant);
+    return slugs.map(s => s.slug);
+  } catch (error) {
+    console.error("Failed to get product slugs:", error);
+    return [];
+  }
+}

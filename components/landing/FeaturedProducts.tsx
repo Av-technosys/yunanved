@@ -1,18 +1,19 @@
 
 import { getFeaturedProducts } from "@/helper";
-import {FeaturedProductCard} from "./featuredProductCard";
+import { FeaturedProductCard } from "./featuredProductCard";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
 import Link from "next/link";
+import getCashedData from "@/config/getCashData";
 
 export async function FeaturedProducts() {
-  const products = await getFeaturedProducts();
+  const products = await getCashedData(getFeaturedProducts, ["featured-products"]);
   const userDetails = await getServerSideUser();
 
 
 
   return (
-// Cleaned up the section classes
-    <section className="md:py-12 py-8"> 
+    // Cleaned up the section classes
+    <section className="md:py-12 py-8">
       <div className="max-w-7xl md:px-7 px-2 mx-auto">
         {/* Heading */}
         <div className="text-center mb-12">
@@ -27,7 +28,7 @@ export async function FeaturedProducts() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-2  items-stretch sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-          {products.map((product) => (
+          {products.map((product: any) => (
             <FeaturedProductCard key={product.id} product={product} userDetails={userDetails} />
           ))}
         </div>
