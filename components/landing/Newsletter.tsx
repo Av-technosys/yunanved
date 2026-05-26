@@ -69,7 +69,7 @@ export function Newsletter() {
           <Button
             type="submit"
             disabled={isPending || isSubscribed}
-            className="h-12 w-full sm:w-28 bg-slate-800 hover:bg-slate-700 text-white rounded-full font-medium transition-colors"
+            className="bg-[#414141] hover:bg-black text-white rounded-full px-12 py-6 text-lg font-medium"
           >
             {isSubscribed ? (
               <span className="flex items-center gap-1">

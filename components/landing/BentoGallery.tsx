@@ -42,7 +42,7 @@ export const BentoGallery = async () => {
                 </p>
 
                 <button className="border border-black px-4 py-1.5 rounded-md text-sm font-semibold hover:bg-black hover:text-white transition">
-                  Discover More
+                  shop now
                 </button>
               </div>
 
@@ -78,7 +78,7 @@ export const BentoGallery = async () => {
 
                 {/* Button */}
                 <button className="border-2 border-white text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-white hover:text-black transition-all transform translate-y-4 group-hover:translate-y-0 duration-300 delay-150">
-                  Discover More
+                  shop now
                 </button>
               </div>
             </Link>
