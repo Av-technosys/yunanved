@@ -50,7 +50,8 @@ export const Footer = () => {
               {[
                 { name: "About Us", link: "/about-us" },
                 { name: "Contact Us", link: "/contact-us" },
-                { name: "Privacy-policy", link: "/privacy-policy" },
+                { name: "Privacy Policy", link: "/privacy-policy" },
+                { name: "Terms & Conditions", link: "/terms-condition" },
               ].map((item) => (
                 <li key={item.name}>
                   <Link
@@ -133,10 +134,10 @@ export const Footer = () => {
           <p>© 2024 Yunanved. All rights reserved.</p>
 
           <div className="flex flex-wrap justify-center sm:justify-end gap-3">
-            <Link href="/privacy" className="hover:text-black transition">
+            <Link href="/privacy-policy" className="hover:text-black transition">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-black transition">
+            <Link href="/terms-condition" className="hover:text-black transition">
               Terms & Conditions
             </Link>
             <Link href="/shipping" className="hover:text-black transition">
@@ -148,4 +149,3 @@ export const Footer = () => {
     </footer>
   );
 };
-
