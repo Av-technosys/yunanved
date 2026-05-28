@@ -8,6 +8,8 @@ import CorePurpose from "./corePurpose";
 import CareersCTA from "./CTA";
 import CoreValues from "./coreValues";
 import { Newsletter } from "@/components/landing/Newsletter";
+import Link from "next/link";
+
 
 const Page = () => {
   return (
@@ -26,14 +28,11 @@ const Page = () => {
               believe in pieces that last a lifetime.
             </p>
           </div>
-          <div className="flex gap-4">
+           <Link href={"/category"} className="flex gap-4">
             <Button className="bg-gray-500 hover:bg-gray-600 w-[180px] text-white">
               View Collection
             </Button>
-            <Button className="rounded-2xl hover:bg-white w-[180px] bg-white text-black">
-              Our Process
-            </Button>
-          </div>
+          </Link>
         </div>
       </div>
       <HeroSection />

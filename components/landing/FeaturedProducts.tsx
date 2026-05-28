@@ -1,15 +1,15 @@
 
-
-import React from "react";
-import { Button } from "@/components/ui";
 import { getFeaturedProducts } from "@/helper";
 import { FeaturedProductCard } from "./featuredProductCard";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
+import Link from "next/link";
 import getCashedData from "@/config/getCashData";
 
 export async function FeaturedProducts() {
   const products = await getCashedData(getFeaturedProducts, ["featured-products"]);
   const userDetails = await getServerSideUser();
+
+
 
   return (
     // Cleaned up the section classes
@@ -35,9 +35,9 @@ export async function FeaturedProducts() {
 
         {/* Explore Button */}
         <div className="text-center">
-          <Button className="bg-[#414141] hover:bg-black text-white rounded-full px-12 py-6 text-lg font-medium">
+          <Link  href={"/category"} className="bg-[#414141] hover:bg-black text-white rounded-full px-12 py-6 text-lg font-medium">
             Explore All
-          </Button>
+          </Link>
         </div>
       </div>
     </section>

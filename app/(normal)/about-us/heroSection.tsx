@@ -1,5 +1,6 @@
 import Image from "next/image";
 import aboutUsHero from "@/public/aboutUsHero.png";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -22,13 +23,13 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
+               <Link href={"/category"} className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
                 Shop Now
-              </button>
+              </Link>
 
-              <button className="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 transition">
+             <Link href={"/about-us"} className="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 transition">
                 Our Values
-              </button>
+              </Link>
             </div>
           </div>
 

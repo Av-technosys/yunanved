@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import {
   Facebook,
@@ -18,9 +17,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:mx-8 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-16">
           {/* Brand Section */}
           <div className="space-y-5">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+            <Link  href={"/"} className="text-xl cursor-pointer sm:text-2xl font-bold tracking-tight text-slate-900">
               YUNANVED
-            </h2>
+            </Link>
 
             <p className="text-sm text-slate-600 leading-relaxed max-w-sm">
               Your destination for premium fashion and lifestyle. Curated

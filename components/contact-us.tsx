@@ -76,7 +76,13 @@ export const ContactUs = () => {
                 <Label htmlFor="phone-1">Contact Number</Label>
                 <Input
                   name="phone"
-                  type="number"
+                  type="tel"
+                  maxLength={10} // or 12
+                  pattern="[0-9]{10,12}"
+                  onInput={(e) => {
+                    e.currentTarget.value =
+                      e.currentTarget.value.replace(/\D/g, "").slice(0, 10); // change 10 → 12 if needed
+                  }}
                   className="text-black bg-[var(--background)]"
                   placeholder="Enter your contact number"
                 />
