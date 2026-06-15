@@ -52,22 +52,26 @@ export function SearchWithIcon() {
   const categories = results.filter((r) => r.type === "category");
 
   return (
-    <div className="relative w-full max-w-2xl">
-      <div className="flex items-center gap-2">
+    <div className="relative w-full max-w-[760px]">
+      <div className="flex h-10 items-center overflow-hidden rounded-full border border-[#02A9E5] bg-white shadow-none">
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for Products, Brands & More"
-          className="flex-1 h-11 rounded-full pl-6 text-sm shadow-sm"
+          className="h-full flex-1 rounded-none border-0 bg-transparent px-5 text-[12px] text-slate-800 shadow-none outline-none placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-[12px]"
         />
 
-        <Button size="icon" className="h-11 w-11 rounded-full">
-          <Search size={18} />
+        <Button
+          type="button"
+          className="h-full min-w-28 rounded-full rounded-l-none bg-[#02A9E5] px-7 text-[12px] font-medium text-white shadow-none hover:bg-[#0298cf]"
+        >
+          <span>Search</span>
+          <Search size={15} />
         </Button>
       </div>
 
       {showDropdown && (
-        <div className="absolute top-14 w-full bg-white border shadow-xl rounded-2xl mt-2 z-50 overflow-hidden">
+        <div className="absolute top-11 w-full bg-white border shadow-xl rounded-2xl mt-2 z-50 overflow-hidden">
           {isPending && (
             <div className="p-4 text-sm text-gray-500">Searching...</div>
           )}

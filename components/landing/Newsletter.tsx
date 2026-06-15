@@ -29,7 +29,7 @@ export function Newsletter() {
   };
 
   return (
-    <section className="relative max-w-7xl mt-8 mx-auto w-full h-[300px] flex items-center justify-center overflow-hidden rounded-2xl">
+    <section className="relative max-w-7xl mt-10 mx-auto w-[calc(100%-1.5rem)] h-[290px] sm:h-[240px] md:h-[245px] flex items-center justify-center overflow-hidden rounded-xl">
 
       {/* Background */}
       <div
@@ -38,22 +38,23 @@ export function Newsletter() {
           backgroundImage: "url('/newslatterBg.jpg')",
         }}
       >
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/45" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-2xl px-6 text-center text-white mx-auto">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+      <div className="relative z-10 w-full max-w-2xl px-4 text-center text-white mx-auto sm:px-6">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 tracking-tight">
           Stay Updated
         </h2>
 
-        <p className="text-sm md:text-base mb-8 text-gray-200">
-          Subscribe to get exclusive offers, style tips, and early access to new collections.
+        <p className="text-xs md:text-sm mb-6 text-gray-100 leading-snug max-w-xl mx-auto sm:mb-7">
+          Subscribe to get exclusive offers, style tips, and early access to new
+          collections.
         </p>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-lg mx-auto"
+          className="flex h-14 w-full max-w-lg mx-auto items-stretch overflow-hidden rounded-full bg-white"
         >
           <Input
             name="email"
@@ -62,14 +63,14 @@ export function Newsletter() {
             value={email}
             disabled={isPending || isSubscribed}
             onChange={(event) => setEmail(event.target.value)}
-            className="h-12 bg-white text-black rounded-full border-none focus-visible:ring-0 focus-visible:ring-offset-0 px-6"
+            className="h-full min-w-0 flex-1 rounded-none border-none bg-transparent px-5 text-sm text-slate-900 shadow-none placeholder:text-slate-600 focus-visible:ring-0 focus-visible:ring-offset-0 sm:px-6"
             required
           />
 
           <Button
             type="submit"
             disabled={isPending || isSubscribed}
-            className="bg-[#414141] hover:bg-black text-white rounded-full px-12 py-6 text-lg font-medium"
+            className="h-full w-28 shrink-0 rounded-full rounded-l-none bg-[#02A9E5] px-0 text-base font-bold text-white shadow-none hover:bg-[#0298cf] sm:w-32"
           >
             {isSubscribed ? (
               <span className="flex items-center gap-1">

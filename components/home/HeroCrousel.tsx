@@ -1,21 +1,30 @@
+import Link from "next/link";
+import Image from "next/image";
+
 export const HeroCrousel = () => {
     return (
-        <div className="relative w-full h-[300px] md:h-[300px] md:rounded-xl overflow-hidden group">
-            <img
-                src="/grocery-banner.jpg"
-                className="absolute inset-0 w-full h-full object-cover"
-                alt="Grocery Promotion"
+        <div className="relative h-[340px] w-full overflow-hidden rounded-lg bg-[#edf7d8] md:h-[450px]">
+            <Image
+                src="/home_banner.png"
+                alt="Natural skincare promotion"
+                fill
+                priority
+                className="hidden object-cover md:block"
             />
-            {/* Dark Blur Overlay */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center text-center px-4">
-                <h1 className="text-white text-4xl md:text-6xl font-bold mb-4">
-                    20% Off
-                </h1>
-                <p className="text-gray-200 text-sm md:text-lg max-w-xl leading-relaxed">
-                    Discover the latest trend in technology — elegant design crafted
-                    for the modern lifestyle
-                </p>
-            </div>
+            <Image
+                src="/mobile-banner.png"
+                alt="Natural skincare promotion"
+                fill
+                priority
+                className="object-cover md:hidden"
+            />
+
+            <Link
+                href="/category"
+                className="absolute bottom-10 left-2 inline-flex h-11 items-center justify-center rounded-md bg-[#96C948] px-7 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#83b83c] sm:left-9 md:bottom-20 md:left-16 md:h-12 md:px-8"
+            >
+                Shop Now
+            </Link>
         </div>
     )
 }

@@ -4,6 +4,8 @@ import { FeaturedProducts } from "@/components/landing";
 import { FAQ } from "@/components/landing";
 import { BentoGallery } from "@/components/landing";
 import { Newsletter } from "@/components/landing";
+import { CustomerReviews } from "@/components/landing";
+import { InstaGrid } from "@/components/landing";
 //import { NavbarCategoryRibbon } from "@/components/landing";
 import Collections from "@/components/landing/Collections";
 
@@ -23,6 +25,8 @@ export default function Home() {
         </div>
       </div>
 
+      <CustomerReviews />
+      <InstaGrid />
       <Newsletter />
       <FAQ />
     </div>

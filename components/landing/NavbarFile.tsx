@@ -2,7 +2,8 @@
 "use client";
 import { Button, Input, Label, Separator } from "@/components/ui";
 import Link from "next/link";
-import { CircleUserRound, LogOut, Menu } from "lucide-react";
+import Image from "next/image";
+import { CircleUserRound, Heart, LogOut, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -16,56 +17,76 @@ import { useEffect, useState } from "react";
 
 export const Navbar = ({ userInfo }: any) => {
   return (
-    <div className="sticky top-0 z-50 bg-white py-2 ">
-      <header className="max-w-7xl mx-auto ">
-        <div
-          className={
-            "w-full mx-auto md:px-4 flex items-center justify-between gap-4 md:gap-12"
-          }
-        >
+    <div className="sticky top-0 z-50 border-b border-slate-100 bg-white">
+      <header className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-16">
+        <div className="flex h-12 w-full items-center justify-between gap-4 md:h-[52px] md:gap-6">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 rounded-full text-slate-900 md:hidden"
+              >
                 <Menu style={{ width: 22, height: 22 }} />
               </Button>
             </SheetTrigger>
 
             {/* Logo */}
-            <Link href={"/"} className="shrink-0">
-              <h1 className="text-2xl font-black tracking-tighter text-primary">
-                YUNANVED
-              </h1>
+            <Link href={"/"} className="flex shrink-0 items-center">
+              <Image
+                src="/mainlogo.png"
+                alt="YUNANVED"
+                width={140}
+                height={40}
+                className="h-7 w-auto object-contain md:h-8"
+              />
             </Link>
 
-            <div className=" hidden md:flex w-full justify-between gap-4">
+            <div className="hidden shrink-0 md:flex md:-ml-1">
               <UserLocation userInfo={userInfo} />
-              {/* Search Bar Container */}
-              <SearchWithIcon />
+            </div>
 
+            <div className="hidden min-w-0 flex-1 justify-center md:flex">
+              {/* Search Bar Container */}
+              <div className="w-full max-w-[760px]">
+                <SearchWithIcon />
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
               {/* Actions (Sign Up, Login, Cart) */}
-              <div className="flex items-center gap-3">
+              <div className="hidden items-center gap-2 md:flex">
                 {userInfo ? (
                   <LogedInUserDetail userInfo={userInfo} />
                 ) : (
                   <AuthBtns />
                 )}
-
-                {/* Cart Icon with Badge */}
               </div>
-            </div>
-            <div className=" flex   items-center justify-end">
-              <CartIcon />
+
+              <div className="[&>div]:p-0 [&_button]:h-8 [&_button]:w-8 [&_button]:rounded-full [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-slate-950 [&_button]:shadow-none [&_button]:hover:bg-slate-50 [&_svg]:h-[18px] [&_svg]:w-[18px]">
+                <CartIcon />
+              </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Wishlist"
+                className="hidden h-8 w-8 rounded-full p-0 text-slate-950 hover:bg-slate-50 sm:inline-flex"
+              >
+                <Heart style={{ width: 18, height: 18 }} />
+              </Button>
 
               <Popover>
                 <PopoverTrigger className=" block sm:hidden" asChild>
                   <Button
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center rounded-full text-slate-900"
                     variant="ghost"
                   >
                     <CircleUserRound style={{ width: 22, height: 22 }} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-40 mr-2  flex flex-col gap-1">
+                <PopoverContent className="mr-2 flex w-44 flex-col gap-2 rounded-2xl border-slate-100 shadow-lg">
                   {userInfo ? (
                     <>
                       <LogedInUserDetail userInfo={userInfo} />
@@ -92,20 +113,36 @@ export const Navbar = ({ userInfo }: any) => {
             <SheetContent
               onOpenAutoFocus={(e) => e.preventDefault()}
               side="left"
-              className="w-72 px-4 py-6 pt-12"
+              className="w-80 px-4 py-6 pt-8"
             >
+              <Link href={"/"} className="mb-6 flex items-center">
+                <Image
+                  src="/mainlogo.png"
+                  alt="YUNANVED"
+                  width={140}
+                  height={40}
+                  className="h-8 w-auto object-contain"
+                />
+              </Link>
+
               {/* Search */}
-              <div className="pb-2">
+              <div className="pb-5">
                 <SearchWithIcon />
               </div>
 
               {/* Categories */}
-              <div className="flex flex-col gap-3 border-t pt-4">
+              <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
+                <Link
+                  href="/"
+                  className="rounded-xl px-3 py-2 text-sm font-semibold text-[#02A9E5] hover:bg-sky-50"
+                >
+                  Home
+                </Link>
                 {NAVBAR_CATEGORY_RIBBON.map((item) => (
                   <Link
                     key={item}
                     href="/category"
-                    className="text-sm font-medium text-slate-700 hover:text-black"
+                    className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-black"
                   >
                     {item}
                   </Link>
@@ -113,7 +150,7 @@ export const Navbar = ({ userInfo }: any) => {
               </div>
 
               {/* Auth */}
-              <div className="border-t pt-4 flex flex-col gap-3">
+              <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4">
                 {userInfo ? (
                   <Link href="/dashboard" className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border">
@@ -153,6 +190,25 @@ export const Navbar = ({ userInfo }: any) => {
             </SheetContent>
           </Sheet>
         </div>
+
+        <nav className="hidden h-9 items-center justify-center gap-9 text-[13px] font-medium text-slate-950 md:flex">
+          <Link
+            href="/"
+            className="relative flex h-full items-center text-[#02A9E5] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#02A9E5]"
+          >
+            Home
+          </Link>
+
+          {NAVBAR_CATEGORY_RIBBON.map((item) => (
+            <Link
+              key={item}
+              href="/category"
+              className="flex h-full items-center transition-colors hover:text-[#02A9E5]"
+            >
+              {item}
+            </Link>
+          ))}
+        </nav>
       </header>
     </div>
   );
@@ -162,9 +218,9 @@ function LogedInUserDetail({ userInfo }: any) {
   return (
     <Link
       href={"/dashboard"}
-      className="flex shrink-0 items-center gap-2 cursor-pointer group"
+      className="group flex shrink-0 cursor-pointer items-center gap-1.5"
     >
-      <Avatar className="h-9 w-9 border">
+      <Avatar className="h-7 w-7 border border-slate-200">
         <AvatarImage
           src={
             userInfo?.profileImage
@@ -175,16 +231,16 @@ function LogedInUserDetail({ userInfo }: any) {
           className="object-cover"
         />
 
-        <AvatarFallback className="bg-slate-200 text-sm font-semibold text-slate-700">
+        <AvatarFallback className="bg-slate-100 text-xs font-semibold text-slate-700">
           {`${userInfo?.firstName?.[0]?.toUpperCase() ?? ""}${userInfo?.lastName?.[0]?.toUpperCase() ?? ""}`}
         </AvatarFallback>
       </Avatar>
 
-      <div className="flex flex-col leading-tight">
-        <span className="text-[13px] text-gray-500">Welcome ,</span>
+      <div className="hidden flex-col leading-tight lg:flex">
+        <span className="text-[11px] font-medium text-slate-500">Welcome</span>
 
         {userInfo?.firstName ? (
-          <span className="text-md font-semibold text-gray-800 group-hover:text-gray-600 transition-colors">
+          <span className="text-sm font-semibold text-slate-950 transition-colors group-hover:text-[#02A9E5]">
             {userInfo.firstName}
           </span>
         ) : (
@@ -196,20 +252,25 @@ function LogedInUserDetail({ userInfo }: any) {
 }
 function AuthBtns() {
   return (
-    <>
-      <Link
-        href={"/sign-up"}
-        className="hidden sm:block text-sm font-semibold "
-      >
-        <Button variant={"ghost"} className=" rounded-full px-8 hidden md:flex">
+    <div className="flex items-center gap-2">
+      <Link href={"/sign-up"} className="hidden text-sm font-semibold lg:block">
+        <Button
+          variant={"ghost"}
+          className="hidden h-8 rounded-full px-3 text-[13px] font-semibold text-slate-900 hover:bg-slate-50 md:flex"
+        >
           Sign Up
         </Button>
       </Link>
 
       <Link href={"/sign-in"}>
-        <Button className=" rounded-full px-8 hidden md:flex">Login</Button>
+        <Button
+          variant="ghost"
+          className="hidden h-8 rounded-full px-2 text-[13px] font-semibold text-slate-950 hover:bg-slate-50 hover:text-[#02A9E5] md:flex"
+        >
+          Login
+        </Button>
       </Link>
-    </>
+    </div>
   );
 }
 
@@ -232,23 +293,25 @@ function MapPinSVG() {
 
 function UserLocation({ userInfo }: { userInfo: any }) {
   return (
-    <div className="flex items-center gap-2 shrink-0 cursor-pointer group">
-      <MapPinSVG />
+    <div className="group flex shrink-0 cursor-pointer items-center gap-1.5">
+      <div className="text-[#96C948]">
+        <MapPinSVG />
+      </div>
 
       <div className="flex flex-col leading-tight">
-        <span className="text-[10px] text-gray-500 font-medium">
+        <span className="text-[10px] font-semibold text-slate-950">
           Deliver to
         </span>
         {userInfo?.city ? (
           <Link href={`${"/dashboard/address"}`}>
-            <span className="text-sm font-bold group-hover:text-slate-600 transition-colors">
+            <span className="text-[13px] font-bold text-[#02A9E5] transition-colors group-hover:text-sky-600">
               {userInfo?.city}, {userInfo?.state}
             </span>
           </Link>
         ) : (
           <Link
             href={`${userInfo ? "/dashboard/address" : "/sign-in"}`}
-            className="text-sm font-bold group-hover:text-slate-600 transition-colors"
+            className="text-[13px] font-bold text-[#02A9E5] transition-colors group-hover:text-sky-600"
           >
             Select a location
           </Link>

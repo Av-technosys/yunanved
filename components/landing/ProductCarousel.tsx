@@ -2,13 +2,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui";
+import Link from "next/link";
 import { ProductCard } from "../productCard";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 interface SectionProps {
@@ -18,73 +12,44 @@ interface SectionProps {
 
 const ProductCarousel = ({ title, items }: SectionProps) => {
   const { userDetails } = useClientSideUser();
-  const [api, setApi] = React.useState<any>();
-  const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
-
-  // track carousel state
-  React.useEffect(() => {
-    if (!api) return;
-
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
 
   if (!items?.length) return null;
+  const visibleItems = items.slice(0, 8);
 
   return (
-    <section className="mt-12 max-w-7xl mx-auto overflow-visible">
+    <section className="mt-12 max-w-7xl mx-auto overflow-visible px-3 md:px-4">
       {/* Header */}
-      <div className="text-center mb-6 md:mb-10 md:px-4">
-        <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
-        <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto">
-          Discover our newest arrivals, thoughtfully designed to elevate
-          everyday style.
-        </p>
+      <div className="relative mb-7 md:mb-10">
+        <div className="text-center">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-950">
+            {title === "New Arrival" ? "New Arrivals" : title}
+          </h2>
+        </div>
+
+        <div className="mt-2 grid items-center gap-2 md:grid-cols-[1fr_auto_1fr]">
+          <div className="hidden md:block" />
+          <p className="text-center text-[11px] md:text-xs text-slate-600">
+            Discover our newest arrivals, thoughtfully designed to elevate
+            everyday style with purpose and quality.
+          </p>
+          <Link
+            href="/category"
+            className="justify-self-end text-xs font-bold uppercase tracking-wide text-slate-950 underline decoration-[#02A9E5] underline-offset-4 transition-colors hover:text-[#02A9E5]"
+          >
+            View All
+          </Link>
+        </div>
       </div>
 
-      {/* Carousel */}
-      <div className="relative">
-        <Carousel
-          setApi={setApi}
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full md:px-8 "
-        >
-          <CarouselContent className="overflow-visible  py-2 md:px-3 ">
-            {items.map((product, index) => (
-              <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3">
-                <ProductCard
-                  product={product}
-                  index={index}
-                  userId={userDetails?.id}
-                />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-
-          {/* Nav Buttons */}
-          <CarouselPrevious className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 left-0 z-10" />
-          <CarouselNext className="hidden md:block cursor-pointer top-1/2 -translate-y-1/2 right-0 z-10" />
-        </Carousel>
-
-        {/* Dots Pagination */}
-        <div className="flex justify-center gap-2 mt-4">
-          {Array.from({ length: count }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => api?.scrollTo(i)}
-              className={`h-2 w-2 rounded-full transition ${i === current - 1 ? "bg-black" : "bg-gray-300"
-                }`}
+      <div className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4">
+        {visibleItems.map((product, index) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            index={index}
+            userId={userDetails?.id}
             />
-          ))}
-        </div>
+        ))}
       </div>
     </section>
   );
