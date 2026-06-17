@@ -1,5 +1,6 @@
 
 import ProductCarousel from "./ProductCarousel";
+import { TrustPromoSection } from "./TrustPromoSection";
 import { getProductsByCategorySlug } from "@/helper";
 
 export default async function Collections() {
@@ -8,6 +9,7 @@ export default async function Collections() {
   return (
     <div className="bg-white mt-8">
       <ProductCarousel title="New Arrival" items={newArrival} />
+      <TrustPromoSection />
       <ProductCarousel title="Best Seller" items={bestSeller} />
     </div>
   );

@@ -9,7 +9,7 @@ export function OrderItemsTable({ orderData }: any) {
   const S3_BASE = NEXT_PUBLIC_S3_BASE_URL;
  
   return (
-    <Card className="lg:col-span-12 rounded-[24px] border-none shadow-sm p-8 overflow-hidden">
+    <Card className="lg:col-span-12 rounded-[24px] border-none shadow-md p-8 overflow-hidden">
 
       {/* Header */}
       <div className="flex justify-between text-sm font-semibold text-gray-400 mb-6 px-4">
@@ -39,7 +39,7 @@ export function OrderItemsTable({ orderData }: any) {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="font-bold text-[#1D4E4E] truncate max-w-[250px]">
+                  <p className="font-bold text-black truncate max-w-[250px]">
                     {item.product?.name || item.productName}
                   </p>
                   <p className="text-xs text-gray-400 truncate max-w-[250px]">
@@ -54,7 +54,7 @@ export function OrderItemsTable({ orderData }: any) {
               </div>
 
               {/* Price */}
-              <div className="w-[15%] text-center font-bold text-[#1D4E4E]">
+              <div className="w-[15%] text-center font-bold text-[#02A9E5]">
                 <span className="inline-block">₹{item.productPrice}</span>
               </div>
 

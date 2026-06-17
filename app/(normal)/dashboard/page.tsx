@@ -84,7 +84,7 @@ useEffect(() => {
           <main className="bg-white  p-8 md:p-6 ">
             {/* Header */}
             <header className="mb-10">
-              <h1 className="text-2xl font-bold text-[#1D4E4E]">
+              <h1 className="text-2xl font-bold text-black">
                 Personal Information
               </h1>
               <p className="text-sm text-gray-400 mt-1">
@@ -106,7 +106,7 @@ useEffect(() => {
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-[#1D4E4E] text-white text-3xl font-bold">
+                    <div className="w-full h-full flex items-center justify-center bg-[#02A9E5] text-white text-3xl font-bold">
                       {form?.firstName?.[0]}
                       {form?.lastName?.[0]}
                     </div>
@@ -119,7 +119,7 @@ useEffect(() => {
                   onClick={() =>
                     document.getElementById("profile-upload")?.click()
                   }
-                  className="absolute bottom-0 right-0 p-2 bg-[#1D4E4E] text-white rounded-full border-2 border-white shadow-md hover:scale-105 transition"
+                  className="absolute bottom-0 right-0 p-2 bg-[#02A9E5] text-white rounded-full border-2 border-white shadow-md hover:scale-105 transition"
                 >
                   <Camera size={14} />
                 </button>
@@ -150,7 +150,7 @@ useEffect(() => {
                   onClick={() =>
                     document.getElementById("profile-upload")?.click()
                   }
-                  className="mt-1 text-sm font-semibold text-[#1D4E4E] hover:underline"
+                  className="mt-1 text-sm font-semibold text-[#02A9E5] hover:underline"
                 >
                   Change Profile Photo
                 </button>
@@ -206,7 +206,7 @@ useEffect(() => {
               <button
                 onClick={handleSave}
                 disabled={isPending}
-                className="px-10 py-3 rounded-full bg-[#1D4E4E] text-white font-semibold hover:bg-[#153a3a] shadow-lg transition-all disabled:opacity-50"
+                className="px-10 py-3 rounded-full bg-[#02A9E5] text-white font-semibold hover:bg-[#0288D1] shadow-lg transition-all disabled:opacity-50"
               >
                 {isPending ? "Saving..." : "Save "}
               </button>
@@ -234,7 +234,7 @@ function Input({ label, icon, value, onChange, disabled, verified }: any) {
           value={value ?? ""}
           disabled={disabled}
           onChange={(e) => onChange?.(e.target.value)}
-          className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#1D4E4E]/10 focus:border-[#1D4E4E] outline-none transition-all disabled:bg-gray-50"
+          className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#02A9E5]/10 focus:border-[#02A9E5] outline-none transition-all disabled:bg-gray-50"
         />
 
         {verified && (

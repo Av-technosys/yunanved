@@ -25,12 +25,12 @@ export function OrderCard({ order, onViewDetails }: any) {
 
   return (
     <Card
-      className="rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      className="rounded-2xl border border-gray-100 shadow-md hover:shadow-md transition-shadow px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
     >
       {/* Left Section: ID and Timing */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
-          <span className="bg-[#1D4E4E]/10 text-[#1D4E4E] text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+          <span className="bg-[#02A9E5]/10 text-[#02A9E5] text-[10px] font-bold px-2 py-0.5 rounded uppercase">
             Order
           </span>
 
@@ -77,14 +77,14 @@ export function OrderCard({ order, onViewDetails }: any) {
             Total Amount
           </p>
 
-          <p className="text-lg font-bold text-[#1D4E4E]">
+          <p className="text-lg font-bold text-[#02A9E5]">
             ₹{order.totalAmountPaid.toLocaleString("en-IN")}
           </p>
         </div>
 
         <Button
           size="sm"
-          className="rounded-xl px-5 bg-[#1D4E4E] hover:bg-[#143a3a] text-white h-10"
+          className="rounded-xl px-5 bg-[#02A9E5] hover:bg-[#143a3a] text-white h-10"
           onClick={() => onViewDetails(order.id)}
         >
           View Details

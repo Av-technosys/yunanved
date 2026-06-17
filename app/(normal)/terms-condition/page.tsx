@@ -13,7 +13,7 @@ const Page = () => {
           </h1>
 
           
-   <div className="w-full bg-[#F8F6F1] md:rounded-2xl rounded-none shadow-sm border border-neutral-200 p-6 sm:p-8 lg:p-10 space-y-6 text-neutral-800 leading-relaxed">
+   <div className="w-full bg-[#F8F6F1] md:rounded-2xl rounded-none shadow-md border border-neutral-200 p-6 sm:p-8 lg:p-10 space-y-6 text-neutral-800 leading-relaxed">
 
   <div>
     <h2 className="font-bold text-black">Acceptance of Terms</h2>

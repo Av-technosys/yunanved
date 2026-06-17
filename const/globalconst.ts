@@ -151,6 +151,7 @@ export const ADMIN_EMAILS = [
   "piyushkharejhs@gmail.com",
   "info@avtechnosys.com",
   "admin@yunanved.com",
+  "bishnoi11011@gmail.com"
 ] as const;
 
 export const ORDER_STATUS = {

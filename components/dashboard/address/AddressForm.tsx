@@ -85,10 +85,10 @@ export  function AddressForm({
   };
 
   return (
-    <Card className="rounded-[24px] border-none shadow-sm p-8 md:p-10">
+    <Card className="rounded-[24px] border-none shadow-md p-8 md:p-10">
       {/* HEADER */}
       <header className="mb-10">
-        <h1 className="text-2xl font-bold text-[#1D4E4E]">
+        <h1 className="text-2xl font-bold text-black">
           {mode === "add" ? "Add New Address" : "Manage Address"}
         </h1>
       </header>
@@ -167,7 +167,7 @@ export  function AddressForm({
 
         <Button
           onClick={handleSubmit}
-          className="rounded-full bg-[#1D4E4E] text-white"
+          className="rounded-full bg-[#02A9E5] hover:bg-[#0298cf] text-white"
         >
           {mode === "add" ? "Save Address" : "Save Changes"}
         </Button>

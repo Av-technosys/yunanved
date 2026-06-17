@@ -162,8 +162,8 @@ export function SidebarFilterWeb({
       <div className="sticky top-4">
         <Card>
           <CardContent>
-            <CardTitle className="flex w-full my-5 items-center justify-between">
-              <strong>Filter</strong>
+            <CardTitle className="flex w-full my-5 items-center justify-between font-semibold">
+              <span>Filter</span>
               <Filter />
             </CardTitle>
 

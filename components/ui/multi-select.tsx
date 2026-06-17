@@ -552,7 +552,7 @@ const MultipleSelector = ({
                 >
                     {open && (
                         <CommandList
-                            className='bg-popover text-popover-foreground shadow-lg outline-hidden'
+                            className='bg-popover text-popover-foreground shadow-md outline-hidden'
                             onMouseLeave={() => {
                                 setOnScrollbar(false)
                             }}

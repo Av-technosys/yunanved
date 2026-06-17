@@ -16,7 +16,7 @@ const Page = () => {
           </h1>
 
          
-         <div className="w-full bg-[#F8F6F1] md:rounded-2xl rounded-none shadow-sm border border-neutral-200 p-6 sm:p-8 lg:p-10 space-y-6 text-neutral-800 leading-relaxed">
+         <div className="w-full bg-[#F8F6F1] md:rounded-2xl rounded-none shadow-md border border-neutral-200 p-6 sm:p-8 lg:p-10 space-y-6 text-neutral-800 leading-relaxed">
 
             <p>
               Thank you for your interest in Yunanved products. To ensure a

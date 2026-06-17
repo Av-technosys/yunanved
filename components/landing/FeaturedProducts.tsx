@@ -5,8 +5,12 @@ import { getServerSideUser } from "@/hooks/getServerSideUser";
 import Link from "next/link";
 import getCashedData from "@/config/getCashData";
 
+type FeaturedProduct = Awaited<ReturnType<typeof getFeaturedProducts>>[number];
+
 export async function FeaturedProducts() {
-  const products = await getCashedData(getFeaturedProducts, ["featured-products"]);
+  const products = (await getCashedData(getFeaturedProducts, [
+    "featured-products",
+  ])) as FeaturedProduct[];
   const userDetails = await getServerSideUser();
 
 
@@ -20,7 +24,7 @@ export async function FeaturedProducts() {
           <h2 className=" text-3xl md:text-4xl font-bold text-slate-900 mb-3">
             Featured Products
           </h2>
-          <p className="text-slate-600 text-sm max-w-2xl mx-auto">
+          <p className="mx-auto mt-3 max-w-2xl text-sm font-normal text-slate-600 md:text-base">
             Discover our newest arrivals, thoughtfully designed to elevate
             everyday style.
           </p>
@@ -28,7 +32,7 @@ export async function FeaturedProducts() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-2  items-stretch sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-          {products.map((product: any) => (
+          {products.map((product) => (
             <FeaturedProductCard key={product.id} product={product} userDetails={userDetails} />
           ))}
         </div>

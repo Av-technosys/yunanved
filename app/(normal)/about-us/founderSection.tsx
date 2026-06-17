@@ -6,7 +6,7 @@ export default function FounderMessage() {
   return (
     <section className="w-full bg-gray-100 py-10">
       <div className="max-w-6xl mx-auto px-6 lg:px-12">
-        <div className="bg-white rounded-3xl shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-5 items-center">
+        <div className="bg-white rounded-3xl shadow-md overflow-hidden grid grid-cols-1 md:grid-cols-5 items-center">
           <div className="relative col-span-1 md:col-span-2 h-[320px] sm:h-[400px] md:h-full w-full">
             <Image
               src={founderImage.src}

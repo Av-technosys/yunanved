@@ -37,10 +37,10 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
 
   return (
     <aside className="w-72 h-h-[86vh]">
-      <div className="bg-white  shadow-sm border border-gray-100 p-6 flex flex-col h-full min-h-0 overflow-hidden">
+      <div className="bg-white shadow-md border border-gray-100 p-6 flex flex-col h-full min-h-0 overflow-hidden">
         {/* Header Section */}
         <div className="mb-8 px-2">
-          <h2 className="text-2xl font-bold text-[#1D4E4E]">My Account</h2>
+          <h2 className="text-2xl font-bold text-black">My Account</h2>
           <p className="text-xs text-gray-400 mt-1">
             Manage your account details
           </p>
@@ -56,13 +56,13 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
                 <div
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all ${
                     active
-                      ? "bg-[#FFF9ED] text-[#B8860B] font-semibold shadow-sm"
+                      ? "bg-[#f5ffe6] text-[#96C948] font-semibold shadow-md"
                       : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
                   <Icon
                     size={20}
-                    className={active ? "text-[#B8860B]" : "text-gray-400"}
+                    className={active ? "text-[#96C948]" : "text-gray-400"}
                   />
                   <span className="text-[15px]">{label}</span>
                 </div>
@@ -75,7 +75,7 @@ export function Sidebar({ closeSidebar }: SidebarProps) {
         <div className="pt-4 border-t">
           <button
             onClick={logout}
-            className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#B8860B]  font-semibold hover:bg-[#ffefd5] transition-colors"
+            className="flex items-center cursor-pointer gap-3 w-full px-4 py-3.5 rounded-xl text-[#ff0606]  font-semibold bg-[#ffe4e4] transition-colors"
           >
             <LogOut size={20} />
             <span className="text-[15px]">Logout</span>

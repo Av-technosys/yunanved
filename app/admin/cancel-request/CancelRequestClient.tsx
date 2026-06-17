@@ -52,7 +52,7 @@ export default function CancelRequestClient({
 
   return (
     <div className="w-full">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
 
         <CardHeader>
           <CardTitle>Cancel Requests</CardTitle>

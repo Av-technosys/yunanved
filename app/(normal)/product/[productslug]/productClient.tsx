@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { Minus, Plus, RefreshCw, Star, Trash2, Truck, Undo2 } from "lucide-react";
+import { Minus, Plus, RefreshCw, Trash2, Truck, Undo2 } from "lucide-react";
 import { ProductCard } from "@/components/productCard";
 import { Button } from "@/components/ui";
 import { useRef, useState } from "react";
@@ -270,8 +270,8 @@ const ProductClient = ({
                   onClick={handleClick}
                   disabled={isAdding || !activeVariant.isInStock}
                   variant="default"
-                  className={`flex-1 rounded-full font-medium transition
-    ${isAdding || !activeVariant.isInStock ? "opacity-70 pointer-events-none" : ""}
+                  className={`flex-1 rounded-full font-medium transition bg-[#96C948] hover:bg-[#7ebc3b] 
+    ${isAdding || !activeVariant.isInStock ? "opacity-70 pointer-events-none " : ""}
   `}
                 >
                   {activeVariant.isInStock
@@ -285,7 +285,7 @@ const ProductClient = ({
                 variant="default"
                 disabled={!activeVariant.isInStock}
                 onClick={handleBuyNow}
-                className="flex-1 bg-yellow-500 text-white py-2 rounded-full font-medium hover:bg-yellow-600 disabled:opacity-50"
+                className="flex-1 bg-[#02A9E5] text-white py-2 rounded-full font-medium hover:bg-[#0298cf] disabled:opacity-50"
               >
                 Buy Now
               </Button>
@@ -397,13 +397,17 @@ function ProductDescription({ description }: { description: string }) {
 }
 
 function ProductSpecification({ attributes }: { attributes: any }) {
+  const visibleAttributes = attributes.filter(
+    (item: any) => item.attribute?.toLowerCase() !== "description",
+  );
+
   return (
     <>
       <div className="max-w-6xl px-2 md:px-0 my-10 mx-auto">
         <h1 className="text-lg mt-4 font-bold">Product Specifications</h1>
 
         <div className=" text-sm grid divide-y grid-cols-1 md:grid-cols-2 gap-4 gap-x-12 mt-6">
-          {attributes.map((item: any, index: number) => (
+          {visibleAttributes.map((item: any) => (
             <div key={item.id}>
               <div className="grid-cols-2 grid  py-2">
                 <span className="text-gray-600">{item.attribute}</span>

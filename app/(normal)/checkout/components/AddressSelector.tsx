@@ -59,7 +59,7 @@ export default function AddressSelector({
               <Card
                 key={item.id}
                 className={`transition border cursor-pointer
-                ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}
+                ${isActive ? "border-[#02A9E5] bg-blue-50" : "border-gray-200"}`}
               >
                 <CardContent className="p-4 flex gap-3 items-start justify-between">
                   <div className="w-full flex gap-3 items-start">

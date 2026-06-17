@@ -58,7 +58,7 @@ const UserClient = ({ users, total, currentPage }: Props) => {
 
   return (
     <div className="w-full ">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle>Users Management</CardTitle>
           <CardDescription>Manage your users here</CardDescription>

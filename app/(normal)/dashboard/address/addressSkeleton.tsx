@@ -8,7 +8,7 @@ export const AddressListSkeleton = () => {
       {[1,2,3].map((i) => (
         <div
           key={i}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4"
+          className="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4"
         >
           {/* Title */}
           <div className="flex items-center gap-3">

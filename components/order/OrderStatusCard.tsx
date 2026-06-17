@@ -62,9 +62,9 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
     }
   };
   return (
-    <Card className="lg:col-span-5 rounded-[24px] border-none shadow-sm p-4 flex flex-col justify-between min-h-[300px]">
+    <Card className="lg:col-span-5 rounded-[24px] border-none shadow-md p-4 flex flex-col justify-between min-h-[300px]">
       <div>
-        <h1 className="text-sm font-bold text-[#1D4E4E]">
+        <h1 className="text-sm font-bold text-black">
           Order #{orderData.id.toUpperCase()}
         </h1>
 
@@ -178,7 +178,7 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
         {orderData.status === "delivered" ? (
           <Button
             onClick={() => router.push(`/invoice/${orderData.id}`)}
-            className="flex-1 rounded-full h-12 bg-[#1D4E4E] text-white"
+            className="flex-1 rounded-full h-12 bg-[#02A9E5] text-white"
           >
             Invoice
           </Button>
@@ -274,12 +274,12 @@ export function OrderStatusCard({ orderData, setOrderReview }: any) {
         {orderData.status === "delivered" ? (
           <Button
             onClick={() => setOrderReview(true)}
-            className="flex-1 rounded-full h-12 bg-[#1D4E4E]"
+            className="flex-1 rounded-full h-12 bg-[#02A9E5]"
           >
             Review
           </Button>
         ) : (
-          <Button className="flex-1 rounded-full h-12 bg-[#1D4E4E]">
+          <Button className="flex-1 rounded-full h-12 bg-[#02A9E5]">
             Track Order
           </Button>
         )}

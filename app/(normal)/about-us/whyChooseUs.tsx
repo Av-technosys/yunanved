@@ -41,9 +41,9 @@ export default function WhyChooseUs() {
               <div
                 key={idx}
                 className="
-                  bg-white rounded-2xl p-6 shadow-sm
+                  bg-white rounded-2xl p-6 shadow-md
                   transition-all duration-300 ease-out
-                  hover:-translate-y-3 hover:shadow-xl
+                  hover:-translate-y-3 hover:shadow-md
                   cursor-pointer
                 "
               >

@@ -68,7 +68,7 @@ export  function OrderSummaryCard({
           <Button
             disabled={isPending}
             onClick={moveToCheckOut}
-            className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-teal-800 text-white py-3 rounded-full mt-4 hover:bg-teal-900"
+            className="w-full text-[16px] md:text-[11px] lg:text-[16px] bg-[#02A9E5] text-white py-3 rounded-full mt-4 hover:bg-[#0298cf]"
           >
             {isPending ? "Processing" : "Proceed to Checkout"}
           </Button>

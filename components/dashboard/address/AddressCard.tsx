@@ -64,12 +64,12 @@ export function AddressCard({
       {/* HEADER */}
       <div className="flex items-center gap-2 mb-3">
         {isPrimary ? (
-          <Home size={18} className="text-[#1D4E4E]" />
+          <Home size={18} className="text-[#02A9E5]" />
         ) : (
-          <Briefcase size={18} className="text-[#1D4E4E]" />
+          <Briefcase size={18} className="text-[#02A9E5]" />
         )}
 
-        <span className="font-bold text-[#1D4E4E] text-lg">
+        <span className="font-bold text-[#02A9E5] text-lg">
           {isPrimary ? "Primary Address" : "Saved Address"}
         </span>
       </div>
