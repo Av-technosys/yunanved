@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 
 export const Navbar = ({ userInfo }: any) => {
   return (
-    <div className="sticky top-0 z-50 border-b border-slate-100 bg-white">
+    <div className="sticky top-0 z-50 border-b border-slate-100 bg-white pt-2">
       <header className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-16">
         <div className="flex h-12 w-full items-center justify-between gap-4 md:h-[52px] md:gap-6">
           <Sheet>
@@ -86,7 +86,7 @@ export const Navbar = ({ userInfo }: any) => {
                     <CircleUserRound style={{ width: 22, height: 22 }} />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="mr-2 flex w-44 flex-col gap-2 rounded-2xl border-slate-100 shadow-lg">
+                <PopoverContent className="mr-2 flex w-44 flex-col gap-2 rounded-2xl border-slate-100 shadow-md">
                   {userInfo ? (
                     <>
                       <LogedInUserDetail userInfo={userInfo} />

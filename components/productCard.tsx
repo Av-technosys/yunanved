@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "./ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import StarRatings from "react-star-ratings";
@@ -113,13 +113,13 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
     <>
       <Card
         key={index}
-        className="relative h-full gap-0 overflow-hidden rounded-xl border border-slate-100 bg-white p-0 shadow-[0_5px_10px_rgba(15,23,42,0.18)] transition-shadow hover:shadow-[0_8px_18px_rgba(15,23,42,0.2)]"
-      >
-        <div className="absolute left-4 top-3 z-10 rounded-sm bg-[#96C948] px-3 py-1 text-[11px] font-bold text-white">
+        className="relative h-full gap-0 overflow-hidden rounded-xl border border-slate-50 bg-white p-0 shadow-md transition-shadow hover:shadow-md"
+      > 
+        <div className="absolute left-4 top-2 z-10 rounded-sm bg-[#96C948] px-3 py-1 text-[12px] font-bold text-white">
           -10%
         </div>
 
-        <CardContent className="flex flex-1 flex-col p-3 pb-0">
+        <CardContent className="flex flex-1 flex-col p-2 pb-0">
           <Link href={`/product/${product.slug}`}>
             <div className={cn(`relative h-48 w-full md:h-52`, className)}>
               <Image
@@ -132,13 +132,13 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 }
                 alt={product.name}
                 fill
-                className="object-contain rounded-md px-2 pt-4"
+                className="object-contain rounded-md px-1 pt-8"
               />
             </div>
           </Link>
-          <div className="flex flex-1 flex-col px-1 pb-2 pt-3">
+          <div className="flex flex-1 flex-col px-0.5 pb-1.5 pt-2">
             <Link href={`/product/${product.slug}`}>
-              <div className="min-h-10 text-[13px] font-semibold leading-tight text-slate-950 line-clamp-2">
+              <div className="min-h-10 text-[16px] font-semibold leading-tight text-slate-950 line-clamp-2">
                 {product.name}
               </div>
             </Link>
@@ -147,26 +147,26 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 <StarRatings
                   rating={rating}
                   numberOfStars={5}
-                  starDimension="14px"
+                  starDimension="16px"
                   starSpacing="1px"
                   starRatedColor="#facc15"
                   starEmptyColor="#e5e7eb"
                 />
               </div>
-              <span className="text-[11px] text-slate-500">
+              <span className="text-[12px] text-slate-500">
                 ({product.reviewCount ?? 0})
               </span>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="px-4 pb-4 pt-0">
-          <div className="flex w-full flex-col gap-3">
+        <CardFooter className="px-2.5 pb-2.5 pt-0">
+          <div className="flex w-full flex-col gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-[#96C948]">
+              <span className="text-md font-bold text-[#96C948]">
                 ₹{product.basePrice}
               </span>
               {product.strikethroughPrice ? (
-                <span className="text-xs font-semibold text-slate-400 line-through">
+                <span className="text-sm font-semibold text-slate-400 line-through">
                   ₹{product.strikethroughPrice}
                 </span>
               ) : null}
@@ -174,7 +174,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
 
             {isInCart ? (
               <div className="flex w-full items-center gap-2">
-                <div className="flex h-11 flex-1 items-center justify-center rounded-md border border-slate-200 bg-gray-50 px-1">
+                <div className="flex h-10 flex-1 items-center justify-center rounded-md border border-slate-200 bg-gray-50 px-1">
                   <button
                     type="button"
                     onClick={() => handleDecrease(cartItem)}
@@ -199,7 +199,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                   variant="outline"
                   onClick={() => handleRemove(cartItem)}
                   aria-label="Remove from cart"
-                  className="h-11 w-11 rounded-md"
+                  className="h-10 w-10 rounded-md"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -209,7 +209,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 disabled={isAdding || !product.isInStock}
                 variant={!product.isInStock ? "outline" : "default"}
                 onClick={handleClick}
-                className="h-11 w-full rounded-md bg-[#02A9E5] text-[12px] font-bold uppercase tracking-wide text-white shadow-none hover:bg-[#0298cf]"
+                className="h-10 w-full rounded-md bg-[#02A9E5] text-[12px] font-bold uppercase tracking-wide text-white shadow-none hover:bg-[#0298cf]"
               >
                 {!product.isInStock
                   ? "Out of Stock"

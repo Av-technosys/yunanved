@@ -15,20 +15,20 @@ export default function Home() {
     <div className="flex px-4 mt-4  max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
      {/* <NavbarCategoryRibbon /> */}
       <Hero />
-      <Categories />
-      <BentoGallery />
+      {/* <Categories />
+      <BentoGallery /> */}  
       <Collections />
 
       <div className="w-full md:max-w-[95%] xl:max-w-360 bg-featureSection mx-auto md:rounded-[3.5rem] mt-8">
         <div className="max-w-7xl mx-auto">
-          <FeaturedProducts />
+          {/* <FeaturedProducts /> */}
         </div>
       </div>
 
       <CustomerReviews />
       <InstaGrid />
       <Newsletter />
-      <FAQ />
+      {/* <FAQ /> */}
     </div>
   );
 }

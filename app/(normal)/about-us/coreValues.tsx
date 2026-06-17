@@ -20,7 +20,7 @@ export default function CoreValues() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition">
+          <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-md transition">
             <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gray-100 mb-6">
               <Cog className="w-6 h-6 text-gray-700" />
             </div>
@@ -35,7 +35,7 @@ export default function CoreValues() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition">
+          <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-md transition">
             <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gray-100 mb-6">
               <Leaf className="w-6 h-6 text-gray-700" />
             </div>
@@ -50,7 +50,7 @@ export default function CoreValues() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition">
+          <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-md transition">
             <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-gray-100 mb-6">
               <Users className="w-6 h-6 text-gray-700" />
             </div>

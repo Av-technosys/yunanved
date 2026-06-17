@@ -63,7 +63,7 @@ export function SearchWithIcon() {
 
         <Button
           type="button"
-          className="h-full min-w-28 rounded-full rounded-l-none bg-[#02A9E5] px-7 text-[12px] font-medium text-white shadow-none hover:bg-[#0298cf]"
+          className="h-full min-w-28 rounded-full bg-[#02A9E5] px-7 text-[12px] font-medium text-white shadow-none hover:bg-[#0298cf]"
         >
           <span>Search</span>
           <Search size={15} />
@@ -71,7 +71,7 @@ export function SearchWithIcon() {
       </div>
 
       {showDropdown && (
-        <div className="absolute top-11 w-full bg-white border shadow-xl rounded-2xl mt-2 z-50 overflow-hidden">
+        <div className="absolute top-11 w-full bg-white border shadow-md rounded-2xl mt-2 z-50 overflow-hidden">
           {isPending && (
             <div className="p-4 text-sm text-gray-500">Searching...</div>
           )}

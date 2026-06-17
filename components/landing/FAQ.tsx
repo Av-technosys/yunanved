@@ -40,7 +40,7 @@ export function FAQ() {
         <h2 className=" text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
           Frequently Asked Questions
         </h2>
-        <p className="mt-1 md:mt-2 text-base md:text-lg text-slate-600">
+        <p className="mt-3 text-sm font-normal text-slate-600 md:text-base">
           Everything you need to know
         </p>
       </div>
@@ -51,7 +51,7 @@ export function FAQ() {
           <AccordionItem
             key={faq.id}
             value={faq.id}
-            className="border rounded-xl px-6 py-1 border-slate-200 shadow-sm"
+            className="border rounded-xl px-6 py-1 border-slate-200 shadow-md"
           >
             <AccordionTrigger className="text-base font-bold text-slate-900 hover:no-underline text-left">
               {faq.question}

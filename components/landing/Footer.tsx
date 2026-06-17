@@ -37,7 +37,7 @@ export const Footer = () => {
                 />
               </Link>
 
-              <p className="mt-6 max-w-sm text-sm leading-relaxed text-slate-950">
+              <p className="mt-6 max-w-sm text-md leading-relaxed text-slate-950">
                 Your destination for premium fashion and lifestyle. Curated
                 collections for the modern individual.
               </p>
@@ -59,10 +59,10 @@ export const Footer = () => {
             </div>
 
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-950">
+              <h3 className="text-2xl font-bold text-slate-950">
                 Quick Links
               </h3>
-              <ul className="mt-6 space-y-4 text-sm text-slate-950">
+              <ul className="mt-6 space-y-4 text-md text-slate-950">
                 {[
                   { name: "About Us", link: "/about-us" },
                   { name: "Contact Us", link: "/contact-us" },
@@ -80,19 +80,17 @@ export const Footer = () => {
             </div>
 
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-950">
+              <h3 className="text-2xl font-bold text-slate-950">
                 Categories
               </h3>
-              <ul className="mt-6 space-y-4 text-sm text-slate-950">
+              <ul className="mt-6 space-y-4 text-md text-slate-950">
                 {[
                   "Fashion",
                   "Perfumes",
                   "Electronics",
                   "Beauty",
                   "Groceries",
-                  "Household",
-                  "Eyewear",
-                  "Kitchen",
+                  
                 ].map((item) => (
                   <li key={item}>
                     <Link
@@ -107,11 +105,11 @@ export const Footer = () => {
             </div>
 
             <div>
-              <h3 className="text-2xl font-extrabold text-slate-950">
+              <h3 className="text-2xl font-bold text-slate-950">
                 Contact
               </h3>
 
-              <ul className="mt-6 space-y-5 text-sm text-slate-950">
+              <ul className="mt-6 space-y-5 text-md text-slate-950">
                 <li className="flex items-start gap-4">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#02A9E5]" />
                   <span>
@@ -140,7 +138,7 @@ export const Footer = () => {
           </div>
 
           <div className="mt-14 text-sm text-slate-950">
-            © 2024 Yunanved. All rights reserved.
+            © 2026 Yunanved. All rights reserved.
           </div>
         </div>
       </footer>

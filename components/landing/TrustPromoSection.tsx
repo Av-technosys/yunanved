@@ -38,15 +38,15 @@ export function TrustPromoSection() {
           <span className="inline-flex rounded-full bg-[#ffe1d1] px-5 py-2 text-xs font-bold uppercase tracking-wide text-[#a96b4d] shadow-sm">
             Our Story
           </span>
-          <h2 className="mt-4 max-w-xl text-3xl font-extrabold leading-tight text-slate-950 md:text-4xl">
+          <h2 className="mt-4 max-w-xl text-3xl font-bold leading-tight text-slate-950 md:text-4xl">
             Quality You Can Trust,
             <span className="block">Service You&apos;ll Love</span>
           </h2>
-          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-slate-700">
+          <p className="mt-3 max-w-2xl text-sm font-normal leading-relaxed text-slate-600 md:text-base">
             At Shopora, we bring you a curated selection of top-quality products
             across lifestyle, fashion, electronics, and more.
           </p>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-700">
+          <p className="mt-4 max-w-2xl text-sm font-normal leading-relaxed text-slate-600 md:text-base">
             Our mission is simple — deliver value, build trust, and make your
             shopping experience seamless.
           </p>
@@ -59,7 +59,7 @@ export function TrustPromoSection() {
                 <div key={item.label} className="flex items-center gap-3">
                   <Icon className="h-8 w-8 shrink-0 text-[#ff8a4c]" />
                   <div>
-                    <p className="text-lg font-extrabold leading-tight text-slate-950">
+                    <p className="text-lg font-bold leading-tight text-slate-950">
                       {item.value}
                     </p>
                     <p className="text-xs font-medium text-slate-700">

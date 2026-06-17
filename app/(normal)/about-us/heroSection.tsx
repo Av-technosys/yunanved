@@ -34,7 +34,7 @@ export default function HeroSection() {
           </div>
 
           <div className="relative w-full">
-            <div className="relative h-[350px] sm:h-[450px] lg:h-[500px] rounded-2xl overflow-hidden shadow-lg">
+            <div className="relative h-[350px] sm:h-[450px] lg:h-[500px] rounded-2xl overflow-hidden shadow-md">
               <Image
                 src={aboutUsHero.src}
                 alt="Interior"
@@ -43,7 +43,7 @@ export default function HeroSection() {
               />
             </div>
 
-            <div className="absolute bottom-[-22px] left-[-22px] bg-white shadow-xl rounded-xl px-6 py-4">
+            <div className="absolute bottom-[-22px] left-[-22px] bg-white shadow-md rounded-xl px-6 py-4">
               <h3 className="text-blue-600 font-bold text-xl">5M+</h3>
               <p className="text-gray-500 text-sm">Happy Customers</p>
             </div>

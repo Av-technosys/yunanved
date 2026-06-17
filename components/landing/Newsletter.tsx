@@ -47,7 +47,7 @@ export function Newsletter() {
           Stay Updated
         </h2>
 
-        <p className="text-xs md:text-sm mb-6 text-gray-100 leading-snug max-w-xl mx-auto sm:mb-7">
+        <p className="mx-auto mb-6 max-w-xl text-sm font-normal leading-snug text-gray-100 md:text-base sm:mb-7">
           Subscribe to get exclusive offers, style tips, and early access to new
           collections.
         </p>
@@ -70,7 +70,7 @@ export function Newsletter() {
           <Button
             type="submit"
             disabled={isPending || isSubscribed}
-            className="h-full w-28 shrink-0 rounded-full rounded-l-none bg-[#02A9E5] px-0 text-base font-bold text-white shadow-none hover:bg-[#0298cf] sm:w-32"
+            className="h-full w-28 shrink-0 rounded-full bg-[#02A9E5] px-0 text-base font-bold text-white shadow-none hover:bg-[#0298cf] sm:w-32"
           >
             {isSubscribed ? (
               <span className="flex items-center gap-1">

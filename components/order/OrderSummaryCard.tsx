@@ -5,9 +5,9 @@ import { Separator } from "@/components/ui"
 export  function OrderSummaryCard({ orderData }: any) {
 
   return (
-    <Card className="rounded-[24px] border-none shadow-sm p-8">
+    <Card className="rounded-[24px] border-none shadow-md p-8">
 
-      <h3 className="font-bold text-[#1D4E4E] text-lg mb-4">
+      <h3 className="font-bold text-black text-lg mb-4">
         Order Summary
       </h3>
 
@@ -25,9 +25,9 @@ export  function OrderSummaryCard({ orderData }: any) {
 
         <Separator className="my-4" />
 
-        <div className="flex justify-between text-xl font-bold text-[#1D4E4E]">
+        <div className="flex justify-between text-xl font-bold text-black">
           <span>Total</span>
-          <span className="text-amber-500">
+          <span className="text-[#02A9E5]">
             ₹{orderData.totalAmountPaid}
           </span>
         </div>

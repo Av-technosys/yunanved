@@ -5,9 +5,9 @@ import { MapPin, User } from "lucide-react"
 export  function DeliveryDetailsCard({ orderData }: any) {
 
   return (
-    <Card className="rounded-[24px] border-none shadow-sm p-8">
+    <Card className="rounded-[24px] border-none shadow-md p-8">
 
-      <h3 className="font-bold text-[#1D4E4E] text-lg mb-4">
+      <h3 className="font-bold text-black text-lg mb-4">
         Delivery Details
       </h3>
 

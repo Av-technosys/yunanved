@@ -23,7 +23,7 @@ export function StatusTabs({ statusFilter, setStatusFilter }: any) {
             onClick={() => setStatusFilter(tab.value)}
             className={`rounded-full px-4 sm:px-6 whitespace-nowrap ${
               statusFilter === tab.value
-                ? "bg-[#1D4E4E] text-white hover:bg-[#143a3a]"
+                ? "bg-[#02A9E5] text-white hover:bg-[#143a3a]"
                 : "text-gray-500 border-gray-200 hover:bg-gray-50"
             }`}
           >

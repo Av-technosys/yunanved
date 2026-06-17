@@ -21,14 +21,14 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
       {/* Header */}
       <div className="relative mb-7 md:mb-10">
         <div className="text-center">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-950">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-950">
             {title === "New Arrival" ? "New Arrivals" : title}
           </h2>
         </div>
 
         <div className="mt-2 grid items-center gap-2 md:grid-cols-[1fr_auto_1fr]">
           <div className="hidden md:block" />
-          <p className="text-center text-[11px] md:text-xs text-slate-600">
+          <p className="text-center text-sm font-normal text-slate-600 md:text-base">
             Discover our newest arrivals, thoughtfully designed to elevate
             everyday style with purpose and quality.
           </p>

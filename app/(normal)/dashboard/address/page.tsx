@@ -109,7 +109,7 @@ export default function AddressPage() {
 
             <button
               onClick={handleAdd}
-              className="px-6 py-3 rounded-xl bg-[#1D4E4E] text-white hover:bg-[#143a3a]"
+              className="px-6 py-3 rounded-xl bg-[#02A9E5] text-white hover:bg-[#0298cf]"
             >
               Add Address
             </button>

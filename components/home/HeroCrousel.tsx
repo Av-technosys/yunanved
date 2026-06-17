@@ -21,7 +21,7 @@ export const HeroCrousel = () => {
 
             <Link
                 href="/category"
-                className="absolute bottom-10 left-2 inline-flex h-11 items-center justify-center rounded-md bg-[#96C948] px-7 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#83b83c] sm:left-9 md:bottom-20 md:left-16 md:h-12 md:px-8"
+                className="absolute bottom-10 left-2 inline-flex h-11 items-center justify-center rounded-md bg-[#96C948] px-7 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#83b83c] sm:left-9 md:bottom-20 md:left-21 md:h-12 md:px-8"
             >
                 Shop Now
             </Link>

@@ -11,7 +11,7 @@ export const ProfileSkeleton= () => {
         <Skeleton className="h-4 w-14" />
       </div>
 
-      <div className="bg-white rounded-[24px] p-8 shadow-sm border">
+      <div className="bg-white rounded-[24px] p-8 shadow-md border">
         
         {/* Header */}
         <div className="mb-10">

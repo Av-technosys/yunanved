@@ -25,14 +25,14 @@ export function CustomerReviews() {
     <section className="mx-auto w-full max-w-7xl px-3 py-10 md:px-4 md:py-14">
       <div className="relative mb-8 md:mb-10">
         <div className="text-center">
-          <h2 className="text-2xl font-extrabold text-slate-950 md:text-3xl">
+          <h2 className="text-2xl font-bold text-slate-950 md:text-3xl">
             Customer Reviews
           </h2>
         </div>
 
         <div className="mt-2 grid items-center gap-2 md:grid-cols-[1fr_auto_1fr]">
           <div className="hidden md:block" />
-          <p className="text-center text-xs text-slate-700 md:text-sm">
+          <p className="text-center text-sm font-normal text-slate-600 md:text-base">
             See what our happy customers are saying about their experience with us.
           </p>
           <Link
@@ -48,7 +48,7 @@ export function CustomerReviews() {
         {reviews.map((review) => (
           <article
             key={review.id}
-            className="min-w-[82%] rounded-xl bg-white px-6 py-5 shadow-[0_4px_10px_rgba(15,23,42,0.18)] md:min-w-0 md:px-7 md:py-6"
+            className="min-w-[82%] rounded-xl bg-white px-6 py-5 shadow-md md:min-w-0 md:px-7 md:py-6"
           >
             <div className="flex items-center gap-1">
               {Array.from({ length: 5 }).map((_, index) => (

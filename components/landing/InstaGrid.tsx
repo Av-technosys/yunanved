@@ -16,7 +16,7 @@ export function InstaGrid() {
   return (
     <section className="mx-auto w-full max-w-7xl px-3 py-10 text-center md:px-4 md:py-14">
       <p className="text-sm font-medium text-slate-950">@yunanved</p>
-      <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 md:text-4xl">
+      <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">
         Shop Your Way
       </h2>
       <p className="mt-3 text-sm text-slate-600 md:text-base">
