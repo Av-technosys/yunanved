@@ -5,14 +5,14 @@ export const HeroCrousel = () => {
     return (
         <div className="relative h-[340px] w-full overflow-hidden rounded-lg bg-[#edf7d8] md:h-[450px]">
             <Image
-                src="/home_banner.png"
+                src="https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.19 AM.jpeg "
                 alt="Natural skincare promotion"
                 fill
                 priority
                 className="hidden object-cover md:block"
             />
             <Image
-                src="/mobile-banner.png"
+                src="https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (4).jpeg"
                 alt="Natural skincare promotion"
                 fill
                 priority

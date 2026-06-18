@@ -34,7 +34,7 @@ export const Navbar = ({ userInfo }: any) => {
             {/* Logo */}
             <Link href={"/"} className="flex shrink-0 items-center">
               <Image
-                src="/mainlogo.png"
+                src="https://d209jjsil73ccf.cloudfront.net/landingImages/mainlogo.png"
                 alt="YUNANVED"
                 width={140}
                 height={40}

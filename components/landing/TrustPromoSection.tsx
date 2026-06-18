@@ -15,11 +15,15 @@ const stats = [
   {
     icon: Grid2X2,
     value: "10,000+",
-    label: "Happy Customers",
+    label: "Happy Customers",     
   },
 ];
 
-const promos = ["/Story.png", "/Story.png", "/Story.png"];
+const promos = [
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (1).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (1).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (1).jpeg"
+];
 
 export function TrustPromoSection() {
   return (
@@ -27,7 +31,7 @@ export function TrustPromoSection() {
       <div className="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center">
         <div className="relative h-[310px] overflow-hidden rounded-2xl bg-[#ffe1c8] md:h-[400px]">
           <Image
-            src="/trusted.png"
+            src="https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM.jpeg "
             alt="Shopora lifestyle collection"
             fill
             className="object-cover"
