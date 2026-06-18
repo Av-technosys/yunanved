@@ -58,7 +58,7 @@ const ReviewClient = ({ reviews, total, currentPage }: Props) => {
   }
   return (
     <div className="w-full ">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle>Review Management</CardTitle>
           <CardDescription>
@@ -71,7 +71,7 @@ const ReviewClient = ({ reviews, total, currentPage }: Props) => {
           {/* Stats */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
             {/* Total Reviews */}
-            <Card className="shadow-sm rounded-2xl">
+            <Card className="shadow-md rounded-2xl">
               <CardContent className="py-3 flex items-center justify-between">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">
@@ -94,7 +94,7 @@ const ReviewClient = ({ reviews, total, currentPage }: Props) => {
             </Card>
 
             {/* Pending Approval */}
-            <Card className="shadow-sm rounded-2xl">
+            <Card className="shadow-md rounded-2xl">
               <CardContent className="py-3 flex items-center justify-between">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">

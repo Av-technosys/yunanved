@@ -83,7 +83,7 @@ const OrderClient = ({ order, total, currentPage, pageSize, status }: Props) => 
 
   return (
     <div className="w-full ">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle>Order Management</CardTitle>
           <CardDescription>Manage your orders here</CardDescription>

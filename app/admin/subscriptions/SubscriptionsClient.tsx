@@ -50,7 +50,7 @@ export default function SubscriptionsClient({
 
   return (
     <div className="w-full">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5 text-orange-400" />

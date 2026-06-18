@@ -104,7 +104,7 @@ export const FeaturedProductCard = ({ product, key }: any) => {
     <div>
       <Card
         key={key}
-        className=" flex flex-col py-1  overflow-hidden border-none rounded-3xl shadow-sm bg-white hover:shadow-xl transition-shadow"
+        className=" flex flex-col py-1  overflow-hidden border-none rounded-3xl shadow-md bg-white hover:shadow-md transition-shadow"
       >
         {/* Image */}
         <Link href={`/product/${product.slug}`}>

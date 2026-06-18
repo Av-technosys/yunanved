@@ -21,7 +21,7 @@ export function StatCard({
   
 }: StatCardProps) {
   return (
-    <Card className="border shadow-sm hover:shadow-md transition-shadow">
+    <Card className="border shadow-md hover:shadow-md transition-shadow">
       <CardContent className="flex items-center justify-between px-3">
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">

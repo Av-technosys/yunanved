@@ -84,7 +84,7 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
 
   return (
     <div className="w-full p-1">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle>Product Management</CardTitle>
           <CardDescription>Manage your products here</CardDescription>

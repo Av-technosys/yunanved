@@ -12,7 +12,7 @@ export default function CorePurpose() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition">
+          <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-md transition">
             <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-100 mb-6">
               <Target className="w-6 h-6 text-gray-700" />
             </div>
@@ -28,7 +28,7 @@ export default function CorePurpose() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition">
+          <div className="bg-white rounded-2xl p-8 shadow-md hover:shadow-md transition">
             <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-100 mb-6">
               <Eye className="w-6 h-6 text-gray-700" />
             </div>

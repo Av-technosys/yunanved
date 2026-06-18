@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "./ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import StarRatings from "react-star-ratings";
@@ -111,10 +111,17 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
 
   return (
     <>
-      <Card key={index} className="p-0">
-        <CardContent className="p-2">
+      <Card
+        key={index}
+        className="relative h-full gap-0 overflow-hidden rounded-xl border border-slate-50 bg-white p-0 shadow-md transition-shadow hover:shadow-md"
+      > 
+        <div className="absolute left-4 top-2 z-10 rounded-sm bg-[#96C948] px-3 py-1 text-[12px] font-bold text-white">
+          -10%
+        </div>
+
+        <CardContent className="flex flex-1 flex-col p-2 pb-0">
           <Link href={`/product/${product.slug}`}>
-            <div className={cn(`relative h-52 w-full`, className)}>
+            <div className={cn(`relative h-48 w-full md:h-52`, className)}>
               <Image
                 src={
                   product.bannerImage &&
@@ -125,51 +132,63 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 }
                 alt={product.name}
                 fill
-                className="object-contain rounded-md"
+                className="object-contain rounded-md px-1 pt-8"
               />
             </div>
           </Link>
-          <div className="p-2">
+          <div className="flex flex-1 flex-col px-0.5 pb-1.5 pt-2">
             <Link href={`/product/${product.slug}`}>
-              <div className="text-black mt-2 font-semibold line-clamp-1">
+              <div className="min-h-10 text-[16px] font-semibold leading-tight text-slate-950 line-clamp-2">
                 {product.name}
               </div>
             </Link>
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="leading-none">
                 <StarRatings
                   rating={rating}
                   numberOfStars={5}
-                  starDimension="20px"
-                  starSpacing="2px"
+                  starDimension="16px"
+                  starSpacing="1px"
                   starRatedColor="#facc15"
                   starEmptyColor="#e5e7eb"
                 />
               </div>
+              <span className="text-[12px] text-slate-500">
+                ({product.reviewCount ?? 0})
+              </span>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="">
-          <div className="flex flex-col md:flex-row gap-2 mb-4 w-full md:items-center justify-between">
-            <div className=" font-semibold text-lg">₹{product.basePrice}</div>
+        <CardFooter className="px-2.5 pb-2.5 pt-0">
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-md font-bold text-[#96C948]">
+                ₹{product.basePrice}
+              </span>
+              {product.strikethroughPrice ? (
+                <span className="text-sm font-semibold text-slate-400 line-through">
+                  ₹{product.strikethroughPrice}
+                </span>
+              ) : null}
+            </div>
 
             {isInCart ? (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center rounded-full border bg-gray-50 px-1 py-1">
+              <div className="flex w-full items-center gap-2">
+                <div className="flex h-10 flex-1 items-center justify-center rounded-md border border-slate-200 bg-gray-50 px-1">
                   <button
                     type="button"
                     onClick={() => handleDecrease(cartItem)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white"
+                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="min-w-6 text-center text-sm font-semibold">
+                  <span className="min-w-8 text-center text-sm font-semibold">
                     {cartItem?.quantity ?? 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleIncrease(cartItem)}
-                    className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white"
+                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -180,6 +199,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                   variant="outline"
                   onClick={() => handleRemove(cartItem)}
                   aria-label="Remove from cart"
+                  className="h-10 w-10 rounded-md"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -189,6 +209,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 disabled={isAdding || !product.isInStock}
                 variant={!product.isInStock ? "outline" : "default"}
                 onClick={handleClick}
+                className="h-10 w-full rounded-md bg-[#02A9E5] text-[12px] font-bold uppercase tracking-wide text-white shadow-none hover:bg-[#0298cf]"
               >
                 {!product.isInStock
                   ? "Out of Stock"
@@ -196,9 +217,9 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                     ? "Adding..."
                     : "Add to Cart"}
 
-                {!product.isInStock ? null : (
+                {/* {!product.isInStock ? null : (
                   <ShoppingCart className="h-4 w-4" />
-                )}
+                )} */}
               </Button>
             )}
           </div>

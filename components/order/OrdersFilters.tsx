@@ -21,7 +21,7 @@ export function OrdersFilters({
     <div className="flex flex-col md:flex-row items-end justify-between gap-3">
       {/* Search */}
       <div className="space-y-2 w-full flex-1">
-        <label className="text-sm font-semibold text-[#1D4E4E] block">
+        <label className="text-sm font-semibold text-black block">
           Search Order
         </label>
 
@@ -42,7 +42,7 @@ export function OrdersFilters({
 
       {/* Date filter */}
       <div className="space-y-2 w-full md:w-72">
-        <label className="text-sm font-semibold text-[#1D4E4E] block">
+        <label className="text-sm font-semibold text-black block">
           Filter by Date Range
         </label>
 

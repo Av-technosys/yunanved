@@ -79,7 +79,7 @@ const CategoryClient = ({ categories, total, currentPage }: Props) => {
 
   return (
     <div className="w-full min-h-screen ">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle>Category Management</CardTitle>
           <CardDescription>Manage your categories here</CardDescription>

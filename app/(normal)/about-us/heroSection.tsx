@@ -1,5 +1,6 @@
 import Image from "next/image";
 import aboutUsHero from "@/public/aboutUsHero.png";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -22,18 +23,18 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
+               <Link href={"/category"} className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
                 Shop Now
-              </button>
+              </Link>
 
-              <button className="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 transition">
+             <Link href={"/about-us"} className="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 transition">
                 Our Values
-              </button>
+              </Link>
             </div>
           </div>
 
           <div className="relative w-full">
-            <div className="relative h-[350px] sm:h-[450px] lg:h-[500px] rounded-2xl overflow-hidden shadow-lg">
+            <div className="relative h-[350px] sm:h-[450px] lg:h-[500px] rounded-2xl overflow-hidden shadow-md">
               <Image
                 src={aboutUsHero.src}
                 alt="Interior"
@@ -42,7 +43,7 @@ export default function HeroSection() {
               />
             </div>
 
-            <div className="absolute bottom-[-22px] left-[-22px] bg-white shadow-xl rounded-xl px-6 py-4">
+            <div className="absolute bottom-[-22px] left-[-22px] bg-white shadow-md rounded-xl px-6 py-4">
               <h3 className="text-blue-600 font-bold text-xl">5M+</h3>
               <p className="text-gray-500 text-sm">Happy Customers</p>
             </div>

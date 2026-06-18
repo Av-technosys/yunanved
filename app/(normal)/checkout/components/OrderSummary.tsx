@@ -65,7 +65,7 @@ export default function OrderSummary({
         <Button
           onClick={handlePayment}
           disabled={loading}
-          className="w-full bg-teal-800 text-white rounded-full"
+          className="w-full bg-[#02A9E5] hover:bg-[#0288D1] text-white rounded-full"
         >
           {loading ? "Processing..." : `Pay ₹${finalTotal}`}
         </Button>

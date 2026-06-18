@@ -15,7 +15,7 @@ export function OrdersHeader({
   return (
     <>
       
-      <Card className="rounded-[24px] border-none bg-white shadow-sm p-6 mb-6">
+      <Card className="rounded-[24px] border-none bg-white shadow-md p-6 mb-6">
         <OrdersFilters
           search={search}
           setSearch={setSearch}

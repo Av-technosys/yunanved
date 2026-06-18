@@ -74,7 +74,7 @@ export default function AddCategoryForm() {
 
   return (
     <div className="w-full p-1">
-      <Card className="border-none shadow-none rounded-none">
+      <Card className="border-none shadow-md rounded-none">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-slate-900">
             Add Categories

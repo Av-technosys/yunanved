@@ -3,24 +3,26 @@ import { Card } from "./ui/card";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { MapPin, Phone, Send, SendHorizontal } from "lucide-react";
+import { FormEvent, useTransition } from "react";
+import { MapPin, Phone, SendHorizontal } from "lucide-react";
 
 import LocationImage from "../public/location.png";
 import Image from "next/image";
 import { sendContactMessage } from "@/helper/contact-us/action";
 import { toast } from "sonner";
-import { useTransition } from "react";
 import { contactUsSchema } from "@/validation/contactUsSchema";
 
 export const ContactUs = () => {
   const [isPending, startTransition] = useTransition();
-  const submitHandler = async (e: any) => {
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const contactData = {
-      name: e.target.name.value,
-      email: e.target.email.value,
-      phone: e.target.phone.value,
-      message: e.target.message.value,
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      message: String(formData.get("message") ?? ""),
     };
 
     const result = contactUsSchema.safeParse(contactData);
@@ -37,7 +39,7 @@ export const ContactUs = () => {
       const response = await sendContactMessage(contactData);
       if (response.success == true) {
         toast.success(response.message);
-        e.target.reset();
+        form.reset();
       } else {
         toast.error(response.message);
       }
@@ -47,7 +49,7 @@ export const ContactUs = () => {
     <div className="my-5">
       <div className="max-w-5xl px-2 flex flex-col gap-2 md:px-4 lg:px-0 mx-auto">
         <h1 className="text-2xl md:text-4xl font-bold">Get in Touch</h1>
-        <p className="max-w-md text-gray-600">
+        <p className="mt-3 max-w-md text-sm font-normal text-slate-600 md:text-base">
           Have a question about an order or want to learn more about our
           products? Our friendly team is here to help you.
         </p>
@@ -76,7 +78,13 @@ export const ContactUs = () => {
                 <Label htmlFor="phone-1">Contact Number</Label>
                 <Input
                   name="phone"
-                  type="number"
+                  type="tel"
+                  maxLength={10} // or 12
+                  pattern="[0-9]{10,12}"
+                  onInput={(e) => {
+                    e.currentTarget.value =
+                      e.currentTarget.value.replace(/\D/g, "").slice(0, 10); // change 10 → 12 if needed
+                  }}
                   className="text-black bg-[var(--background)]"
                   placeholder="Enter your contact number"
                 />
@@ -151,5 +159,3 @@ export const ContactUs = () => {
     </div>
   );
 };
-
-

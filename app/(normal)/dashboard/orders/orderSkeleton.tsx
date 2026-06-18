@@ -6,7 +6,7 @@ export const OrdersSkeleton = () => {
     <div className="w-full animate-pulse">
 
       {/* Filter Section */}
-      <Card className="rounded-3xl border-none bg-white shadow-sm p-6 mb-6 space-y-6">
+      <Card className="rounded-3xl border-none bg-white shadow-md p-6 mb-6 space-y-6">
 
         {/* Search + Date */}
         <div className="flex flex-col md:flex-row gap-4">
@@ -34,7 +34,7 @@ export const OrdersSkeleton = () => {
       </Card>
 
       {/* Empty State Card */}
-      <Card className="rounded-2xl border border-gray-100 shadow-sm p-10 flex flex-col items-center gap-4">
+      <Card className="rounded-2xl border border-gray-100 shadow-md p-10 flex flex-col items-center gap-4">
 
         <Skeleton className="h-6 w-44" />
         <Skeleton className="h-4 w-64" />
