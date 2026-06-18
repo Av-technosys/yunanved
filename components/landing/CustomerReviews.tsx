@@ -69,7 +69,7 @@ export function CustomerReviews() {
 
             <div className="mt-5 flex items-center gap-3">
               <Image
-                src="/reviewer.png"
+                src="https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (2).jpeg"
                 alt={review.name}
                 width={44}
                 height={44}

@@ -4,12 +4,12 @@ import { Instagram } from "lucide-react";
 
 const instaImages = [
  
-  "/ProductCarousel4.jpg",
-  "/gallery1.jpg",
-  "/gallery2.jpg",
-   "/ProductCarousel4.jpg",
-  "/gallery1.jpg",
-  "/gallery2.jpg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (3).jpeg ",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.19 AM (2).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.19 AM (1).jpeg",
+   "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.19 AM (2).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.19 AM (1).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (3).jpeg",
 ];
 
 export function InstaGrid() {
