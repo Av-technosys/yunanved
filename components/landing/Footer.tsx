@@ -113,20 +113,20 @@ export const Footer = () => {
                 <li className="flex items-start gap-4">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#02A9E5]" />
                   <span>
-                    456 Fashion Avenue, Style District,
+                    786/2 Yunanved Premium Mart, Gandhi Chowraha rd.,
                     <br />
-                    New York, NY 10013
+                    Mandsaur (m.p) 458001
                   </span>
                 </li>
 
                 <li className="flex items-center gap-4">
                   <Phone className="h-5 w-5 shrink-0 text-[#02A9E5]" />
-                  <Link href={MOBILE_NUMBER_URL}>+1 (555) 987-6543</Link>
+                  <Link href={MOBILE_NUMBER_URL}>+91 72598 51792</Link>
                 </li>
 
                 <li className="flex items-center gap-4">
                   <Mail className="h-5 w-5 shrink-0 text-[#02A9E5]" />
-                  <Link href={EMAIL_URL}>hello@yunanved.com</Link>
+                  <Link href={EMAIL_URL}>support@yunanved.com</Link>
                 </li>
 
                 <li className="flex items-center gap-4">
