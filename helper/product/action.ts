@@ -612,7 +612,6 @@ export async function getProductSimilarProducts(slug: string | any) {
 }
 
 export async function getProductReviews(slug: string | any) {
-  console.log("slug coming up for reviews:", slug)
   try {
     const v = await db.query.productVariant.findFirst({
       where: eq(productVariant.slug, slug),
