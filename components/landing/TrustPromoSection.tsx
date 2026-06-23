@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Grid2X2, Heart, UsersRound } from "lucide-react";
 
 const stats = [
@@ -47,7 +48,7 @@ export function TrustPromoSection() {
             <span className="block">Service You&apos;ll Love</span>
           </h2>
           <p className="mt-3 max-w-2xl text-sm font-normal leading-relaxed text-slate-600 md:text-base">
-            At Shopora, we bring you a curated selection of top-quality products
+            At Yunanved, we bring you a curated selection of top-quality products
             across lifestyle, fashion, electronics, and more.
           </p>
           <p className="mt-4 max-w-2xl text-sm font-normal leading-relaxed text-slate-600 md:text-base">
@@ -79,8 +80,9 @@ export function TrustPromoSection() {
 
       <div className="hide-scrollbar mt-10 flex gap-5 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
         {promos.map((promo, index) => (
-          <article
+          <Link
             key={`${promo}-${index}`}
+            href="/category"
             className="relative h-52 min-w-[82%] overflow-hidden rounded-xl bg-slate-100 md:min-w-0"
           >
             <Image
@@ -89,7 +91,7 @@ export function TrustPromoSection() {
               fill
               className="object-cover"
             />
-          </article>
+          </Link>
         ))}
       </div>
     </section>
