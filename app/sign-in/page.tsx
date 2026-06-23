@@ -135,13 +135,13 @@ const Page = () => {
                 >
                   Login
                 </Button>
-                <Button
+                {/* <Button
                   variant={"outline"}
                   className="w-full rounded-full border-slate-200 text-slate-900 flex items-center justify-center hover:border-[#02A9E5] hover:bg-sky-50"
                 >
                   <Image src={googleIcon} alt="google" width={18} height={18} />
                   <span>Sign in with Google</span>
-                </Button>
+                </Button> */}
               </div>
 
               <CardFooter>

@@ -183,13 +183,13 @@ const Page = () => {
                 >
                   Create Account
                 </Button>
-                <Button
+                {/* <Button
                   variant={"outline"}
                   className="w-full rounded-full border-slate-200 text-slate-900 hover:border-[#02A9E5] hover:bg-sky-50"
                 >
                   <Image src={googleIcon} alt="google" width={18} height={18} />
                   <span>Sign up with Google</span>
-                </Button>
+                </Button> */}
               </div>
 
               <CardFooter>
