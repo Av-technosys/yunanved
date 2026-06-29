@@ -3,6 +3,7 @@
 
 import { usePathname } from "next/navigation";
 import { Footer, Navbar } from "@/components/landing";
+import { Suspense } from "react";
 
 export default function LayoutClientWrapper({
   children,
@@ -18,7 +19,9 @@ export default function LayoutClientWrapper({
 
   return (
     <>
-      <Navbar userInfo={userDetails} />
+      <Suspense fallback={null}>
+        <Navbar userInfo={userDetails} />
+      </Suspense>
       {children}
       {!isDashboard && <Footer />}
     </>
