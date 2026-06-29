@@ -130,15 +130,17 @@ export const CATEGORY_2 = [
 
 
 export const NAVBAR_CATEGORY_RIBBON = [
-  "Face",
-  "Hair",
-  "Makeup",
-  "Body",
-  "Baby",
-  "New Launches",
-  "All Products",
-  "Store Locator",
+  { label: "Face", href: "/category?cat=face" },
+  { label: "Hair", href: "/category?cat=hair" },
+  { label: "Makeup", href: "/category?cat=makeup" },
+  { label: "Body", href: "/category?cat=body" },
+  { label: "Baby", href: "/category?cat=baby" },
+  { label: "New Launches", href: "/category?cat=new-launch" },
+  { label: "All Products", href: "/category" },
+  { label: "Store Locator", href: "/contact-us" },
 ]
+//hides from category section and filter 
+export const HIDDEN_CATEGORIES = ["new-launch"];
 
 export const pageSize = 4
 // export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
