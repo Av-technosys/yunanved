@@ -130,15 +130,14 @@ export const CATEGORY_2 = [
 
 
 export const NAVBAR_CATEGORY_RIBBON = [
-  "Mens wear",
-  "Womens Wear",
-  "Electronics",
-  "Grocery",
-  "Mobiles/Tablets",
-  "Beauty",
-  "Food",
-  "Perfumes",
-  "Laptop",
+  "Face",
+  "Hair",
+  "Makeup",
+  "Body",
+  "Baby",
+  "New Launches",
+  "All Products",
+  "Store Locator",
 ]
 
 export const pageSize = 4
@@ -151,12 +150,13 @@ export const ADMIN_EMAILS = [
   "piyushkharejhs@gmail.com",
   "info@avtechnosys.com",
   "admin@yunanved.com",
-  "bishnoi11011@gmail.com"
+  "bishnoi11011@gmail.com",
+  "jatinsankhla1@gmail.com",
 ] as const;
 
 export const ORDER_STATUS = {
   PENDING: "pending",
-  Paid:"paid",
+  Paid: "paid",
   PROCESSING: "processing",
   SHIPPED: "shipped",
   DELIVERED: "delivered",

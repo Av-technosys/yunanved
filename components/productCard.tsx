@@ -121,7 +121,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
 
         <CardContent className="flex flex-1 flex-col p-2 pb-0">
           <Link href={`/product/${product.slug}`}>
-            <div className={cn(`relative h-48 w-full md:h-52`, className)}>
+            <div className={cn(`relative h-48 w-full md:h-52 group`, className)}>
               <Image
                 src={
                   product.bannerImage &&
@@ -132,8 +132,16 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 }
                 alt={product.name}
                 fill
-                className="object-contain rounded-md px-1 pt-8"
+                className={cn("object-contain rounded-md px-1 pt-8 transition-opacity duration-300", product.hoverImage ? "group-hover:opacity-0" : "")}
               />
+              {product.hoverImage && (
+                <Image
+                  src={`${NEXT_PUBLIC_S3_BASE_URL}/${product.hoverImage}`}
+                  alt={product.name}
+                  fill
+                  className="object-contain rounded-md px-1 pt-8 transition-opacity duration-300 opacity-0 group-hover:opacity-100 absolute inset-0"
+                />
+              )}
             </div>
           </Link>
           <div className="flex flex-1 flex-col px-0.5 pb-1.5 pt-2">
