@@ -4,19 +4,19 @@ const Page = () => {
   return (
     <div className="min-h-screen w-full bg-white">
 
-     
 
 
-     
-           <div className="w-full flex items-start justify-center bg-white py-16 px-0 md:px-8">
+
+
+      <div className="w-full flex items-start justify-center bg-white py-16 px-0 md:px-8">
         <div className="w-full max-w-3xl flex flex-col items-center gap-10">
 
           <h1 className="text-3xl sm:text-4xl font-bold text-black text-center">
             Refund Policy
           </h1>
 
-         
-         <div className="w-full bg-[#F8F6F1] md:rounded-2xl rounded-none shadow-md border border-neutral-200 p-6 sm:p-8 lg:p-10 space-y-6 text-neutral-800 leading-relaxed">
+
+          <div className="w-full bg-[#F8F6F1] md:rounded-2xl rounded-none shadow-md border border-neutral-200 p-6 sm:p-8 lg:p-10 space-y-6 text-neutral-800 leading-relaxed">
 
             <p>
               Thank you for your interest in Yunanved products. To ensure a
@@ -45,7 +45,7 @@ const Page = () => {
                 <li>Select the correct item(s) and quantities for your needs.</li>
                 <li>
                   If you have any questions about a product before you purchase it,
-                  please contact us at care@yunanved.com and we will be happy to assist you.
+                  please contact us at support@yunanved.com and we will be happy to assist you.
                 </li>
               </ul>
             </div>
@@ -57,7 +57,7 @@ const Page = () => {
               <p className="mt-3">
                 While we do not offer refunds or returns, we are committed to
                 your satisfaction. If you have any concerns about your order,
-                please contact us at care@yunanved.com and we will do our best
+                please contact us at support@yunanved.com and we will do our best
                 to address them.
               </p>
             </div>

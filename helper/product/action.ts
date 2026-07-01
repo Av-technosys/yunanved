@@ -612,7 +612,6 @@ export async function getProductSimilarProducts(slug: string | any) {
 }
 
 export async function getProductReviews(slug: string | any) {
-  console.log("slug coming up for reviews:", slug)
   try {
     const v = await db.query.productVariant.findFirst({
       where: eq(productVariant.slug, slug),
@@ -735,6 +734,27 @@ export async function getProductsByCategorySlug(slug: string) {
         .limit(10);
     }
 
+    if (products.length > 0) {
+      const productIds = products.map((p) => p.id);
+      const media = await db
+        .select({
+          productVarientId: productVarientMedia.productVarientId,
+          mediaURL: productVarientMedia.mediaURL,
+        })
+        .from(productVarientMedia)
+        .where(inArray(productVarientMedia.productVarientId, productIds));
+
+      const mediaMap = new Map<string, string[]>();
+      for (const m of media) {
+        if (!mediaMap.has(m.productVarientId)) mediaMap.set(m.productVarientId, []);
+        mediaMap.get(m.productVarientId)!.push(m.mediaURL);
+      }
+
+      return products.map((p) => ({
+        ...p,
+        hoverImage: mediaMap.get(p.id)?.[0] || null,
+      }));
+    }
 
     return products;
   } catch (error) {

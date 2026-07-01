@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
-import signup from "../../public/authpic.png";
-import yunanved from "../../public/yunanvedLogo.png";
+import signup from "../../public/authhero.png";
+import yunanved from "../../public/mainlogo.png";
 import googleIcon from "../../public/Icon-Google.png";
 import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui";
 import { Input } from "@/components/ui";
@@ -42,13 +42,14 @@ const Page = () => {
       <div className="w-full h-screen flex ">
         <div className="w-1/2 hidden md:block relative border border-black">
           <Image src={signup} alt="signup" fill className="object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#02A9E5]/15 via-transparent to-white/20" />
         </div>
-        <div className="w-full md:w-1/2 bg-[#FFF6E3] flex items-center justify-center">
+        <div className="w-full md:w-1/2 bg-[#f1f7e9] flex items-center justify-center">
           <Card className="w-full max-w-lg mx-auto">
             <div className="w-full max-w-sm   mx-auto">
               <CardHeader>
                 <div className="w-full flex flex-col items-center">
-                  <Image src={yunanved} alt="yunanved" width={70} height={70} />
+                  <Image src={yunanved} alt="yunanved" width={150} height={44} className="h-9 w-auto object-contain" />
                   <h1 className="text-xl font-bold mt-4">Reset Password</h1>
                   <p className="text-gray-600 text-base">Enter your Email ID</p>
                 </div>

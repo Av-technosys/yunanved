@@ -7,10 +7,11 @@ import { ProductCard } from "../productCard";
 import { useClientSideUser } from "@/hooks/getClientSideUser";
 interface SectionProps {
   title: string;
+  subtitle?: string;
   items: any[];
 }
 
-const ProductCarousel = ({ title, items }: SectionProps) => {
+const ProductCarousel = ({ title, subtitle, items }: SectionProps) => {
   const { userDetails } = useClientSideUser();
 
   if (!items?.length) return null;
@@ -29,8 +30,7 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
         <div className="mt-2 grid items-center gap-2 md:grid-cols-[1fr_auto_1fr]">
           <div className="hidden md:block" />
           <p className="text-center text-sm font-normal text-slate-600 md:text-base">
-            Discover our newest arrivals, thoughtfully designed to elevate
-            everyday style with purpose and quality.
+            {subtitle}
           </p>
           <Link
             href="/category"
@@ -48,7 +48,7 @@ const ProductCarousel = ({ title, items }: SectionProps) => {
             product={product}
             index={index}
             userId={userDetails?.id}
-            />
+          />
         ))}
       </div>
     </section>

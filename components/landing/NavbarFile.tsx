@@ -14,8 +14,24 @@ import { CartIcon } from "./navbar/Cart";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui";
 import LogoutNavbar from "./logoutNavbar";
 import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export const Navbar = ({ userInfo }: any) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCat = searchParams.get("cat");
+
+  const checkIsActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    if (href.includes("?")) {
+      const [path, query] = href.split("?");
+      const params = new URLSearchParams(query);
+      return pathname === path && currentCat === params.get("cat");
+    }
+    return pathname === href && !currentCat;
+  };
+
   return (
     <div className="sticky top-0 z-50 border-b border-slate-100 bg-white pt-2">
       <header className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-16">
@@ -34,7 +50,7 @@ export const Navbar = ({ userInfo }: any) => {
             {/* Logo */}
             <Link href={"/"} className="flex shrink-0 items-center">
               <Image
-                src="/mainlogo.png"
+                src="https://d209jjsil73ccf.cloudfront.net/landingImages/mainlogo.png"
                 alt="YUNANVED"
                 width={140}
                 height={40}
@@ -134,17 +150,23 @@ export const Navbar = ({ userInfo }: any) => {
               <div className="flex flex-col gap-1 border-t border-slate-100 pt-4">
                 <Link
                   href="/"
-                  className="rounded-xl px-3 py-2 text-sm font-semibold text-[#02A9E5] hover:bg-sky-50"
+                  className={cn(
+                    "rounded-xl px-3 py-2 text-sm font-semibold hover:bg-sky-50",
+                    checkIsActive("/") ? "text-[#02A9E5]" : "text-slate-700"
+                  )}
                 >
                   Home
                 </Link>
                 {NAVBAR_CATEGORY_RIBBON.map((item) => (
                   <Link
-                    key={item}
-                    href="/category"
-                    className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-black"
+                    key={item.label}
+                    href={item.href}
+                    className={cn(
+                      "rounded-xl px-3 py-2 text-sm font-medium hover:bg-slate-50 hover:text-black",
+                      checkIsActive(item.href) ? "text-[#02A9E5]" : "text-slate-700"
+                    )}
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 ))}
               </div>
@@ -191,21 +213,27 @@ export const Navbar = ({ userInfo }: any) => {
           </Sheet>
         </div>
 
-        <nav className="hidden h-9 items-center justify-center gap-9 text-[13px] font-medium text-slate-950 md:flex">
+        <nav className="hidden h-9 items-center justify-center gap-9 text-[13px] font-medium md:flex">
           <Link
             href="/"
-            className="relative flex h-full items-center text-[#02A9E5] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#02A9E5]"
+            className={cn(
+              "flex h-full items-center transition-colors hover:text-[#02A9E5]",
+              checkIsActive("/") ? "relative text-[#02A9E5] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#02A9E5]" : "text-slate-950"
+            )}
           >
             Home
           </Link>
 
           {NAVBAR_CATEGORY_RIBBON.map((item) => (
             <Link
-              key={item}
-              href="/category"
-              className="flex h-full items-center transition-colors hover:text-[#02A9E5]"
+              key={item.label}
+              href={item.href}
+              className={cn(
+                "flex h-full items-center transition-colors hover:text-[#02A9E5]",
+                checkIsActive(item.href) ? "relative text-[#02A9E5] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-[#02A9E5]" : "text-slate-950"
+              )}
             >
-              {item}
+              {item.label}
             </Link>
           ))}
         </nav>

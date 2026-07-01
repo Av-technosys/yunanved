@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Grid2X2, Heart, UsersRound } from "lucide-react";
 
 const stats = [
@@ -15,11 +16,15 @@ const stats = [
   {
     icon: Grid2X2,
     value: "10,000+",
-    label: "Happy Customers",
+    label: "Happy Customers",     
   },
 ];
 
-const promos = ["/Story.png", "/Story.png", "/Story.png"];
+const promos = [
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (1).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (1).jpeg",
+  "https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM (1).jpeg"
+];
 
 export function TrustPromoSection() {
   return (
@@ -27,7 +32,7 @@ export function TrustPromoSection() {
       <div className="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center">
         <div className="relative h-[310px] overflow-hidden rounded-2xl bg-[#ffe1c8] md:h-[400px]">
           <Image
-            src="/trusted.png"
+            src="https://d209jjsil73ccf.cloudfront.net/landingImages/WhatsApp Image 2026-06-18 at 10.36.18 AM.jpeg "
             alt="Shopora lifestyle collection"
             fill
             className="object-cover"
@@ -43,7 +48,7 @@ export function TrustPromoSection() {
             <span className="block">Service You&apos;ll Love</span>
           </h2>
           <p className="mt-3 max-w-2xl text-sm font-normal leading-relaxed text-slate-600 md:text-base">
-            At Shopora, we bring you a curated selection of top-quality products
+            At Yunanved, we bring you a curated selection of top-quality products
             across lifestyle, fashion, electronics, and more.
           </p>
           <p className="mt-4 max-w-2xl text-sm font-normal leading-relaxed text-slate-600 md:text-base">
@@ -75,8 +80,9 @@ export function TrustPromoSection() {
 
       <div className="hide-scrollbar mt-10 flex gap-5 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
         {promos.map((promo, index) => (
-          <article
+          <Link
             key={`${promo}-${index}`}
+            href="/category"
             className="relative h-52 min-w-[82%] overflow-hidden rounded-xl bg-slate-100 md:min-w-0"
           >
             <Image
@@ -85,7 +91,7 @@ export function TrustPromoSection() {
               fill
               className="object-cover"
             />
-          </article>
+          </Link>
         ))}
       </div>
     </section>

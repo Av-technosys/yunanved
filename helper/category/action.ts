@@ -8,7 +8,7 @@ import slugify from "slugify";
 import { redirect } from "next/navigation";
 import { arrayContains, arrayOverlaps, avg, count, desc, eq, gte, inArray, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { productCategory, category, product, productVariant, review } from "@/db";
+import { productCategory, category, product, productVariant, review, featuredCategory } from "@/db";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
@@ -166,6 +166,7 @@ export async function deleteCategory(id: string) {
       };
     }
 
+    await db.delete(featuredCategory).where(eq(featuredCategory.categoryId, id));
     await db.delete(category).where(eq(category.id, id));
 
     revalidatePath("/admin/category");

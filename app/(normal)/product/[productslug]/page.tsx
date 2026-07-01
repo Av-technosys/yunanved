@@ -18,7 +18,6 @@ export async function generateStaticParams() {
 const Page = async (props: any) => {
   const params = await props.params;
   const product = await getFullProduct(params.productslug);
-  console.log("Product Data:", product); // Debug log to check the product data
   if (!product) {
     return <div className="p-20 text-center">Product not found</div>;
   }

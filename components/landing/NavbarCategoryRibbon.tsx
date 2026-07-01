@@ -6,11 +6,11 @@ export const NavbarCategoryRibbon = () => {
         <nav className="hidden md:flex max-w-7xl mx-auto justify-center items-center gap-10 py-1  text-sm font-medium text-slate-700">
             {NAVBAR_CATEGORY_RIBBON.map((item) => (
                 <Link
-                    key={item}
-                    href="/"
+                    key={item.label}
+                    href={item.href}
                     className="hover:text-black transition-colors"
                 >
-                    {item}
+                    {item.label}
                 </Link>
             ))}
         </nav>

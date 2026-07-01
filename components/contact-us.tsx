@@ -117,7 +117,7 @@ export const ContactUs = () => {
               <div className="max-w-xs   flex flex-col gap-2">
                 <span className="text-base font-bold">Our Office</span>
                 <p className="text-gray-600 text-sm">
-                  123 Ecommerce Way, Suite 100 San Francisco, CA 94103, USA
+                  786/2 Yunanved Premium Mart, Gandhi Chowraha rd.,Mandsaur (m.p) 458001
                 </p>
               </div>
             </div>
@@ -128,9 +128,9 @@ export const ContactUs = () => {
               <div className="max-w-xs   flex flex-col gap-1">
                 <span className="text-base font-bold">Phone Support</span>
                 <p className="text-gray-600 text-sm">
-                  Monday - Friday, 9am - 5pm EST
+                  Monday - Friday, 10am - 8pm IST
                 </p>
-                <p className="text-blue-500 text-sm">+1 (555) 000-0000</p>
+                <p className="text-blue-500 text-sm">+91 72598 51792</p>
               </div>
             </div>
             <div className="flex items-start  gap-2">
@@ -142,7 +142,7 @@ export const ContactUs = () => {
                 <p className="text-gray-600 text-sm">
                   Expect a reply within 24 hours.
                 </p>
-                <p className="text-blue-500 text-sm">support@brand.com</p>
+                <p className="text-blue-500 text-sm">support@yunanved.com</p>
               </div>
             </div>
           </div>
