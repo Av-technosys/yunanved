@@ -17,9 +17,10 @@ import {
   MOBILE_NUMBER_URL,
   TWITTER_URL,
   WHATSAPP_URL,
+  NAVBAR_CATEGORY_RIBBON,
 } from "@/const";
 
-import {IconBrandWhatsapp } from "@tabler/icons-react";
+import { IconBrandWhatsapp } from "@tabler/icons-react";
 export const Footer = () => {
   return (
     <>
@@ -42,7 +43,7 @@ export const Footer = () => {
                 collections for the modern individual.
               </p>
 
-              <div className="mt-6 flex items-center gap-4 text-slate-950">
+              {/* <div className="mt-6 flex items-center gap-4 text-slate-950">
                 <Link href={FACEBOOK_URL} aria-label="Facebook">
                   <Facebook className="h-5 w-5" />
                 </Link>
@@ -55,7 +56,7 @@ export const Footer = () => {
                 <Link href={EMAIL_URL} aria-label="Email">
                   <Mail className="h-5 w-5" />
                 </Link>
-              </div>
+              </div> */}
             </div>
 
             <div>
@@ -84,20 +85,13 @@ export const Footer = () => {
                 Categories
               </h3>
               <ul className="mt-6 space-y-4 text-md text-slate-950">
-                {[
-                  "Fashion",
-                  "Perfumes",
-                  "Electronics",
-                  "Beauty",
-                  "Groceries",
-                  
-                ].map((item) => (
-                  <li key={item}>
+                {NAVBAR_CATEGORY_RIBBON.filter((item) => item.href.startsWith("/category")).map((item) => (
+                  <li key={item.label}>
                     <Link
-                      href={`/category?cat=${item.toLowerCase()}`}
+                      href={item.href}
                       className="hover:text-[#02A9E5]"
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}

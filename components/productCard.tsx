@@ -114,19 +114,19 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
       <Card
         key={index}
         className="relative h-full gap-0 overflow-hidden rounded-xl border border-slate-50 bg-white p-0 shadow-md transition-shadow hover:shadow-md"
-      > 
+      >
         <div className="absolute left-4 top-2 z-10 rounded-sm bg-[#96C948] px-3 py-1 text-[12px] font-bold text-white">
           -10%
         </div>
 
         <CardContent className="flex flex-1 flex-col p-2 pb-0">
           <Link href={`/product/${product.slug}`}>
-            <div className={cn(`relative h-48 w-full md:h-52 group`, className)}>
+            <div className={cn(`relative h-64 w-full md:h-72 group`, className)}>
               <Image
                 src={
                   product.bannerImage &&
-                  product.bannerImage !== "null" &&
-                  product.bannerImage !== "[object Object]"
+                    product.bannerImage !== "null" &&
+                    product.bannerImage !== "[object Object]"
                     ? `${NEXT_PUBLIC_S3_BASE_URL}/${product.bannerImage}`
                     : "/fortune1.png"
                 }
@@ -144,13 +144,13 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
               )}
             </div>
           </Link>
-          <div className="flex flex-1 flex-col px-0.5 pb-1.5 pt-2">
+          <div className="flex flex-1 flex-col px-1 pb-2 pt-3">
             <Link href={`/product/${product.slug}`}>
-              <div className="min-h-10 text-[16px] font-semibold leading-tight text-slate-950 line-clamp-2">
+              <div className="min-h-11 text-[15px] font-semibold leading-snug text-slate-950 line-clamp-2">
                 {product.name}
               </div>
             </Link>
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-3 flex items-center justify-between">
               <div className="leading-none">
                 <StarRatings
                   rating={rating}
@@ -167,9 +167,9 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="px-2.5 pb-2.5 pt-0">
+        <CardFooter className="px-3 pb-3 pt-1">
           <div className="flex w-full flex-col gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="text-md font-bold text-[#96C948]">
                 ₹{product.basePrice}
               </span>
@@ -217,7 +217,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 disabled={isAdding || !product.isInStock}
                 variant={!product.isInStock ? "outline" : "default"}
                 onClick={handleClick}
-                className="h-10 w-full rounded-md bg-[#02A9E5] text-[12px] font-bold uppercase tracking-wide text-white shadow-none hover:bg-[#0298cf]"
+                className="h-11 w-full rounded-md bg-[#02A9E5] text-[12px] font-bold uppercase tracking-wide text-white shadow-none hover:bg-[#0298cf]"
               >
                 {!product.isInStock
                   ? "Out of Stock"
