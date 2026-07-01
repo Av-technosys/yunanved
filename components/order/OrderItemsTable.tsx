@@ -34,7 +34,7 @@ export function OrderItemsTable({ orderData }: any) {
                   <img
                     src={`${S3_BASE}/${item.productImage}`}
                     className="object-cover h-full w-full"
-                    alt="product"
+                    alt={item.productName || "Order item"}
                   />
                 </div>
 
@@ -72,7 +72,7 @@ export function OrderItemsTable({ orderData }: any) {
                       {returnReq.status === "pending" && (
                         <div>
                           <p className="text-yellow-600 font-medium text-sm">
-                            Return requested
+                            Return initiated
                           </p>
                         </div>
                       )}

@@ -8,5 +8,6 @@ export const userSubjects = {
   orderDelivered: "Yunanved - Your Order Has Been Delivered",
   outForDelivery: "Yunanved - Your Order is Out for Delivery",
   paymentSuccess: "Yunanved - Payment Received for Your Order",
+  returnInitiated: "Yunanved - Return Request Initiated",
   refundProcessed: "Refund Request Received - Yunanved",
 } as const;

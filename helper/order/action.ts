@@ -2,16 +2,18 @@
 "use server";
 
 import { paginate } from "@/lib/pagination";
-import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
+import { and, or, sql, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { cancelRequest, order, orderItem, payment, returnRequest, returnRequestImage } from "@/db/orderSchema";
 import { user } from "@/db/userSchema";
 import { revalidatePath } from "next/cache";
-import { cart, cartItem, productVariant, product } from "@/db";
+import { cart, cartItem, productVariant } from "@/db";
 import { getServerSideUser } from "@/hooks/getServerSideUser";
 import { createNewShipingToken, createShiprocketOrder, getShippingTokenFromDB } from "@/utils/shipping";
 import { ShiprocketOrderPayload } from "@/types/shipping";
 import { coupon, couponTransaction } from "@/db/userSchema";
+import { ORDER_STATUS } from "@/const";
+import { sendRefundEmail, sendReturnInitiatedEmail } from "@/helper/emailTemplates/action";
 type CancelStatus = "pending" | "approved" | "rejected" | "refunded";
 
 const DELIVERY_FEE = 15;
@@ -247,7 +249,6 @@ export async function updateOrderStatus(id: string, status: string | any) {
 export async function createOrder({
   items,
   userId,
-  fixedAmount,
   address,
   razorpayPaymentId,
   razorpayOrderId,
@@ -653,13 +654,25 @@ export async function updateCancelRequestStatus({
   status: "approved" | "rejected" | "refunded";
   adminReason?: string;
 }) {
-  await db
+  const [updatedRequest] = await db
     .update(cancelRequest)
     .set({
       status,
       ...(adminReason && { adminReason }),
+      updatedAt: new Date(),
     })
-    .where(eq(cancelRequest.id, id));
+    .where(eq(cancelRequest.id, id))
+    .returning();
+
+  if (status === "refunded" && updatedRequest?.orderId) {
+    await db
+      .update(order)
+      .set({
+        status: ORDER_STATUS.CANCELED,
+        updatedAt: new Date(),
+      })
+      .where(eq(order.id, updatedRequest.orderId));
+  }
 }
 
 export async function createReturnRequest({
@@ -703,6 +716,16 @@ export async function createReturnRequest({
         imageUrl: img,
       }))
     );
+  }
+
+  const [item] = await db
+    .select()
+    .from(orderItem)
+    .where(eq(orderItem.id, orderItemId))
+    .limit(1);
+
+  if (item?.orderId) {
+    await sendReturnInitiatedEmail(user.email, item.orderId, item.productName);
   }
 
   return { success: true };
@@ -792,10 +815,51 @@ export async function updateReturnRequestStatus({
     updateData.adminReason = adminReason;
   }
 
-  await db
+  const [updatedRequest] = await db
     .update(returnRequest)
     .set(updateData)
-    .where(eq(returnRequest.id, id));
+    .where(eq(returnRequest.id, id))
+    .returning();
+
+  if (status === "refunded" && updatedRequest?.orderItemId) {
+    const [item] = await db
+      .select()
+      .from(orderItem)
+      .where(eq(orderItem.id, updatedRequest.orderItemId))
+      .limit(1);
+
+    if (item?.orderId) {
+      const [orderData] = await db
+        .select()
+        .from(order)
+        .where(eq(order.id, item.orderId))
+        .limit(1);
+
+      const [userData] = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, updatedRequest.userId))
+        .limit(1);
+
+      if (orderData?.id) {
+        await db
+          .update(order)
+          .set({
+            status: ORDER_STATUS.COMPLETED,
+            updatedAt: new Date(),
+          })
+          .where(eq(order.id, orderData.id));
+      }
+
+      if (userData?.email) {
+        await sendRefundEmail(
+          userData.email,
+          String(item.productPrice),
+          item.orderId,
+        );
+      }
+    }
+  }
 
   return {
     success: true,

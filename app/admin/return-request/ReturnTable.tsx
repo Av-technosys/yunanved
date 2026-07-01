@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { sendRefundEmail, updateReturnRequestStatus } from "@/helper";
+import { updateReturnRequestStatus } from "@/helper";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,7 +35,6 @@ import { ReturnImagePreviewModal } from "./ReturnImagePreviewModal";
 export default function ReturnTable({ data }: any) {
   const router = useRouter();
   const [rejectReason, setRejectReason] = useState("");
-  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const getColor = (status: string) => {
     switch (status) {
@@ -52,18 +51,14 @@ export default function ReturnTable({ data }: any) {
     }
   };
 
-  const refundEmailHandler=async(email:any,amount:any,orderID:any)=>{
-    await sendRefundEmail(email, amount, orderID);
-  }
-
   return (
-    <div className=" rounded-lg overflow-auto">
-      <Table>
+    <div className="rounded-lg">
+      <Table className="table-fixed w-full">
         <TableHeader className="bg-gray-50 sticky top-0">
           <TableRow>
             <TableHead className="w-[50px]">#</TableHead>
-            <TableHead className="w-[180px]">User</TableHead>
-            <TableHead className="w-[250px]">Product</TableHead>
+            <TableHead>User</TableHead>
+            <TableHead>Product</TableHead>
             <TableHead className="w-[80px]">Amount</TableHead>
             <TableHead className="w-[90px]">Status</TableHead>
             <TableHead className="w-[180px] text-end">Action</TableHead>
@@ -88,12 +83,17 @@ export default function ReturnTable({ data }: any) {
                 {/* USER */}
                 <TableCell className="align-middle py-2">
                   <div>
-                    <p className="text-sm font-medium truncate max-w-[160px]">
-                      {user.first_name} {user.last_name}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate max-w-[160px]">
-                      {user.email}
-                    </p>
+                    <TextPreview
+                      title="Customer"
+                      value={`${user.first_name} ${user.last_name}\n${user.email}`}
+                      preview={`${user.first_name} ${user.last_name}`}
+                    />
+                    <TextPreview
+                      title="Customer Email"
+                      value={user.email}
+                      preview={user.email}
+                      className="text-xs text-gray-400"
+                    />
                   </div>
                 </TableCell>
 
@@ -101,12 +101,17 @@ export default function ReturnTable({ data }: any) {
                 <TableCell className="align-middle py-2">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate max-w-[150px]">
-                        {item.productName}
-                      </p>
-                      <p className="text-xs text-gray-400 truncate max-w-[150px]">
-                        {req.reason}
-                      </p>
+                      <TextPreview
+                        title="Product"
+                        value={item.productName}
+                        preview={item.productName}
+                      />
+                      <TextPreview
+                        title="Return Reason"
+                        value={req.reason}
+                        preview={req.reason}
+                        className="text-xs text-gray-400"
+                      />
                     </div>
                     {row.images?.length > 0 && (
                       <ReturnImagePreviewModal
@@ -151,15 +156,12 @@ export default function ReturnTable({ data }: any) {
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={async () => {
-                                setLoadingId(req.id);
                                 await updateReturnRequestStatus({
                                   id: req.id,
                                   status: "approved",
                                 });
-                                toast.success("Approved");
+                                toast.success("Return approved");
                                 router.refresh();
-                                setLoadingId(null);
-                                refundEmailHandler(user.email, item.productPrice, item.orderId);
                               }}
                             >
                               Confirm
@@ -193,7 +195,6 @@ export default function ReturnTable({ data }: any) {
                               disabled={!rejectReason}
                               className="bg-red-600"
                               onClick={async () => {
-                                setLoadingId(req.id);
                                 await updateReturnRequestStatus({
                                   id: req.id,
                                   status: "rejected",
@@ -202,7 +203,6 @@ export default function ReturnTable({ data }: any) {
                                 toast.success("Rejected");
                                 router.refresh();
                                 setRejectReason("");
-                                setLoadingId(null);
                               }}
                             >
                               Submit
@@ -232,14 +232,12 @@ export default function ReturnTable({ data }: any) {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={async () => {
-                              setLoadingId(req.id);
                               await updateReturnRequestStatus({
                                 id: req.id,
                                 status: "refunded",
                               });
-                              toast.success("Refunded");
+                              toast.success("Refunded and order marked completed");
                               router.refresh();
-                              setLoadingId(null);
                             }}
                           >
                             Confirm
@@ -260,5 +258,45 @@ export default function ReturnTable({ data }: any) {
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+function TextPreview({
+  title,
+  value,
+  preview,
+  className = "text-sm font-medium",
+}: {
+  title: string;
+  value: string;
+  preview?: string;
+  className?: string;
+}) {
+  const display = preview || value;
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          type="button"
+          className={`block max-w-full truncate text-left hover:text-slate-950 hover:underline ${className}`}
+        >
+          {display}
+        </button>
+      </AlertDialogTrigger>
+
+      <AlertDialogContent className="max-w-[420px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription className="whitespace-pre-wrap break-words text-left text-slate-700">
+            {value}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogAction>Close</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

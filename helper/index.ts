@@ -120,6 +120,7 @@ export {
   sendOrderStatusEmail,
   sendOutForDeliveryEmail,
   sendPaymentReceivedEmail,
+  sendReturnInitiatedEmail,
   sendRefundEmail
 } from "./emailTemplates/action";
 

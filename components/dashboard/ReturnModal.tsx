@@ -92,7 +92,7 @@ export function ReturnModal({ item }: any) {
       });
 
       if (res?.success) {
-        toast.success("Return request submitted");
+        toast.success("Return initiated");
 
          startTransition(() => {
          window.location.reload();
@@ -180,6 +180,7 @@ export function ReturnModal({ item }: any) {
               <img
                 src={img.preview}
                 className="w-20 h-20 rounded-lg object-cover border"
+                alt="Return item preview"
               />
 
               {/* ❌ remove */}

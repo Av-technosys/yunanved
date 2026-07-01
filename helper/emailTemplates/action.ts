@@ -293,6 +293,29 @@ export async function sendPaymentReceivedEmail(
   }
 }
 
+export async function sendReturnInitiatedEmail(
+  email: string,
+  orderId: string,
+  productName: string,
+) {
+  try {
+    const result = await sendUserTemplateEmail({
+      to: email,
+      subject: userSubjects.returnInitiated,
+      template: "returnInitiated",
+      data: {
+        orderId,
+        productName,
+      },
+    });
+
+    return { success: true, result };
+  } catch (error) {
+    console.error("SES Email Error:", error);
+    return { success: false, error };
+  }
+}
+
 export async function sendRefundEmail(
   email: string,
   amount: string,

@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
-/* eslint-disable react-hooks/purity */
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -12,12 +18,10 @@ import {
 } from "@/components/ui";
 import { Eye } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Select } from "@/components/select";
-import { sendOrderCancellationEmail, sendOrderConfirmationEmail, sendOrderShippedEmail, sendOrderStatusEmail, updateOrderStatus } from "@/helper/index";
+import { updateOrderStatus } from "@/helper/index";
 import { ORDER_STATUS } from "@/const/globalconst";
-import { useClientSideUser } from "@/hooks/getClientSideUser";
-import { getUserEmailByUserId } from "@/helper/getUserId";
 
 interface OrderTableProps {
   page: number;
@@ -33,31 +37,14 @@ const ORDER_STATUS_OPTIONS = Object.values(ORDER_STATUS).map((status) => ({
 
 const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
   const startIndex = (page - 1) * pageSize;
-  const now = new Date();
-  const currentDate = now.toLocaleDateString('en-IN');
-  const currentTime = now.toLocaleTimeString('en-IN');
-
   const [isPending, startTransition] = useTransition();
-
-
+  const [statusChange, setStatusChange] = useState<{
+    order: any;
+    status: string;
+  } | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
-
-  const orderStatusEmailSender = async (order: any, value: any) => {
-    const userDetails: any = await getUserEmailByUserId(order.userId);
-    if (value == 'processing') {
-      await sendOrderConfirmationEmail(userDetails?.email, order?.id, currentDate, currentTime, 'Online Payment', '7-8 days from order date', order?.totalAmountPaid.toString(), `${order?.addressLine1} ${order?.addressLine2}, ${order?.city}, ${order?.state}, ${order?.postalCode}`);
-    } else if (value == 'canceled') {
-      await sendOrderCancellationEmail(userDetails?.email, order?.id);
-    } else if (value == 'shipped') {
-      await sendOrderShippedEmail(userDetails?.email, order?.id, 'Blue Dart', '987654321');
-    } else if (value == 'delivered') {
-      await sendOrderStatusEmail(userDetails?.email, order?.id);
-    }
-  }
-
-
 
   return (
     <div className="mt-8">
@@ -100,10 +87,8 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
                         value={order.status}
                         selectItems={ORDER_STATUS_OPTIONS}
                         onValueChange={(value) => {
-                          startTransition(() => {
-                            updateOrderStatus(order.id, value);
-                            orderStatusEmailSender(order, value);
-                          });
+                          if (!value) return;
+                          setStatusChange({ order, status: value });
                         }}
                       />
                     </div>
@@ -134,6 +119,42 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
           )}
         </TableBody>
       </Table>
+
+      <AlertDialog
+        open={Boolean(statusChange)}
+        onOpenChange={(open) => {
+          if (!open) setStatusChange(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update order status?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will mark order #{statusChange?.order?.id} as{" "}
+              <span className="font-semibold text-slate-900">
+                {statusChange?.status}
+              </span>
+              . No customer status email will be sent from this action.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!statusChange) return;
+
+                startTransition(() => {
+                  updateOrderStatus(statusChange.order.id, statusChange.status);
+                  setStatusChange(null);
+                });
+              }}
+            >
+              Update
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

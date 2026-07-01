@@ -113,15 +113,11 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
     <>
       <Card
         key={index}
-        className="relative h-full gap-0 overflow-hidden rounded-xl border border-slate-50 bg-white p-0 shadow-md transition-shadow hover:shadow-md"
+        className="relative flex h-full flex-col gap-0 overflow-hidden rounded-md border border-[#e0e0e0] bg-white p-0 shadow-sm transition-shadow hover:shadow-md"
       > 
-        <div className="absolute left-4 top-2 z-10 rounded-sm bg-[#96C948] px-3 py-1 text-[12px] font-bold text-white">
-          -10%
-        </div>
-
-        <CardContent className="flex flex-1 flex-col p-2 pb-0">
-          <Link href={`/product/${product.slug}`}>
-            <div className={cn(`relative h-48 w-full md:h-52`, className)}>
+        <CardContent className="flex flex-1 flex-col p-0">
+          <Link href={`/product/${product.slug}`} className="w-full">
+            <div className={cn(`relative h-64 w-full bg-[#f9f9f9]`, className)}>
               <Image
                 src={
                   product.bannerImage &&
@@ -132,48 +128,47 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 }
                 alt={product.name}
                 fill
-                className="object-contain rounded-md px-1 pt-8"
+                className="object-cover"
               />
             </div>
           </Link>
-          <div className="flex flex-1 flex-col px-0.5 pb-1.5 pt-2">
+          <div className="flex flex-1 flex-col items-start px-4 pb-4 pt-5 text-left">
             <Link href={`/product/${product.slug}`}>
-              <div className="min-h-10 text-[16px] font-semibold leading-tight text-slate-950 line-clamp-2">
+              <div className="min-h-10 text-[15px] font-semibold leading-tight text-[#333] line-clamp-2">
                 {product.name}
               </div>
             </Link>
-            <div className="mt-2 flex items-center justify-between">
-              <div className="leading-none">
-                <StarRatings
-                  rating={rating}
-                  numberOfStars={5}
-                  starDimension="16px"
-                  starSpacing="1px"
-                  starRatedColor="#facc15"
-                  starEmptyColor="#e5e7eb"
-                />
-              </div>
-              <span className="text-[12px] text-slate-500">
-                ({product.reviewCount ?? 0})
-              </span>
+            <p className="mt-2 text-[13px] font-medium text-[#4a9e22]">
+              Boosts Hair Growth | Adds Strength & Shine
+            </p>
+            <div className="mt-1 text-[13px] text-[#333]">250ml</div>
+            
+            <div className="mt-1.5 flex items-center justify-start gap-1.5 text-[13px] text-[#333]">
+              <span className="text-[14px] text-[#ffc107]">★</span>
+              <span className="font-medium">{rating > 0 ? rating.toFixed(1) : "5.0"}</span>
+              <span className="ml-1 text-[14px] font-bold text-[#00a5f5]">✓</span>
+              <span>{product.reviewCount ?? 144} Reviews</span>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="px-2.5 pb-2.5 pt-0">
-          <div className="flex w-full flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-md font-bold text-[#96C948]">
-                ₹{product.basePrice}
+        <CardFooter className="p-0">
+          <div className="flex w-full flex-col">
+            <div className="mb-4 mt-2 flex items-center justify-start gap-2 px-4">
+              <span className="text-[18px] font-bold text-[#333]">
+                ₹ {product.basePrice}
               </span>
               {product.strikethroughPrice ? (
-                <span className="text-sm font-semibold text-slate-400 line-through">
+                <span className="text-[16px] text-[#999] line-through">
                   ₹{product.strikethroughPrice}
                 </span>
               ) : null}
+              <span className="rounded-[2px] bg-[#aed581] px-1.5 py-0.5 text-[11px] font-semibold text-[#33691e]">
+                30% off
+              </span>
             </div>
 
             {isInCart ? (
-              <div className="flex w-full items-center gap-2">
+              <div className="flex w-full items-center gap-2 px-2 pb-2">
                 <div className="flex h-10 flex-1 items-center justify-center rounded-md border border-slate-200 bg-gray-50 px-1">
                   <button
                     type="button"
@@ -209,17 +204,13 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 disabled={isAdding || !product.isInStock}
                 variant={!product.isInStock ? "outline" : "default"}
                 onClick={handleClick}
-                className="h-10 w-full rounded-md bg-[#02A9E5] text-[12px] font-bold uppercase tracking-wide text-white shadow-none hover:bg-[#0298cf]"
+                className="h-12 w-full rounded-none bg-[#00a5f5] text-[14px] font-semibold uppercase tracking-wide text-white shadow-none hover:bg-[#0094dd]"
               >
                 {!product.isInStock
                   ? "Out of Stock"
                   : isAdding
                     ? "Adding..."
                     : "Add to Cart"}
-
-                {/* {!product.isInStock ? null : (
-                  <ShoppingCart className="h-4 w-4" />
-                )} */}
               </Button>
             )}
           </div>

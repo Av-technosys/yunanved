@@ -61,14 +61,14 @@ export default function CancelRequestTable({ data }: any) {
   };
 
   return (
-    <Table>
+    <Table className="table-fixed w-full">
       <TableHeader>
         <TableRow>
-          <TableHead>#</TableHead>
+          <TableHead className="w-[52px]">#</TableHead>
           <TableHead>Order</TableHead>
           <TableHead>User</TableHead>
-          <TableHead>Amount</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="w-[110px]">Amount</TableHead>
+          <TableHead className="w-[110px]">Status</TableHead>
           <TableHead>Reason</TableHead>
           <TableHead className="text-end">Action</TableHead>
         </TableRow>
@@ -85,10 +85,20 @@ export default function CancelRequestTable({ data }: any) {
               <TableRow key={cancel.id}>
                 <TableCell>{index + 1}</TableCell>
 
-                <TableCell>#{order.id}</TableCell>
+                <TableCell>
+                  <TextPreview
+                    title="Order ID"
+                    value={order.id}
+                    preview={`#${order.id.slice(0, 8)}...`}
+                  />
+                </TableCell>
 
                 <TableCell>
-                  {user.first_name} {user.last_name}
+                  <TextPreview
+                    title="Customer"
+                    value={`${user.first_name} ${user.last_name}\n${user.email}`}
+                    preview={`${user.first_name} ${user.last_name}`}
+                  />
                 </TableCell>
 
                 <TableCell>₹{order.totalAmountPaid}</TableCell>
@@ -99,8 +109,11 @@ export default function CancelRequestTable({ data }: any) {
                   </Badge>
                 </TableCell>
 
-                <TableCell className="max-w-[200px] truncate">
-                  {cancel.userReason}
+                <TableCell>
+                  <TextPreview
+                    title="Cancellation Reason"
+                    value={cancel.userReason || "No reason provided"}
+                  />
                 </TableCell>
 
                 <TableCell className="text-end">
@@ -183,6 +196,44 @@ export default function CancelRequestTable({ data }: any) {
         )}
       </TableBody>
     </Table>
+  );
+}
+
+function TextPreview({
+  title,
+  value,
+  preview,
+}: {
+  title: string;
+  value: string;
+  preview?: string;
+}) {
+  const display = preview || value;
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          type="button"
+          className="block max-w-full truncate text-left text-sm text-slate-700 hover:text-slate-950 hover:underline"
+        >
+          {display}
+        </button>
+      </AlertDialogTrigger>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription className="whitespace-pre-wrap break-words text-left text-slate-700">
+            {value}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogAction>Close</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
