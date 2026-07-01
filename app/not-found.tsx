@@ -8,11 +8,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { Home } from "lucide-react";
 
+import { Suspense } from "react";
+
 const NotFound = () => {
   const { userDetails, loading } = useClientSideUser();
   return (
     <>
-      <Navbar userInfo={userDetails} loading={loading} />
+      <Suspense fallback={<div className="h-12 md:h-[52px]" />}>
+        <Navbar userInfo={userDetails} loading={loading} />
+      </Suspense>
       <div className="min-h-[90vh] sm:min-h-[80vh] flex flex-col items-center justify-center px-4 text-center">
         
         <Image src={pageImage} alt="404" width={500} height={500} />

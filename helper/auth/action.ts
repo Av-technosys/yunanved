@@ -4,6 +4,7 @@ type SignupPayload = {
   password: string;
   first_name?: string;
   last_name?: string;
+  number?: string;
   user_type?: "user" | "admin";
 };
 
@@ -110,6 +111,7 @@ export async function resetPasswordUsingOTP(payload: any) {
 }
 
 
- export const logoutHandler = async () => {
-  await fetch("/api/logout", { method: "POST" });
+export const logoutHandler = async () => {
+  const { signOut } = await import("next-auth/react");
+  await signOut({ redirect: false });
 };

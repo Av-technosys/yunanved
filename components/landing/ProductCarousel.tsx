@@ -48,7 +48,7 @@ const ProductCarousel = ({ title, subtitle, items }: SectionProps) => {
             product={product}
             index={index}
             userId={userDetails?.id}
-            />
+          />
         ))}
       </div>
     </section>

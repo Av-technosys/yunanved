@@ -13,10 +13,10 @@ export default function Home() {
 
   return (
     <div className="flex px-4 mt-4  max-sm:px-2 mx-auto min-h-screen flex-col font-sans overflow-x-hidden">
-     {/* <NavbarCategoryRibbon /> */}
+      {/* <NavbarCategoryRibbon /> */}
       <Hero />
       {/* <Categories />
-      <BentoGallery /> */}  
+      <BentoGallery /> */}
       <Collections />
 
       <div className="w-full md:max-w-[95%] xl:max-w-360 bg-featureSection mx-auto md:rounded-[3.5rem] mt-8">
@@ -26,7 +26,7 @@ export default function Home() {
       </div>
 
       <CustomerReviews />
-      <InstaGrid />
+      {/* <InstaGrid />  */}
       <Newsletter />
       {/* <FAQ /> */}
     </div>

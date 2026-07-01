@@ -7,6 +7,7 @@ import {
 } from "@/helper/category/action";
 
 import { SidebarFilterWeb } from "./SidebarFilter";
+import { HIDDEN_CATEGORIES } from "@/const/globalconst";
 
 export const revalidate = 10;
 
@@ -69,13 +70,15 @@ const Page = async ({ searchParams }: CategoryPageProps) => {
     getCategories(),
   ]);
 
-  const categories = allCategories.map(
-    (category): CategoryFilter => ({
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-    })
-  );
+  const categories = allCategories
+    .filter(cat => !HIDDEN_CATEGORIES.includes(cat.slug))
+    .map(
+      (category): CategoryFilter => ({
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+      })
+    );
 
   const selectedCategories = categories.filter((category) =>
     selectedCategorySlugs.includes(category.slug)
