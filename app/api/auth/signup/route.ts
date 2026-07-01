@@ -32,9 +32,10 @@ export async function POST(req: Request) {
       );
     }
 
+    // User exists but is not confirmed — let them verify via email OTP
     return NextResponse.json(
-      { message: "User already registered but not confirmed." },
-      { status: 409 }
+      { message: "Account already registered. Please verify your email." },
+      { status: 200 }
     );
 
   } catch (error: any) {
