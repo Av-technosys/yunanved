@@ -132,60 +132,60 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
               />
             </div>
           </Link>
-          <div className="flex flex-1 flex-col items-start px-4 pb-4 pt-5 text-left">
+          <div className="flex flex-1 flex-col items-start px-2.5 pb-3 pt-3 md:px-4 md:pb-4 md:pt-5 text-left">
             <Link href={`/product/${product.slug}`}>
-              <div className="min-h-10 text-[15px] font-semibold leading-tight text-[#333] line-clamp-2">
+              <div className="min-h-9 md:min-h-10 text-[13px] md:text-[15px] font-semibold leading-tight text-[#333] line-clamp-2">
                 {product.name}
               </div>
             </Link>
-            <p className="mt-2 text-[13px] font-medium text-[#4a9e22]">
+            <p className="mt-1 md:mt-2 text-[11px] md:text-[13px] font-medium text-[#4a9e22]">
               Boosts Hair Growth | Adds Strength & Shine
             </p>
-            <div className="mt-1 text-[13px] text-[#333]">250ml</div>
+            <div className="mt-1 text-[11px] md:text-[13px] text-[#333]">250ml</div>
             
-            <div className="mt-1.5 flex items-center justify-start gap-1.5 text-[13px] text-[#333]">
-              <span className="text-[14px] text-[#ffc107]">★</span>
+            <div className="mt-1.5 flex items-center justify-start gap-1 md:gap-1.5 text-[11px] md:text-[13px] text-[#333]">
+              <span className="text-[12px] md:text-[14px] text-[#ffc107]">★</span>
               <span className="font-medium">{rating > 0 ? rating.toFixed(1) : "5.0"}</span>
-              <span className="ml-1 text-[14px] font-bold text-[#00a5f5]">✓</span>
-              <span>{product.reviewCount ?? 144} Reviews</span>
+              <span className="ml-0.5 md:ml-1 text-[12px] md:text-[14px] font-bold text-[#00a5f5]">✓</span>
+              <span className="whitespace-nowrap">{product.reviewCount ?? 144} Reviews</span>
             </div>
           </div>
         </CardContent>
         <CardFooter className="p-0">
           <div className="flex w-full flex-col">
-            <div className="mb-4 mt-2 flex items-center justify-start gap-2 px-4">
-              <span className="text-[18px] font-bold text-[#333]">
+            <div className="mb-3 md:mb-4 mt-1.5 md:mt-2 flex flex-wrap items-center justify-start gap-1.5 md:gap-2 px-2.5 md:px-4">
+              <span className="text-[15px] md:text-[18px] font-bold text-[#333]">
                 ₹ {product.basePrice}
               </span>
               {product.strikethroughPrice ? (
-                <span className="text-[16px] text-[#999] line-through">
+                <span className="text-[13px] md:text-[16px] text-[#999] line-through">
                   ₹{product.strikethroughPrice}
                 </span>
               ) : null}
-              <span className="rounded-[2px] bg-[#aed581] px-1.5 py-0.5 text-[11px] font-semibold text-[#33691e]">
+              <span className="rounded-[2px] bg-[#aed581] px-1 md:px-1.5 py-0.5 text-[10px] md:text-[11px] font-semibold text-[#33691e] whitespace-nowrap">
                 30% off
               </span>
             </div>
 
             {isInCart ? (
               <div className="flex w-full items-center gap-2 px-2 pb-2">
-                <div className="flex h-10 flex-1 items-center justify-center rounded-md border border-slate-200 bg-gray-50 px-1">
+                <div className="flex h-9 md:h-10 flex-1 items-center justify-center rounded-md border border-slate-200 bg-gray-50 px-1">
                   <button
                     type="button"
                     onClick={() => handleDecrease(cartItem)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
+                    className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-full hover:bg-white"
                   >
-                    <Minus className="h-4 w-4" />
+                    <Minus className="h-3 w-3 md:h-4 md:w-4" />
                   </button>
-                  <span className="min-w-8 text-center text-sm font-semibold">
+                  <span className="min-w-6 md:min-w-8 text-center text-xs md:text-sm font-semibold">
                     {cartItem?.quantity ?? 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => handleIncrease(cartItem)}
-                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-white"
+                    className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-full hover:bg-white"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-3 w-3 md:h-4 md:w-4" />
                   </button>
                 </div>
                 <Button
@@ -194,7 +194,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                   variant="outline"
                   onClick={() => handleRemove(cartItem)}
                   aria-label="Remove from cart"
-                  className="h-10 w-10 rounded-md"
+                  className="h-9 w-9 md:h-10 md:w-10 rounded-md"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -204,7 +204,7 @@ export const ProductCard = ({ product, index, className = "" }: any) => {
                 disabled={isAdding || !product.isInStock}
                 variant={!product.isInStock ? "outline" : "default"}
                 onClick={handleClick}
-                className="h-12 w-full rounded-none bg-[#00a5f5] text-[14px] font-semibold uppercase tracking-wide text-white shadow-none hover:bg-[#0094dd]"
+                className="h-10 md:h-12 w-full rounded-none bg-[#00a5f5] text-[12px] md:text-[14px] font-semibold uppercase tracking-wide text-white shadow-none hover:bg-[#0094dd]"
               >
                 {!product.isInStock
                   ? "Out of Stock"
